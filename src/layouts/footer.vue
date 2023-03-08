@@ -7,11 +7,11 @@
             <p>Bringing you keystone statistics since 2018</p>
             <p>© 2023 @SindreMA. All right reserved.</p>
           </div>
-          <div class="gap-5 socials">
-            <div v-for="(social, index) in socials" :key="index" class="text-center flex flex-row gap-15 align-content-center flex-center" >
-              <p>Community discord</p>
+          <div class="gap-10 socials flex column">
+            <div v-for="(social, index) in socials" :key="index" class="text-center flex flex-row gap-15 flex-center justify-between" >
+              <p class="no-margin" >{{ social.label }}</p>
               <a :href="social.link" target="_blank" class="socialItem" :style="{backgroundColor: social.bg}">
-                <img :src="social.icon" alt="social icon" width="50px" height="50px" />
+                <img :src="social.icon" alt="social icon" width="30px" height="30px" />
               </a>
             </div>
 
@@ -31,6 +31,12 @@ const socials = [
     label: 'Discord',
     bg: '#5865F2'
   },
+  {
+    link: 'https://github.com/SindreMA/Bestkeystone_Frontend',
+    icon: 'https://res.cloudinary.com/djpcbbeqx/image/upload/v1678312407/Social/sduczryz3mefotbzxzlp.png',
+    label: 'Github',
+    bg: '#333'
+  }
 ]
 
 </script>
@@ -72,9 +78,9 @@ h5 {
 }
 
 .socialItem {
-  width: 60px;
-  height: 60px;
-  border-radius: 15px;
+  width: 50px;
+  height: 50px;
+  border-radius: 13px;
 
   display: flex;
   justify-content: center;
