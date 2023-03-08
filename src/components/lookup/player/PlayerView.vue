@@ -25,12 +25,6 @@
       <TalentLine v-if="details" :spec="details.active_spec" :talents="details.talents" />
 
       <br />
-      <RioRank
-        :region="region ?? data.run_data?.region"
-        :realm="realm ?? data.run_data?.realm"
-        :player="details?.name ?? data.run_data.name"
-        :season="periode.season"
-      />
 
       <div class="flex justify-around">
         <updateBox
@@ -98,7 +92,6 @@ import TalentLine from "../../../components/lookup/player/v2/TalentLine.vue";
 import DungeonOverview from "components/lookup/player/DungeonOverview.vue";
 import AffixOverview from "components/lookup/player/AffixOverview.vue";
 import AffixSetOverview from "components/lookup/player/AffixSetOverview.vue";
-import RioRank from "components/lookup/player/RioRank.vue";
 import RaidInfo from "components/Pages/lookup/RaidInfo.vue";
 import keystoneFriends from "components/Pages/lookup/keystoneFriends.vue";
 import GearInfo from "components/Pages/lookup/GearInfo.vue";
@@ -106,7 +99,6 @@ import statsBox from "components/Pages/lookup/statsBox.vue";
 import statisticsBox from "components/Pages/lookup/statisticsBox.vue";
 import recentRunsBox from "components/Pages/lookup/recentRunsBox.vue";
 import updateBox from "components/Pages/lookup/updateBox.vue";
-import LevelStats from "components/ListViews/LevelStats.vue";
 import ChestChart from "components/ListViews/ChestsChart.vue";
 import renameBox from "components/Pages/lookup/renameBox.vue";
 import DungeonList from "components/lookup/player/DungeonListv2.vue";

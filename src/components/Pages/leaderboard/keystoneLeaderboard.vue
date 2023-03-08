@@ -124,9 +124,8 @@
                 />
               </CloudinaryFormat>
 
-                {{/* this is outdated link and should be fixed */}}
-                <a                
-                  :href="`/#/lookup?characters=${props.row.region}.${player.realm}.${player.name}`"
+                <a
+                  :href="`/#/lookup?characters=${props.row.region}.${player.realm}.${player.name}${''/* this is outdated link and should be fixed */}`"
                   v-if="(index + 1) !=  getPlayersWithRoles(props.row.players).length"
                 >{{player.name + " "}}</a>
                 <a
