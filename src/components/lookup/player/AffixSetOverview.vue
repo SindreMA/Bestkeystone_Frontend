@@ -11,9 +11,9 @@
           <q-tr :props="props" class="text-center">
             <q-td key="affix">
               <div class="flex justify-around">
-                <div class="flex affixItem" v-for="(affix, index) in props.row.affix.affixes" :key="index">
-                  <Affix :affixid="affix.id" :border="true" size="13px" class="tableIcon" />
-                  <div> {{ affix.name }}</div>
+                <div class="flex affixItem" v-for="(affix, index) in props.row.affix?.affixes" :key="index">
+                  <Affix :affixid="affix?.id" :border="true" size="13px" class="tableIcon" />
+                  <div> {{ affix?.name }}</div>
                 </div>
               </div>
 
@@ -61,7 +61,7 @@ const runData = ref([])
 const paginationControl = ref({ rowsPerPage: 20, page: 1, sortBy: "affix" })
 const columns = ref<Array<any>>([
   {
-    name: "affix", label: "Affix", field: row => row.affix.affix, sortable: true,
+    name: "affix", label: "Affix", field: row => row.affix?.affix, sortable: true,
     align: 'center',
   },
   {
@@ -104,7 +104,7 @@ const columns = ref<Array<any>>([
 const GetAffixdetails = (id) => {
   for (let i = 0; i < GetAffixes.value.length; i++) {
     const affix = GetAffixes.value[i];
-    if (affix.id === id) {
+    if (affix?.id === id) {
       return affix
     }
   }
@@ -121,13 +121,13 @@ const GetRuns = computed(() => {
   for (let i = 0; i < ls.length; i++) {
     const item = ls[i];
 
-    var affixString = item.affixes.map(x => GetAffixdetails(x).name).join(' ')
+    var affixString = item.affixes.map(x => GetAffixdetails(x)?.name).join(' ')
     var exist = false
     for (let p = 0; p < als.length; p++) {
       const _affix = als[p];
 
-      if (_affix.affix === affixString) {
-        _affix.runs.push(item)
+      if (_affix?.affix === affixString) {
+        _affix?.runs.push(item)
         exist = true
       }
     }

@@ -11,8 +11,8 @@
           <q-tr :props="props" class="text-center">
             <q-td key="affix">
               <div class="flex tableIconContainer">
-                <affix :affixid="props.row.affix.id" size="13px" :border="true" class="tableIcon" />
-                <div> {{ props.row.affix.name }}</div>
+                <affix :affixid="props.row.affix?.id" size="13px" :border="true" class="tableIcon" />
+                <div> {{ props.row.affix?.name }}</div>
               </div>
 
             </q-td>
@@ -65,7 +65,7 @@ onBeforeMount(() => {
 const runData = ref([])
 const paginationControl = ref({ rowsPerPage: 20, page: 1, sortBy: "affix" })
 const columns = ref<Array<any>>([
-  { name: "affix", label: "Affix", field: row => row.affix.name, sortable: true, align: "center" },
+  { name: "affix", label: "Affix", field: row => row.affix?.name, sortable: true, align: "center" },
   {
     name: "highest_lvl",
     label: "Highest level",
@@ -99,7 +99,7 @@ const columns = ref<Array<any>>([
 const GetAffixdetails = (id) => {
   for (let i = 0; i < GetAffixes.value.length; i++) {
     const affix = GetAffixes.value[i];
-    if (affix.id === id) {
+    if (affix?.id === id) {
       return affix
     }
   }
