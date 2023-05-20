@@ -582,8 +582,8 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   width: 100%;
 }
 
-* {
-  color: rgb(161, 161, 161);
+.apexcharts-legend-text {
+  color: rgb(161, 161, 161) !important;
 }
 h1,h2,h3,h4,h5,h6 {
     margin: 0px;
