@@ -28,15 +28,18 @@
         <div style="width: 70%;">
           <div>Affixes</div>
           <div class="flex justify-around">
-            <div v-for="(affix, index) in runData.affixes" :key="index">
+            <div v-for="(affix, index) in runData.affixes.filter((x,i)=> x > 0)" :key="index">
               <div>Level {{getAffixLevelFromIndex(index)}}</div>
-              <Affix
-                class="AffixImg"
-                :affixid="affix"
-                :border="true"
-                :tooltip="true"
-                :customSize="true"
-              />
+              <div style="width: 35px; height: 35px;" class="flex justify-center">
+                <Affix
+                  :size="35"
+                  class="AffixImg"
+                  :affixid="affix"
+                  :border="true"
+                  :tooltip="true"
+                  :customSize="true"
+                />
+              </div>
             </div>
           </div>
         </div>
