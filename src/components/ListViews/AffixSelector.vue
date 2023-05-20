@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="holderPeriode && !hidePictures" id="AffixInfoShower" class="flex justify-around">
-      <div v-for=" affix in holderPeriode.affixes" :key="affix" class="flex-center">
+      <div v-for=" affix in holderPeriode.affixes" :key="affix" class="flex-center affixItem">
         <div v-if="GetAffixDetails(affix)">
           <div class="flex flex-center">
             <CloudinaryFormat :url="GetAffixDetails(affix).icon_Url" v-slot="{ link }" :size="56">
@@ -54,7 +54,7 @@
     <!--
   <div class="flex justify-center">
     <q-btn flat rounded text-color="grey-6" id="dropDownButton" :icon="getDropdownButtonIcon">
-     
+
     </q-btn>
   </div>
 -->
@@ -241,6 +241,10 @@ i.icon-grey {
   background-color: #292929;
   border: #5e5e5e 3px solid;
   border-top: #5e5e5e 0px solid;
+}
+.affixItem {
+  width: 100px;
+  text-align: center;
 }
 </style>
 
