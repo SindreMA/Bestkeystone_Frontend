@@ -36,9 +36,11 @@
               </q-item-section>
               <q-item-section>
                 <q-item-label >
-                  <ClassTextColor :_class="scope.opt?.class">
-                    {{scope.opt?.name}}
-                  </ClassTextColor>
+                  <div class="flex ">
+                    <ClassTextColor :_class="scope.opt?.class">
+                        {{scope.opt?.name}}
+                    </ClassTextColor>
+                  </div>
                 </q-item-label>
                 <q-item-label
                   caption
