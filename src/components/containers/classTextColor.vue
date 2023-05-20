@@ -1,5 +1,5 @@
 <template>
-  <div :style="`color: ${classColor} !important;`" class="aOverride flex flex-start full-width">
+  <div :style="`color: ${classColor} !important;`" class="aOverride flex flex-start">
     <slot />
   </div>
 </template>
