@@ -148,15 +148,20 @@ export default {
   display: flex;
 }
 
-.horde.q-linear-progress,
-.horde .q-badge {
+.horde.q-linear-progress {
+  background-color: #b30000;
   color: #b30000;
+  fill: #b30000;
   height: 25px;
 }
 
-.alliance.q-linear-progress,
-.alliance .q-badge {
+.alliance.q-linear-progress {
+  background-color: #0078ff;
   color: #0078ff;
+  fill: #0078ff;
   height: 25px;
+}
+.q-linear-progress__model--determinate {
+  background: unset;
 }
 </style>
