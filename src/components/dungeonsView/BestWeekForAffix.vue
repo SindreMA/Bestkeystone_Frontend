@@ -435,7 +435,6 @@ h2 {
 }
 .TotalView {
   overflow: hidden;
-  width: 283px;
   height: 70px;
   border-radius: 40px;
   border: 1px solid black;
