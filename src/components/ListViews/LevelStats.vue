@@ -171,7 +171,7 @@ const GetAffixSetName = (affixes) => {
           var affix = GetAffixdetails(element);
 
           if (affix) {
-            ls.push(affix.name);
+            ls.push(affix?.name);
           }
         }
         return ls.join(", ");
@@ -287,24 +287,24 @@ const genData = () => {
           GetPeriodeDetails(week[0].periode, details => {
             var s_serie = {
               name:
-                GetAffixdetails(details.affixes[0]).name +
+                (GetAffixdetails(details.affixes[0])?.name ?? '') +
                 ", " +
-                GetAffixdetails(details.affixes[1]).name +
+                (GetAffixdetails(details.affixes[1])?.name ?? '') +
                 ", " +
-                GetAffixdetails(details.affixes[2]).name +
+                (GetAffixdetails(details.affixes[2])?.name ?? '') +
                 ", " +
-                GetAffixdetails(details.affixes[3]).name,
+                (GetAffixdetails(details.affixes[3])?.name ?? ''),
               data: s_data
             };
             var r_serie = {
               name:
-                GetAffixdetails(details.affixes[0]).name +
+                (GetAffixdetails(details.affixes[0])?.name ?? '') +
                 ", " +
-                GetAffixdetails(details.affixes[1]).name +
+                (GetAffixdetails(details.affixes[1])?.name ?? '') +
                 ", " +
-                GetAffixdetails(details.affixes[2]).name +
+                (GetAffixdetails(details.affixes[2])?.name ?? '') +
                 ", " +
-                GetAffixdetails(details.affixes[3]).name,
+                (GetAffixdetails(details.affixes[3])?.name ?? ''),
               data: r_data
             };
             allSeries_success_rate.push(s_serie);
