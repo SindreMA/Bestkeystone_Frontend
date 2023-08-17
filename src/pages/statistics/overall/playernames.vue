@@ -1,9 +1,9 @@
 <template>
-    <div>
-    <h2>Playernames patterns</h2>
-    <p>This is a page where you can see how many players have a certain pattern in their name.</p>
-    <p>(Pattern with less than 50 occurances are not saved, it also only tracks m+ players)</p>
-    <NamePatternTable v-model:search="search" v-model:length="length" v-model:useWords="useWords" :items="rows"  />
+    <div class="textColor">
+        <h2>Playernames patterns</h2>
+        <p>This is a page where you can see how many players have a certain pattern in their name.</p>
+        <p>(Pattern with less than 50 occurances are not saved, it also only tracks m+ players)</p>
+        <NamePatternTable v-model:search="search" v-model:length="length" v-model:useWords="useWords" :items="rows"  />
     </div>
 </template>
 

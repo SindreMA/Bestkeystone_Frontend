@@ -589,4 +589,8 @@ h1,h2,h3,h4,h5,h6 {
     margin: 0px;
 }
 
+.textColor {
+    color: rgb(161, 161, 161) !important;
+}
+
 </style>
