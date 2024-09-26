@@ -1,5 +1,5 @@
 <template>
-  <div :id="uuid.toString()" >
+  <div :id="'REACT_COMPONENT_' + uuid.toString()" >
     Loading...
   </div>
 </template>
@@ -25,7 +25,8 @@ const props = defineProps({
 })
 
 onMounted(() => {
-  const reactComponent = new ReactConnector(document.getElementById(uuid.value.toString())!, props.componentName, props.componentProps)
+  const divEl = document.getElementById('REACT_COMPONENT_' + uuid.value.toString());
+  const reactComponent = new ReactConnector(divEl, props.componentName, props.componentProps)
   reactComponent.render()
 })
 </script>
