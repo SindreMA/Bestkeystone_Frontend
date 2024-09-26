@@ -14,6 +14,12 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/test-react',
+    component: layout,
+    children: [
+      { path: '', component: () => import('pages/test.vue') },    ]
+  },
+  {
     path: '/leaderboard',
     component: layout,
     children: [

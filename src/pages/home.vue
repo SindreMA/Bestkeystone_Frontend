@@ -1,10 +1,10 @@
 <template>
-    <div>    
+    <div>
         <QuickRunsView >
             <!--<CurrentAffixes :nextWeek="true"/>
             <br>-->
             <TopSpecsView/>
-        </QuickRunsView>        
+        </QuickRunsView>
         <br>
         <QuickDungeonView/>
         <br>
