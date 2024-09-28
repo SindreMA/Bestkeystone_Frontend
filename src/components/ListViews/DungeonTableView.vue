@@ -265,9 +265,9 @@ let dungonsColumns = ref([
       return false;
     }
     const getDungeon = (id) => {
-      if (GetDungeons.value) {
-        for (let i = 0; i < GetDungeons.value.length; i++) {
-          const dungeon = GetDungeons.value[i];
+      if (GetDungeons?.value) {
+        for (let i = 0; i < (GetDungeons?.value?.length ?? 0); i++) {
+          const dungeon = GetDungeons?.value?.[i];
           if (dungeon.keystone_id == id) {
             return dungeon;
           }

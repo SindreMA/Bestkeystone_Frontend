@@ -81,9 +81,9 @@ const getValidLink = (url1, url2) => {
 };
 
 const setDungeon = (id) => {
-  if (GetDungeons.value) {
-    for (let i = 0; i < GetDungeons.value.length; i++) {
-      const _dungeon = GetDungeons.value[i];
+  if (GetDungeons?.value) {
+    for (let i = 0; i < (GetDungeons?.value?.length ?? 0); i++) {
+      const _dungeon = GetDungeons?.value?.[i];
       if (_dungeon.keystone_id == id) {
         dungeon.value = _dungeon;
       }

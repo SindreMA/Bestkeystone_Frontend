@@ -109,7 +109,7 @@
           <q-td key="players" :props="props">
             <div class="flex justify-between">
               <div
-                :style="`color: ${getClass(player.class).color};`"
+                :style="`color: ${getClass(player?.class)?.color};`"
                 class="flex justify-center"
                 v-for="(player, index) in getPlayersWithRoles(props.row.players)"
                 :key="index"
@@ -314,7 +314,7 @@ const Columns = ref([
     const FormatTimeUsed = (time) => moment.duration(time).format("hh:mm:ss");
 
 
-    const getRole = (spec) => GetSpec(spec).role;
+    const getRole = (spec) => GetSpec(spec)?.role;
 
     const getRoleNr = (spec) => {
       if (GetSpec(spec).role == "TANK") {

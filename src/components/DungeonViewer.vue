@@ -136,8 +136,8 @@ const $q = useQuasar();
 const viewMode = computed(() => sf.GetDefaultView($q.screen.width, Settings));
 
 const DungeonDetails = computed(() => {
-  for (let i = 0; i < GetDungeons.value.length; i++) {
-    const item = GetDungeons.value[i];
+  for (let i = 0; i < (GetDungeons?.value?.length ?? 0); i++) {
+  const item = GetDungeons?.value?.[i];
     if (item.keystone_id === dungeon.value.id) {
       return item;
     }

@@ -1,7 +1,7 @@
 <template>
   <div :class="`flex1 flex column ${_class}`">
     <CloudinaryFormat
-      :url="`roles/${getRole(spec).toLowerCase()}.png`"
+      :url="`roles/${getRole(spec)?.toLowerCase()}.png`"
       v-slot="{ link }"
     >
       <q-img
@@ -40,7 +40,7 @@ const data = store.state.data;
 
 const GetSpecs = computed(() => data.Specs);
 
-const getRole = (spec) => GetSpec(spec).role;
+const getRole = (spec) => GetSpec(spec)?.role;
 const GetSpec = (spec_id) => {
   if (!GetSpecs.value) return null;
   for (let i = 0; i < GetSpecs.value.length; i++) {
