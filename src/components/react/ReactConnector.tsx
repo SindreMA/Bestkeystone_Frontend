@@ -23,7 +23,7 @@ export default class ReactConnector {
     const ReactComponent = AllComponents[this.nameOfComponent]
 
     this.root.render(
-      React.createElement(ReactComponent, this.props)
+      React.createElement(ReactComponent, {...this.props, specData: {... this.props.specData } })
     )
   }
 }

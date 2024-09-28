@@ -53,6 +53,7 @@ const state = {
 
         Specs: null,
         Spec_Data: null,
+
         Spec_Dungeon_Data: [],
 
         AffixSchedule: null,
@@ -282,8 +283,11 @@ const state = {
                 })
         },
         fetchSpecData({ commit, dispatch, state }, payload) {
+
+          console.log("fetchSpecData", payload);
+
             var url = state.apiUrl + '/Spec/leaderboard?periode=' +
-                state.SelectedPeriode + '&min_level=' +
+                (payload?.SelectedPeriode ?? state.SelectedPeriode) + '&min_level=' +
                 state.settings.min_keystonelevel + '&amount=' +
                 state.settings.max_runs + '&limitToLowestDungeon=' +
                 state.settings.limitbylowestdungeon;
