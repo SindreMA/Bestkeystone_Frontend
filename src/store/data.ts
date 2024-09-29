@@ -5,7 +5,7 @@ const { rgbToHex } = colors
 const state = {
 
     state: {
-        apiUrl:  'http://localhost:8585/api', //'https://bestkeystone.com/api',
+        apiUrl: 'https://bestkeystone.com/api',
         settings: {
             viewMode: null,
             region: null,
