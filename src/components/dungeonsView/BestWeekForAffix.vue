@@ -320,8 +320,8 @@ const GetAffixDetails = (id) => {
 };
 
 const DungeonDetails = (id) => {
-  for (let i = 0; i < GetDungeons.value.length; i++) {
-    const dungeon = GetDungeons.value[i];
+  for (let i = 0; i < (GetDungeons?.value?.length ?? 0); i++) {
+    const dungeon = GetDungeons?.value?.[i];
     if (dungeon.id == id) {
       return dungeon;
     }

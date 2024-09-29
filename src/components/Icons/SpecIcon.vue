@@ -49,8 +49,8 @@ const getImgUrl = ref("");
 const getText = ref("");
 
 var el = useclass?.value ? getClass.value : getSpec.value;
-getImgUrl.value = el.icon_url;
-getText.value = el.name;
+getImgUrl.value = el?.icon_url;
+getText.value = el?.name;
 </script>
 
 <style scouped></style>

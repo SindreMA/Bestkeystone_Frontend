@@ -64,9 +64,9 @@ const store = useStore();
 const data = store.state.data;
 
 const dungeonDetails = computed(() => {
-  if (GetDungeons.value) {
-    for (let i = 0; i < GetDungeons.value.length; i++) {
-      const _dungeon = GetDungeons.value[i];
+  if (GetDungeons?.value) {
+    for (let i = 0; i < GetDungeons?.value?.length; i++) {
+      const _dungeon = GetDungeons?.value?.[i];
       if (_dungeon?.keystone_id == dungeon.value.value) {
         return _dungeon;
       }
@@ -77,7 +77,7 @@ const dungeonDetails = computed(() => {
 const GetDungeons = computed(() => data.Dungeons);
 
 watch(GetDungeons, () => {
-  const dung = GetDungeons.value[0];
+  const dung = GetDungeons?.value?.[0];
   dungeon.value = {label: dung.name, value: dung.keystone_id};
 });
 watch(dungeon, (newValue, oldValue) => {
@@ -128,9 +128,9 @@ const durationPercentage = computed(() =>
 );
 const dungeons = computed(() => {
   var ls = [];
-  if (GetDungeons.value) {
-    for (let i = 0; i < GetDungeons.value.length; i++) {
-      const dungeon = GetDungeons.value[i];
+  if (GetDungeons?.value) {
+    for (let i = 0; i < (GetDungeons?.value?.length ?? 0); i++) {
+      const dungeon = GetDungeons?.value?.[i];
       var item = {
         label: dungeon.name,
         value: dungeon.keystone_id,

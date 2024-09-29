@@ -37,18 +37,10 @@ const props = defineProps({
 });
 const { player, region } = toRefs(props);
 
-
-
-const GetSpecs = computed(() => data.Specs);
-const GetClasses = computed(() => data.Classes);
-const GetClassColors = computed(() => data.Class_Colors);
-
-const __class = computed(() => getClass( GetSpec(player.value.spec).class));
-
 const GetSpec = (spec_id) => {
-  if (!GetSpecs.value) return null;
-  for (let i = 0; i < GetSpecs.value.length; i++) {
-    const spec = GetSpecs.value[i];
+  if (!data.Specs) return null;
+  for (let i = 0; i < data.Specs.length; i++) {
+    const spec = data.Specs[i];
     if (spec_id == spec.id) {
       return spec;
     }
@@ -56,9 +48,9 @@ const GetSpec = (spec_id) => {
 };
 
 const getClass = (id) => {
-  if (GetClasses.value) {
-    for (let i = 0; i < GetClasses.value.length; i++) {
-      const _class = GetClasses.value[i];
+  if (data.Classes) {
+    for (let i = 0; i < data.Classes.length; i++) {
+      const _class = data.Classes[i];
       if (_class.id == id) {
         return _class;
       }
@@ -66,12 +58,16 @@ const getClass = (id) => {
   }
 };
 
+
 const classColor = computed(() => {
-  if (__class.value?.color) return __class.value?.color;
+  const spec = GetSpec(player.value?.spec)
+  const __class = getClass(spec?.class ?? spec?.["Class"])
+
+  if (__class?.color) return __class?.color;
   try {
-    if (GetClassColors.value) {
-    const className = String(__class.value.name).replace(' ', '').toUpperCase()
-    const rgb = GetClassColors.value[className]?.map(x=> Math.round(x * 255))
+    if (data.Class_Colors) {
+    const className = String(__class?.name).replace(' ', '').toUpperCase()
+    const rgb = data.Class_Colors[className]?.map(x=> Math.round(x * 255)) ?? [255, 255, 255]
 
     return rgbToHex({
       r: rgb[0],

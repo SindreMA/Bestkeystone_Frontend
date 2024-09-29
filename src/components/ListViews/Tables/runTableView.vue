@@ -85,7 +85,7 @@
             :class="`${dense ? 'justify-around' : 'justify-between'}`"
           >
             <div
-              :style="`color: ${getClass(player.class).color};`"
+              :style="`color: ${getClass(player?.class)?.color};`"
               class="flex justify-center"
               v-for="(player, index) in getPlayersWithRoles(
                 props.row.players
@@ -99,7 +99,7 @@
           </div>
           <div class="flex justify-between">
             <div
-              :style="`color: ${getClass(player.class).color};`"
+              :style="`color: ${getClass(player?.class)?.color};`"
               class="flex justify-center"
               v-for="(player, index) in getPlayersWithRoles(
                 props.row.players
@@ -254,13 +254,14 @@ const GetClasses = computed(() => data.Classes);
 const GetSpecs = computed(() => data.Specs);
 
 const GetDungeonsDetails = (id) => {
-  for (let i = 0; i < GetDungeons.value.length; i++) {
-    const dungeon = GetDungeons.value[i];
+  for (let i = 0; i < (GetDungeons?.value?.length ?? 0); i++) {
+    const dungeon = GetDungeons?.value?.[i];
     if (dungeon.keystone_id === id) {
       return dungeon;
     }
   }
 };
+
 const $router = useRouter();
 const to = (url) => $router.push(url);
 

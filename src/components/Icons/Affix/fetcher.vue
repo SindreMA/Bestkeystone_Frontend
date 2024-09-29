@@ -19,8 +19,8 @@ export default {
         if (affix.id == id) {
           return affix;
         }
-       } 
-      }      
+       }
+      }
     }
   }
 };
