@@ -1,5 +1,3 @@
-
-
 <template>
   <div v-if="data" :class="!size && '_affixImage'" :style="`${size && `width: ${size}px; height: ${size}px;`}`">
     <CloudinaryFormat :url="data.icon_Url" v-slot="{ link }" :size="56">
