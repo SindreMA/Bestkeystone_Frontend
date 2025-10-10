@@ -52,6 +52,7 @@ export default {
       if (!latestRaid) return;
       var latestDifficulty = SF._sortBy(latestRaid.difficulties,x=> x.difficulty.order).reverse()[0];
       if (!latestDifficulty) return;
+      if (!latestRaid.raid?.bosses) return;
 
       var shortRaidName = this.shortName(latestRaid.raid.name);
 
