@@ -8,9 +8,9 @@
 
 
 <script>
-import GuildNav from '../../components//pages/guild/guildNav.vue'
-import GuildHeader from '../../components/pages/guild/GuildHeader.vue'
-import GuildBody from '../../components/pages/guild/GuildBody.vue'
+import GuildNav from '../../components/Pages/guild/guildNav.vue'
+import GuildHeader from '../../components/Pages/guild/guildHeader.vue'
+import GuildBody from '../../components/Pages/guild/guildBody.vue'
 import axios from 'axios'
 
 export default {
@@ -47,21 +47,21 @@ export default {
     watch: {
         region(_old, _new) {
             if (_old !== _new) {
-                this.FetchData()    
+                this.FetchData()
             }
         },
         realm(_old, _new) {
             if (_old !== _new) {
-                this.FetchData()    
+                this.FetchData()
             }
         },
         guild(_old, _new) {
             if (_old !== _new) {
-                this.FetchData()    
+                this.FetchData()
             }
         },
         tab() {
-            this.$router.replace({ query: { view: this.tab } })            
+            this.$router.replace({ query: { view: this.tab } })
         }
     },
     methods: {
@@ -88,5 +88,5 @@ export default {
 
 <style scoped>
 
-    
+
 </style>

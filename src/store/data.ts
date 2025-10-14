@@ -5,7 +5,8 @@ const { rgbToHex } = colors
 const state = {
 
     state: {
-        apiUrl: 'https://bestkeystone.com/api',
+        //apiUrl: 'https://bestkeystone.com/api',
+        apiUrl: 'https://bestkeystone_test.k8s.sindrema.com/api',
         settings: {
             viewMode: null,
             region: null,

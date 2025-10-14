@@ -56,7 +56,7 @@ import { mapGetters, mapActions, mapMutations } from "vuex";
 import DataUpdaterView from "../../components/ItemViews/DataUpdaterView.vue";
 import AffixSchedule from "../../components/Pages/info/AffixSchedule.vue";
 import DiscordLink from "../../components/Pages/info/DiscordLink.vue";
-import Tools from "../../components/Pages/info/Tools.vue";
+import Tools from "../../components/Pages/info/tools.vue";
 import renameMonitor from "../../components/Pages/info/renameMonitor.vue";
 import CreatorsProjects from "../../components/Pages/info/CreatorsProjects.vue";
 import DiscordLinksFetcher from '../../components/fetchers/DiscordLinksFetcher.vue'

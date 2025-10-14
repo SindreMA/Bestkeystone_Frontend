@@ -54,6 +54,7 @@ const selSpecTalents = computed(() => {
   var selectedSpecTalents = talents.value.find(x=> x.filter(c=>
     c.specId)[0]?.specId === selectedSpec.value
   )
+  if (!selectedSpecTalents) return []
   return selectedSpecTalents.filter(x=> x.isActive === undefined || x.isActive)
 })
 
