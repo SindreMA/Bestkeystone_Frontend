@@ -381,7 +381,7 @@ const Columns = ref([
 
           leaderboardData.value = x.data.list;
 
-          paginationControl.value.page = page + 1;
+          paginationControl.value.page = page;
           paginationControl.value.rowsPerPage = rowsPerPage;
           paginationControl.value.sortBy = sortBy;
 
