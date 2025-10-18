@@ -5,8 +5,7 @@ const { rgbToHex } = colors
 const state = {
 
     state: {
-        //apiUrl: 'https://bestkeystone.com/api',
-        apiUrl: 'https://bestkeystone-test.k8s.sindrema.com/api',
+        apiUrl: '', // Will be set during app initialization
         settings: {
             viewMode: null,
             region: null,
@@ -65,6 +64,12 @@ const state = {
     },
 
     mutations: {
+        SetApiUrl(state, apiUrl) {
+            console.log('[Mutation SetApiUrl] Before:', state.apiUrl);
+            console.log('[Mutation SetApiUrl] Setting to:', apiUrl);
+            state.apiUrl = apiUrl;
+            console.log('[Mutation SetApiUrl] After:', state.apiUrl);
+        },
         SaveReloadTimestamp(state) {
             state.Reloaded_Timestamp = Date.now();
         },

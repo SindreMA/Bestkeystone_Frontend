@@ -1,5 +1,6 @@
 import { boot } from 'quasar/wrappers';
 import axios, { AxiosInstance } from 'axios';
+import { loadConfig } from '../config/env';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -15,7 +16,18 @@ declare module '@vue/runtime-core' {
 // for each client)
 const api = axios.create({ baseURL: 'https://api.example.com' });
 
-export default boot(({ app }) => {
+export default boot(async ({ app, store }) => {
+  // Load runtime configuration before initializing the app
+  const config = await loadConfig();
+
+  console.log('[Boot] Loaded config:', config);
+  console.log('[Boot] Setting API URL to:', config.apiUrl);
+
+  // Set the API URL in the store
+  store.commit('SetApiUrl', config.apiUrl);
+
+  console.log('[Boot] Store state after commit:', store.state.data?.state?.apiUrl || store.state.data?.apiUrl);
+
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
   app.config.globalProperties.$axios = axios;
