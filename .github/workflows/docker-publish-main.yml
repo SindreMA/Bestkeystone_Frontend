@@ -79,8 +79,9 @@ jobs:
           echo "Before update:"
           cat "k8s-repo/${K8S_DEPLOYMENT_PATH}" | grep "image:" || echo "No image line found"
 
-          # Update the deployment file - match the full registry path with any tag
-          sed -i.bak "s|image: ${REGISTRY}/${IMAGE_NAME}:.*|image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" \
+          # Update the deployment file - match any bestkeystone_frontend or bestkeystone_client image
+          # This handles cases where the image might have different tags
+          sed -i.bak "s|image: ${REGISTRY}/images/bestkeystone_frontend[^[:space:]]*|image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" \
             "k8s-repo/${K8S_DEPLOYMENT_PATH}"
 
           # Show the result
