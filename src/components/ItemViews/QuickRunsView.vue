@@ -1,6 +1,13 @@
 <template>
   <div class="HeaderFont text-center">
-    <h5>Runs Completed in newest week</h5>
+    <h5>
+      Runs Completed in newest week*
+      <q-icon name="info" size="xs" class="info-icon">
+        <q-tooltip>
+          This data is based on Blizzard's leaderboard. If a run doesn't appear there, it won't be tracked. Player scans will add the player's runs, but we only have manual player scans currently. Due to Blizzard leaderboard bugs, the actual number is probably 5x-10x higher.
+        </q-tooltip>
+      </q-icon>
+    </h5>
     <div>
       <h5 class="nrFont">{{ amountOfRunsFormatted }}</h5>
     </div>
@@ -193,5 +200,11 @@ h5 {
   min-width: 500px;
   width: 100%;
   max-width: 600px;
+}
+.info-icon {
+  cursor: help;
+  vertical-align: super;
+  font-size: 0.7em;
+  margin-left: 4px;
 }
 </style>

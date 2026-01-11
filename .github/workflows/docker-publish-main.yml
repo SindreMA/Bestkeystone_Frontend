@@ -1,0 +1,126 @@
+name: Docker Build and Publish (Main)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  REGISTRY: registry.k8s.sindrema.com
+  IMAGE_NAME: images/bestkeystone_frontend
+  K8S_REPO: SindreMA/sindre-k8s
+  K8S_DEPLOYMENT_PATH: manifests/bestkeystone/bestkeystone-frontend-deployment.yaml
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Harbor Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+
+      - name: Generate timestamp tag
+        id: timestamp
+        run: echo "tag=$(date +%Y%m%d-%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.timestamp.outputs.tag }}
+            type=raw,value=latest
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
+
+      - name: Checkout k8s manifests repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.K8S_REPO }}
+          path: k8s-repo
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Update Kubernetes deployment
+        run: |
+          IMAGE_TAG="${{ steps.timestamp.outputs.tag }}"
+          IMAGE_NAME="${{ env.IMAGE_NAME }}"
+          K8S_DEPLOYMENT_PATH="${{ env.K8S_DEPLOYMENT_PATH }}"
+
+          echo "Updating deployment to use image tag: ${IMAGE_TAG}"
+          echo "Image name: ${IMAGE_NAME}"
+          echo "Deployment file: ${K8S_DEPLOYMENT_PATH}"
+
+          # Show current state
+          echo "Before update:"
+          cat "k8s-repo/${K8S_DEPLOYMENT_PATH}" | grep "image:" || echo "No image line found"
+
+          # Update the deployment file
+          sed -i.bak "s|image: ${REGISTRY}/images/bestkeystone_frontend[^[:space:]]*|image: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}|g" \
+            "k8s-repo/${K8S_DEPLOYMENT_PATH}"
+
+          # Show the result
+          echo "After update:"
+          cat "k8s-repo/${K8S_DEPLOYMENT_PATH}" | grep "image:"
+
+          # Check if file actually changed
+          if ! diff -q "k8s-repo/${K8S_DEPLOYMENT_PATH}.bak" "k8s-repo/${K8S_DEPLOYMENT_PATH}" > /dev/null 2>&1; then
+            echo "File was successfully updated"
+          else
+            echo "Warning: File did not change!"
+            exit 1
+          fi
+        env:
+          REGISTRY: ${{ env.REGISTRY }}
+
+      - name: Commit and push deployment update
+        run: |
+          cd k8s-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          IMAGE_TAG="${{ steps.timestamp.outputs.tag }}"
+          K8S_DEPLOYMENT_PATH="${{ env.K8S_DEPLOYMENT_PATH }}"
+          IMAGE_NAME="${{ env.IMAGE_NAME }}"
+
+          # Show what we're about to commit
+          echo "Git status:"
+          git status
+
+          git add "${K8S_DEPLOYMENT_PATH}"
+
+          # Check if there are changes to commit
+          if git diff --cached --quiet; then
+            echo "No changes detected. The deployment file may already be at the correct version."
+            echo "Current image in deployment:"
+            cat "${K8S_DEPLOYMENT_PATH}" | grep "image:"
+          else
+            echo "Committing changes..."
+            git commit -m "Update ${IMAGE_NAME} deployment to image tag ${IMAGE_TAG}"
+            git push
+            echo "Successfully pushed deployment update!"
+          fi

@@ -4,9 +4,9 @@
             <!--<CurrentAffixes :nextWeek="true"/>
             <br>-->
             <TopSpecsView/>
-        </QuickRunsView>
         <br>
         <QuickDungeonView/>
+        </QuickRunsView>
         <br>
         <br>
     </div>
