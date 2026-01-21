@@ -1,23 +1,19 @@
 <template>
-    <div id="pageFooter" class="lineBackground shadow-24">
-        <div class=" Container">
+    <div id="pageFooter">
+        <div class="Container">
           <div class="TextBox">
-            <h5>Bestkeystone.com</h5>
-            <br>
-            <p>Bringing you keystone statistics since 2018</p>
-            <p>© 2023 @SindreMA. All right reserved.</p>
+            <h5 class="footer-title">Bestkeystone.com</h5>
+            <p class="footer-tagline">Bringing you keystone statistics since 2018</p>
+            <p class="footer-copyright">© 2024 @SindreMA. All rights reserved.</p>
           </div>
           <div class="gap-10 socials flex column">
-            <div v-for="(social, index) in socials" :key="index" class="text-center flex flex-row gap-15 flex-center justify-between" >
-              <p class="no-margin" >{{ social.label }}</p>
-              <a :href="social.link" target="_blank" class="socialItem" :style="{backgroundColor: social.bg}">
-                <img :src="social.icon" alt="social icon" width="30px" height="30px" />
+            <div v-for="(social, index) in socials" :key="index" class="social-row">
+              <span class="social-label">{{ social.label }}</span>
+              <a :href="social.link" target="_blank" class="socialItem" :style="{'--social-color': social.bg}">
+                <img :src="social.icon" alt="social icon" width="24px" height="24px" />
               </a>
             </div>
-
           </div>
-
-
         </div>
     </div>
 </template>
@@ -43,63 +39,102 @@ const socials = [
 
 
 <style scoped>
-.socials {
-  color: white;
-}
-h5 {
-  margin: 0px !important;
-}
-.TextBox {
-  height: 100%;
-  color: white;
-  font-weight: 500;
-  display: flex;
-  flex-direction: column;
-}
-
 #pageFooter {
   width: 100%;
-  height: 160px;
-  bottom: 0px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-default);
 }
+
 .Container {
   width: 100%;
-  max-width: 1300px;
-  padding: 10px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 15px
+  gap: 24px;
+}
+
+.TextBox {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.footer-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.footer-tagline {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.footer-copyright {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.socials {
+  display: flex;
+  gap: 12px;
+}
+
+.social-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.social-label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
 }
 
 .socialItem {
-  width: 50px;
-  height: 50px;
-  border-radius: 13px;
-
+  --social-color: #6366f1;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--social-color);
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .socialItem:hover {
-    cursor: pointer;
-    opacity: 0.8;
+  opacity: 0.85;
 }
 
-.socialItem a {
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-img {
-  width: 70%;
-  height: 70%;
+.socialItem img {
+  width: 20px;
+  height: 20px;
   object-fit: contain;
+}
+
+@media (max-width: 600px) {
+  .Container {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .social-label {
+    display: none;
+  }
+
+  .socials {
+    flex-direction: row;
+  }
+
+  .social-row {
+    gap: 0;
+  }
 }
 </style>

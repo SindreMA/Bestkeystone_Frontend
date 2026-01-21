@@ -1,7 +1,7 @@
 <template>
   <div class="HeaderFont text-center">
     <h5>
-      Runs Completed in newest week*
+      Runs Completed This Week
       <q-icon name="info" size="xs" class="info-icon">
         <q-tooltip>
           This data is based on Blizzard's leaderboard. If a run doesn't appear there, it won't be tracked. Player scans will add the player's runs, but we only have manual player scans currently. Due to Blizzard leaderboard bugs, the actual number is probably 5x-10x higher.
@@ -10,6 +10,10 @@
     </h5>
     <div>
       <h5 class="nrFont">{{ amountOfRunsFormatted }}</h5>
+    </div>
+    <div class="live-indicator">
+      <span class="pulse-dot"></span>
+      <span>LIVE TRACKING</span>
     </div>
     <br />
     <slot />
@@ -206,5 +210,30 @@ h5 {
   vertical-align: super;
   font-size: 0.7em;
   margin-left: 4px;
+}
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 50px;
+  padding: 8px 18px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #22c55e;
+  letter-spacing: 2px;
+  margin-top: 10px;
+}
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
 }
 </style>

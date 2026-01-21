@@ -106,16 +106,21 @@ export default {
 
 <style scoped>
 #Box {
-  border: 1px solid #696969;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   width: 518px;
   height: 380px;
   position: relative;
-
+  overflow: hidden;
+  background: var(--bg-surface);
 }
 
 #Header {
-  background-color: #414141;
-  padding: 5px;
+  background: var(--bg-elevated);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-default);
 }
 #Container {
   position: absolute;
@@ -164,8 +169,8 @@ export default {
   top: 12px;
   width: 260x;
   height: 26px;
-  border: 1px grey solid;
-  border-radius: 5px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
 }
 .talentItem .Name {
   font-size: 11px;

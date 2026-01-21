@@ -43,19 +43,27 @@ export default {
   }
 };
 </script>
-<style scouped>
+<style scoped>
 .container {
   width: 100%;
   height: auto;
   font-size: 16px;
-  background: rgb(26, 26, 26);
+  background: var(--bg-elevated);
   text-align: center;
-  padding: 3px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  margin-bottom: 4px;
+  transition: background var(--transition-fast);
+}
+.container:hover {
+  background: var(--bg-hover);
 }
 .fs25 {
   font-size: 35px;
+  color: var(--text-accent);
 }
 .marginTop {
   margin-top: 5px;
+  color: var(--text-primary);
 }
 </style>

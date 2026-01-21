@@ -50,9 +50,10 @@ const Specs = computed(() => data.Specs);
   min-height: 80px;
   padding: 10px 30px;
   text-align: center;
-  background-color: #1e1e1e;
-  border-radius: 10px;
-  border: 1px solid #000000;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
 }
 .matchItem {
   display: flex;
@@ -65,11 +66,19 @@ const Specs = computed(() => data.Specs);
   min-height: 50px;
   padding: 2px 20px;
   text-align: center;
-  background-color: #1e1e1e;
-  border-radius: 10px;
-  border: 1px solid #000000;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  transition: border-color var(--transition-fast);
+}
+.matchItem:hover {
+  border-color: var(--border-accent);
 }
 a {
-  color: #00bfff;
+  color: var(--text-accent);
+  transition: color var(--transition-fast);
+}
+a:hover {
+  color: var(--text-primary);
 }
 </style>

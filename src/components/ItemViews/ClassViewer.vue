@@ -120,62 +120,29 @@ export default {
 
 
 <style>
-.TextCover {
-    background-color: #252525;
-    border-radius: 10px;
-    font-size: 25px;
-    padding: 2px 12px;
-    margin-top: 10px;
-    border: rgb(161, 161, 161) 0.5px solid;
-
-
-
+.ClassViewWindowMAIN {
+    margin: 12px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    transition: all var(--transition-normal);
 }
 
-.Score {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-
-    background-color: #252525;
-    border-radius: 10px;
-    font-size: 20px;
-    border: rgb(161, 161, 161) 0.5px solid;
-
-    padding: 0 5px;
-    margin-top: 10px;
-
-}
-
-.Rank {
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    text-align: center;
-    border: rgb(161, 161, 161) 0.5px solid;
-
-    background-color: #252525;
-    border-radius: 50px;
-    font-size: 20px;
-
-    width: 30px;
-    height: 30px;
-    margin-top: 10px;
-}
-
-.middle {
-
-    position: absolute;
+.ClassViewWindowMAIN:hover {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-glow);
+    transform: translateY(-4px) scale(1.02);
 }
 
 .ClassViewWindow {
     min-width: 330px;
-    height: 70px;
+    height: 80px;
     background-size: cover;
-    /* <------ */
     background-repeat: no-repeat;
     background-position: center;
     position: relative;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .TopBack {
@@ -188,35 +155,100 @@ export default {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
+    background: linear-gradient(180deg, rgba(13, 17, 23, 0.3) 0%, rgba(13, 17, 23, 0.7) 100%);
+    backdrop-filter: blur(1px);
+}
 
+.TextCover {
+    background: var(--bg-surface);
+    border-radius: var(--radius-full);
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 6px 16px;
+    margin-top: 14px;
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.Score {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.Rank {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    text-align: center;
+    background: var(--bg-surface);
+    border: 2px solid var(--border-accent);
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    font-weight: 700;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-accent);
+    box-shadow: var(--shadow-glow);
 }
 
 .ShowMore {
-    background-color: #252525;
-    border-radius: 55px;
-    bottom: 1px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-full);
+    bottom: -12px;
     position: absolute;
-
+    padding: 2px;
+    border: 1px solid var(--border-default);
+    transition: all var(--transition-fast);
 }
 
 .ShowMore:hover {
     cursor: pointer;
+    background: var(--bg-hover);
+    border-color: var(--border-accent);
+}
+
+.ShowMore .material-icons {
+    color: var(--text-secondary);
+    font-size: 20px;
 }
 
 .MoreDetails {
-    background-color: #313131;
-    padding: 5px;
+    background: var(--bg-elevated);
+    padding: 12px;
+    border-top: 1px solid var(--border-default);
+}
+
+.MoreDetails > div {
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    transition: all var(--transition-fast);
+}
+
+.MoreDetails > div:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 .Marked {
-    background-color: #292929
+    background: var(--bg-surface);
 }
 
-.ClassViewWindowMAIN {
-    margin: 10px 11px;
-    border-radius: 10px;
-
+.middle {
+    position: absolute;
 }
 </style>
 

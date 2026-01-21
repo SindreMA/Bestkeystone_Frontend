@@ -23,16 +23,26 @@ export default {
 
 <style scoped>
 #Box {
-  border: 1px solid #696969;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   position: relative;
+  overflow: hidden;
+  background: var(--bg-surface);
 }
 
 #Header {
-  background-color: #414141;
-  padding: 5px;
+  background: var(--bg-elevated);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-default);
 }
 
-.TakeAll{
+#Container {
+  padding: 16px;
+}
+
+.TakeAll {
   width: 100%;
   height: auto;
 }

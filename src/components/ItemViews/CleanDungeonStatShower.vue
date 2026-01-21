@@ -103,17 +103,23 @@ computed: {
 }
 </script>
 
-<style scouped>
+<style scoped>
+.mainContainer {
+  width: 100%;
+}
 .imageFormat {
-
-  background-position: center; /* Center the image */
+  background-position: center;
   background-size: cover;
-} 
+}
 .dungeonImage {
   margin-right: 10px;
   width: 40px;
   height: 40px;
-  border-radius: 5px;
-  border: 1px grey solid;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  transition: border-color var(--transition-fast);
+}
+.dungeonImage:hover {
+  border-color: var(--border-accent);
 }
 </style>

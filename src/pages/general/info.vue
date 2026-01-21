@@ -103,5 +103,15 @@ export default {
 };
 </script>
 <style scoped>
+.HeaderSize3 {
+  color: var(--text-primary);
+  margin: 20px 0;
+}
 
+p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 800px;
+  margin: 0 auto 16px;
+}
 </style>

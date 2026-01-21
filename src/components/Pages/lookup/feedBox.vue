@@ -120,16 +120,22 @@ export default {
   max-width: 662px;
 }
 #Box {
-  border: 1px solid #696969;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   min-width: 300px;
   width: 100%;
   height: 200px;
   position: relative;
+  overflow: hidden;
+  background: var(--bg-surface);
 }
 
 #Header {
-  background-color: #414141;
-  padding: 5px;
+  background: var(--bg-elevated);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-default);
 }
 #Container {
   position: relative;
@@ -138,23 +144,24 @@ export default {
   color: #ffd000d0;
 }
 .loot {
-  color: blueviolet;
+  color: #a855f7;
 }
 .bosskill {
-  color: rgba(255, 0, 0, 0.596);
+  color: #ef4444;
 }
 .dark {
-  background-color: #2b2b2b;
+  background: var(--bg-elevated);
 }
 .placeLeft {
   position: absolute;
-  left: 5px;
+  left: 8px;
   height: 20px;
   overflow: hidden;
 }
 .placeRight {
   position: absolute;
   height: 20px;
-  right: 5px;
+  right: 8px;
+  color: var(--text-secondary);
 }
 </style>

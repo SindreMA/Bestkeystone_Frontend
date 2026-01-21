@@ -2,7 +2,7 @@
   <div>
 
     <div v-if="GetSelectedPeriode && c_data && GetSelectedPeriode != c_data.periode || !Specs('DAMAGE')" class="flex flex-center">
-          <q-spinner-puff style="color: rgb(161, 161, 161)" size="500" />
+          <q-spinner-puff style="color: var(--text-accent)" size="500" />
     </div>
     <div v-else>
       <div v-if="Specs('DAMAGE').length === 0" class="HeaderFont nodataInfo">
@@ -150,15 +150,20 @@ onBeforeMount(() => {
 })
 </script>
 <style>
-  #SpecShowerShowAllbtn{
-    width: 80px;
-    border: rgb(161, 161, 161) 1px solid;
-    border-radius: 20px;
-    padding: 3px 2px;
+  #SpecShowerShowAllbtn {
+    width: 100px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-full);
+    padding: 8px 16px;
     text-align: center;
+    background: var(--bg-surface);
+    transition: all var(--transition-normal);
+    font-weight: 500;
   }
   #SpecShowerShowAllbtn:hover {
     cursor: pointer;
+    border-color: var(--border-accent);
+    background: var(--bg-hover);
+    transform: scale(1.05);
   }
-
 </style>

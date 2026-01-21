@@ -32,7 +32,7 @@ const { runs } = toRefs(props)
 const series = ref([])
 const chartOptions = ref({
     chart: {
-        foreColor: "#a1a1a1"
+        foreColor: "#e6edf3"
     },
     plotOptions: {
         bar: {
@@ -117,12 +117,18 @@ onBeforeMount(() => {
 
 <style scoped>
 .Box {
-    border: 1px solid #696969;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
     position: relative;
+    overflow: hidden;
+    background: var(--bg-surface);
 }
 
 .Header {
-    background-color: #414141;
-    padding: 5px;
+    background: var(--bg-elevated);
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-default);
 }
 </style>

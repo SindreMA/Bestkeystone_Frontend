@@ -69,11 +69,13 @@ onBeforeMount(() => {
 })
 </script>
 
-<style scouped>
+<style scoped>
 .specButton {
-    padding: 5px 10px;
+    padding: 8px 12px;
     min-width: 65px;
     min-height: 25px;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
 }
 
 .pointer {
@@ -81,15 +83,18 @@ onBeforeMount(() => {
 }
 
 .clickHover:hover {
-    background: #2f2f2f;
+    background: var(--bg-hover);
+    color: var(--text-primary);
 }
 
 .specButtonSelected {
-    background: #1f1f1f;
+    background: var(--bg-elevated);
+    color: var(--text-accent);
+    font-weight: 500;
 }
-
 
 .talents {
   gap: 5px 20px;
+  padding: 12px;
 }
 </style>

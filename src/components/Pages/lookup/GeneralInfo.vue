@@ -2,7 +2,7 @@
   <div v-if="details">
     <div
       id="GeneralInfoFader"
-      :style="'background-image: linear-gradient(#252525,'+ColorLuminance(GetClass(details.character_class).color,-0.7)+');'"
+      :style="'background-image: linear-gradient(var(--bg-surface),'+ColorLuminance(GetClass(details.character_class).color,-0.7)+');'"
     ></div>
     <div
       id="GeneralInfo"
@@ -82,7 +82,7 @@
     </div>
     <div
       id="GeneralInfoFader"
-      :style="'background-image: linear-gradient('+ColorLuminance(GetClass(details.character_class).color,-0.2)+',#252525);'"
+      :style="'background-image: linear-gradient('+ColorLuminance(GetClass(details.character_class).color,-0.2)+',var(--bg-surface));'"
     ></div>
   </div>
 </template>
@@ -222,24 +222,31 @@ export default {
 #PicturePlate {
   width: 84px;
   height: 84px;
-  background-color: #252525;
-  border: solid goldenrod 1px;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 #NameLocationPlate {
-  width: 150px;
-  border-radius: 15px 15px 15px 15px;
-  background-color: #252525;
-  padding: 2px;
-  border: solid goldenrod 1px;
+  width: 160px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  padding: 8px 12px;
+  border: 1px solid var(--border-default);
 }
 .InfoField {
-  border-radius: 15px 15px 15px 15px;
-  background-color: #252525;
-  padding: 2px 20px;
-  border: solid goldenrod 1px;
-  height: 44px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  padding: 8px 20px;
+  border: 1px solid var(--border-default);
+  height: auto;
   min-width: 110px;
-  margin: 0 20px;
+  margin: 0 10px;
+  transition: all var(--transition-normal);
+}
+.InfoField:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
 }
 .DetailsPos {
   position: relative;

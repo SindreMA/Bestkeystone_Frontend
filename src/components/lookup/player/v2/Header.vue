@@ -106,18 +106,26 @@ const playerLinks = computed(() => {
 })
 </script>
 
-<style scouped>
+<style scoped>
 a {
   text-decoration: inherit;
+  color: var(--text-accent);
+  transition: color var(--transition-fast);
+}
+a:hover {
+  color: var(--text-primary);
 }
 
 .field {
   margin: 0 5px;
+  color: var(--text-secondary);
 }
 
 .field .value {
   margin: 5px;
   font-size: 30px;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .avatarImage {
@@ -125,12 +133,21 @@ a {
   height: 120px;
   border-radius: 100%;
   margin-right: 15px;
+  border: 3px solid var(--border-default);
+  transition: border-color var(--transition-normal);
+}
+.avatarImage:hover {
+  border-color: var(--border-accent);
 }
 
 .iconLink {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 100%;
+  transition: transform var(--transition-fast);
+}
+.iconLink:hover {
+  transform: scale(1.2);
 }
 
 .externalLinks {

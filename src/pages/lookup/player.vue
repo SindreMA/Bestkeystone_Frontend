@@ -55,15 +55,17 @@ const playerName = computed(() => $router.currentRoute.value.params.name as stri
 }
 
 .showStats {
-  border-radius: 25px;
-  border: 1px solid #494949;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
   width: 340px;
-  background-color: #2e2e2e;
+  background: var(--bg-surface);
+  transition: all var(--transition-normal);
 }
 
 .showStats:hover {
   cursor: pointer;
-  background-color: #414141;
+  background: var(--bg-hover);
+  border-color: var(--border-accent);
 }
 
 #LookupMain {
@@ -73,9 +75,10 @@ const playerName = computed(() => $router.currentRoute.value.params.name as stri
 #LookupSearchField {
   margin-top: 10px;
   width: 900px;
-  background-color: #414141;
-  border-radius: 50px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
   padding: 5px 25px;
+  border: 1px solid var(--border-default);
 }
 
 .regionSelector {
@@ -91,10 +94,11 @@ const playerName = computed(() => $router.currentRoute.value.params.name as stri
 }
 
 .NameScore {
-  border: rgb(161, 161, 161) solid 1px;
+  border: 1px solid var(--border-default);
   padding: 0 20px;
   text-align: center;
-  border-radius: 20%;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
 }
 
 .InputField {

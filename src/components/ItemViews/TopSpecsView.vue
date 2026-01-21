@@ -33,6 +33,10 @@ const SortByAvgScore = (ls) =>SF._sortBy(ls, (x) => x.score / x.runs).reverse();
 
 <style scoped>
 a {
-  color: inherit;
+  color: var(--text-accent);
+  transition: color var(--transition-fast);
+}
+a:hover {
+  color: var(--text-primary);
 }
 </style>

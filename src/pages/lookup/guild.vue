@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="guild-page">
         <GuildHeader :guild="guildData" @Update="FetchData(true)"/>
         <GuildNav :guild="guildData" :tab="tab" @changedTab="tab = $event"/>
         <GuildBody :guild="guildData" :tab="tab"/>
@@ -23,7 +23,7 @@ export default {
     data() {
         return {
             guildData: null,
-            tab: 'members',
+            tab: 'overview',
         }
     },
     computed: {
@@ -87,6 +87,15 @@ export default {
 </script>
 
 <style scoped>
+.guild-page {
+  background: transparent;
+}
+</style>
 
-
+<style>
+/* Ensure Quasar components don't add white backgrounds */
+.guild-page .q-tab-panels,
+.guild-page .q-tab-panel {
+  background: transparent !important;
+}
 </style>

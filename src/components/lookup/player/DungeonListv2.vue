@@ -283,10 +283,10 @@ const subcolumns = ref<Array<any>>([
 
           format: (val, row) =>
             `${[
-              GetAffixDetails(row.affixes[0]).name,
-              GetAffixDetails(row.affixes[1]).name,
-              GetAffixDetails(row.affixes[2]).name,
-              GetAffixDetails(row.affixes[3]).name
+              shortenAffixName(GetAffixDetails(row.affixes[0])?.name),
+              shortenAffixName(GetAffixDetails(row.affixes[1])?.name),
+              shortenAffixName(GetAffixDetails(row.affixes[2])?.name),
+              shortenAffixName(GetAffixDetails(row.affixes[3])?.name)
             ].join(",")}`
         },
         {
@@ -339,10 +339,10 @@ const columns = ref<Array<any>>([
           sort: (a,b, rowA, rowB) => rowA.reduce((a,b) => a + b, 0) - rowB.reduce((a,b) => a + b, 0),
           format: (val, row) =>
             `${[
-              GetAffixDetails(row.affixes[0]).name,
-              GetAffixDetails(row.affixes[1]).name,
-              GetAffixDetails(row.affixes[2]).name,
-              GetAffixDetails(row.affixes[3]).name
+              shortenAffixName(GetAffixDetails(row.affixes[0])?.name),
+              shortenAffixName(GetAffixDetails(row.affixes[1])?.name),
+              shortenAffixName(GetAffixDetails(row.affixes[2])?.name),
+              shortenAffixName(GetAffixDetails(row.affixes[3])?.name)
             ].join(",")}`
         },
         {
@@ -396,6 +396,14 @@ const GetAffixDetails = (id) => {
           return affix;
         }
       }
+    }
+
+const shortenAffixName = (name) => {
+      if (!name) return name;
+      if (name.includes(' ')) {
+        return name.split(' ').pop();
+      }
+      return name;
     }
 
 const updateData = () => {
@@ -484,24 +492,27 @@ onBeforeMount(() => {
   height: 20px;
 }
 .historyContainer {
-  border: rgb(61, 61, 61) 1px solid;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 table {
-  color: rgb(161, 161, 161) !important;
+  color: var(--text-primary) !important;
   border-collapse: collapse;
   width: 100%;
 }
 .hideHover:hover {
-  background-color: #333333 !important;
+  background: var(--bg-hover) !important;
 }
 .historyContainer .hideHover:hover {
-  background-color: #252525 !important;
+  background: var(--bg-elevated) !important;
 }
 .hideHover:hover tr:nth-child():hover {
-  background-color: #252525 !important;
+  background: var(--bg-elevated) !important;
 }
 .q-table th {
   opacity: 1;
+  color: var(--text-secondary);
 }
 .starIcon {
   transform: scale(0.6);
@@ -515,7 +526,10 @@ table {
   top: -2px;
 }
 .boxBorder {
-  border: #424242 2px solid;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-surface);
 }
 
 .cardMargin {
@@ -526,10 +540,10 @@ table {
 .SelectedMarker {
   font-size: 20px;
   height: 38px;
-  color: red;
+  color: #ef4444;
 }
-.dungeoonDetails{
-  background-color: #333333;
+.dungeoonDetails {
+  background: var(--bg-elevated);
 }
 .viewItem {
   min-width: 800px;
@@ -537,14 +551,22 @@ table {
   max-width: 1000px;
 }
 .Header {
-    background-color: #414141;
-  padding: 5px;
+  background: var(--bg-elevated);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-default);
 }
 .btnBackground {
-    background-position: center; /* Center the image */
-        background-size: cover; /* Resize the background image to cover the entire container */
-    border-radius: 20px;
-    border: 1px solid grey;
+  background-position: center;
+  background-size: cover;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
+  transition: all var(--transition-normal);
+}
+.btnBackground:hover {
+  border-color: var(--border-accent);
+  transform: scale(1.1);
 }
 </style>
 

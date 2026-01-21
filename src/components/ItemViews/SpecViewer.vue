@@ -84,29 +84,42 @@ export default {
 
 </script>
 <style>
+.SpecViewWindowMAIN {
+  margin: 8px 0;
+}
+
 .SpecMaxWidth {
   max-width: 700px;
-
 }
 
 .SpecTextCover {
-  background-color: #252525;
-  border-radius: 10px;
-  font-size: 14px;
-  padding: 2px 12px;
-  border: rgb(161, 161, 161) 0.5px solid;
+  background: var(--bg-surface);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 4px 14px;
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .SpecViewWindow {
-  height: 40px;
-  border-radius: 20px;
+  height: 48px;
+  border-radius: var(--radius-full);
   overflow: hidden;
-  margin: 5px 0;
+  margin: 6px 0;
   background-size: cover;
-  /* <------ */
   background-repeat: no-repeat;
   background-position: center;
   position: relative;
+  border: 1px solid var(--border-default);
+  transition: all var(--transition-normal);
+}
+
+.SpecViewWindow:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-glow);
+  transform: scale(1.01);
 }
 
 .DarkerGreyOverlay {
@@ -115,16 +128,25 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-
+  background: linear-gradient(90deg, rgba(13, 17, 23, 0.7) 0%, rgba(13, 17, 23, 0.4) 50%, rgba(13, 17, 23, 0.7) 100%);
 }
 
 .rankBoxSpec {
-  color: rgb(161, 161, 161);
-  border-radius: 50px;
-  width: 25px;
-  height: 25px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  color: var(--text-accent);
+  border-radius: var(--radius-full);
+  width: 28px;
+  height: 28px;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-glow);
+}
+
+#points {
+  background: var(--gradient-primary) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 600;
 }
 </style>

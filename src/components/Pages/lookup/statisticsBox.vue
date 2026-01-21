@@ -62,16 +62,22 @@ export default {
 
 <style scoped>
 #Box {
-    border: 1px solid #696969;
-    min-height: 255px;  
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    min-height: 255px;
     z-index: 1;
-    background-color: #252525;
+    background: var(--bg-surface);
+    overflow: hidden;
 }
 
 #Header {
-  background-color: #414141;
-  padding: 5px;
+  background: var(--bg-elevated);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-default);
 }
 #Container {
+  padding: 8px;
 }
 </style>

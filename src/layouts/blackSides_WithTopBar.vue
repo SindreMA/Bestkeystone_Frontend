@@ -189,6 +189,7 @@ let settings_changed = ref(false);
 const scrollArea = ref(null);
 
 const router = useRouter();
+const route = router.currentRoute;
 
 const store = useStore();
 const data = store.state.data;
@@ -223,11 +224,11 @@ const SaveSettings = (x) => store.commit("SaveSettings", x);
 const SaveReloadTimestamp = () => store.commit("SaveReloadTimestamp");
 
 const Selected = computed(() => GetSavedSelected);
-const path = computed(() => location.pathname);
+const path = computed(() => route.value.path);
 const SelectedAffixSet = computed(() => GetSelectedAffixSet);
 const RIOData = computed(() => GetRIOData);
 const showSettingBtn = computed(() => {
-  if (location.pathname.startsWith("/statistics")) {
+  if (route.value.path.startsWith("/statistics")) {
     return true;
   }
   return false;
@@ -390,42 +391,45 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   text-transform: capitalize;
 }
 #HeaderLine {
-  height: 32px;
+  height: 4px;
   margin: auto;
+  background: var(--gradient-primary);
 }
 .BoxHeaderBackground {
-  background-color: #414141;
+  background: var(--bg-elevated);
 }
 .relative {
   position: relative;
 }
 .lightBackground {
-  background-color: #494949;
-  color: #e7e7e7;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 .searchResultsBox {
-  background-color: #494949;
-  color: #e7e7e7;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
 }
 .gap-5 {
   gap: 5px;
 }
 .background {
-  background-color: #252525;
+  background: var(--bg-surface);
 }
 .transperant {
   background: transparent;
 }
 #LayoutHeader {
   width: 100%;
-  background-color: #181818;
+  background: var(--bg-surface);
   position: sticky;
   top: 0px;
   z-index: 100000;
 }
 .lineBackground {
-  background-color: #181818;
-  height: 500px;
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+  height: 120px;
   width: 100%;
 }
 
@@ -442,10 +446,11 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 .greyBackground {
   position: relative;
-  background-color: #292929;
-  color: rgb(161, 161, 161);
-  border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border-radius: var(--radius-lg);
   padding: 0 5px;
+  border: 1px solid var(--border-default);
 }
 
 #DonateButton:hover {
@@ -453,7 +458,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 
 .HeaderFont {
-  color: rgb(161, 161, 161) !important;
+  color: var(--text-secondary) !important;
 }
 
 .HeaderSize {
@@ -478,7 +483,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   align-items: center;
   height: 100%;
 }
-@media screen and (min-width: 400px) {
+@media screen and (min-width: 600px) {
   .MiddleAndSize {
     max-width: 1300px;
     margin: auto;
@@ -488,10 +493,10 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   }
 }
 .GreyBackground {
-  background-color: #252525;
+  background: var(--bg-surface);
 }
 .BlackBackground {
-  background-color: #151515;
+  background: var(--bg-base);
   min-height: 100vh;
   height: 100%;
   display: flex;
@@ -505,32 +510,43 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   position: absolute;
   top: -10px;
   right: -10px;
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default);
+  transition: all var(--transition-normal);
+}
+.StaticSettingButtonbtn:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-glow);
+  transform: rotate(90deg);
 }
 #SettingsBox {
-  width: 300px;
-  height: 450px;
-  background-color: #303030;
-  border: rgb(161, 161, 161) 1px solid;
-  border-radius: 15px;
+  width: 320px;
+  height: 480px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
 }
 #SettingsContent {
-  padding: 12px;
+  padding: 20px;
   margin: 0px;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s;
+  transition: opacity 0.3s ease;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter, .fade-leave-to {
   opacity: 0;
 }
 .nodataInfo {
   margin: auto;
-  border: 1px grey solid;
-  border-radius: 15px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   max-width: 300px;
   margin-top: 50px;
+  background: var(--bg-surface);
+  padding: 20px;
 }
 .Slider {
   top: -8px;
@@ -540,7 +556,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   position: relative;
 }
 .HeaderFontv2 {
-  color: #cacaca;
+  color: var(--text-primary);
 }
 .Ad {
   padding: 10px 10px 5px 10px;
@@ -562,9 +578,15 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   background-color: transparent !important;
 }
 .logoIcon {
-  width: 45px;
-  border-radius: 30px;
-  border: rgb(63, 63, 63) solid 1px;
+  width: 48px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--border-default);
+  transition: all var(--transition-normal);
+}
+.logoIcon:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-glow);
+  transform: scale(1.05);
 }
 
 .gap-15 {
@@ -583,14 +605,15 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 
 .apexcharts-legend-text {
-  color: rgb(161, 161, 161) !important;
+  color: var(--text-secondary) !important;
 }
 h1,h2,h3,h4,h5,h6 {
-    margin: 0px;
+  margin: 0px;
+  color: var(--text-primary);
 }
 
 .textColor {
-    color: rgb(161, 161, 161) !important;
+  color: var(--text-secondary) !important;
 }
 
 </style>

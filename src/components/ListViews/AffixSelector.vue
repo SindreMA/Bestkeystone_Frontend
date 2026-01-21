@@ -4,7 +4,7 @@
       <div v-for=" affix in holderPeriode.affixes" :key="affix" class="flex-center affixItem">
         <div v-if="GetAffixDetails(affix)">
           <div class="flex flex-center">
-            <CloudinaryFormat :url="GetAffixDetails(affix).icon_Url" v-slot="{ link }" :size="56">
+            <CloudinaryFormat :url="GetAffixDetails(affix).icon_Url" v-slot="{ link }" :size="40">
               <div class="affixImage" :style="{ 'background-image': 'url('+link+')' }">
                 <q-tooltip>
                   {{GetAffixDetails(affix).description}}
@@ -13,7 +13,7 @@
             </CloudinaryFormat>
           </div>
           <div class="HeaderFont flex-center affixText">
-            {{GetAffixDetails(affix).name}}
+            {{shortenAffixName(GetAffixDetails(affix).name)}}
           </div>
         </div>
       </div>
@@ -41,7 +41,7 @@
                     <div class="affixImageSmall " :style="{ 'background-image': 'url('+link+')' }"></div>
                   </CloudinaryFormat>
                   <div class="HeaderFont ">
-                    {{GetAffixDetails(affix).name}}
+                    {{shortenAffixName(GetAffixDetails(affix).name)}}
                   </div>
                 </div>
               </div>
@@ -62,7 +62,7 @@
 
     <div v-else class="HeaderFont">
       <div class="col-12 flex flex-center">
-        <q-spinner-puff style="color: rgb(161, 161, 161)" :size="750" />
+        <q-spinner-puff style="color: var(--text-accent)" :size="750" />
       </div>
       <div class="col-12 flex flex-center">
         <p>if you see this, then that means the webpage have'nt loaded any data yet...</p>
@@ -126,6 +126,14 @@ export default {
       var date = moment(time).fromNow();
 
       return date;
+    },
+    shortenAffixName(name) {
+      if (!name) return name;
+      // If name contains a space, return the last word
+      if (name.includes(' ')) {
+        return name.split(' ').pop();
+      }
+      return name;
     }
 
   },
@@ -163,32 +171,41 @@ export default {
 <style>
 hr {
   display: block;
-  height: 1px;
+  height: 2px;
   border: 0;
-  border-top: 1px solid #ccc;
+  background: var(--gradient-primary);
   margin: 1em 0;
   padding: 0;
+  border-radius: var(--radius-full);
 }
 
 .affixImage {
-  height: 38px;
-  width: 38px;
-  border: rgb(161, 161, 161) solid 1px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  height: 40px;
+  width: 40px;
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  margin-bottom: 6px;
   background-size: 100% 100%;
   background-position: center;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
+}
+
+.affixImage:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-glow);
+  transform: scale(1.1);
 }
 
 #SelectboxAffix {
   width: 100%;
   height: 20px;
-  border: groove 1px grey;
-
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
 }
 
 #SelectboxAffix:hover {
-  background-color: #3a3a3a;
+  background: var(--bg-hover);
   cursor: pointer;
 }
 
@@ -197,54 +214,92 @@ hr {
 }
 
 i.icon-grey {
-  color: rgb(161, 161, 161);
+  color: var(--text-secondary);
 }
 
 .affixSetListItem {
-  min-height: 40px;
+  min-height: 48px;
   width: 100%;
-  border-bottom: rgb(161, 161, 161) solid 1px;
+  border-bottom: 1px solid var(--border-default);
+  padding: 8px 0;
+  transition: all var(--transition-fast);
 }
 
 .affixSetListItemInfo {
   margin: 0px;
-  padding: 0px;
+  padding: 8px 12px;
   min-height: 0;
   border: none;
-  background-color: #313131;
-
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
 }
 
 .affixSetListItem:hover {
-  background-color: #525252;
+  background: var(--bg-hover);
 }
 
 .SelectBox {
-  background-color: #252525;
-  border: rgb(161, 161, 161) solid 1px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   width: 63%;
 }
 
 .affixImageSmall {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   background-size: 100% 100%;
   background-position: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
 }
 
 #dropDownButton {
   width: 100%;
-  border: #313131 1px solid;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-full) !important;
+  background: var(--bg-surface) !important;
+  transition: all var(--transition-normal);
+}
+
+#dropDownButton:hover {
+  border-color: var(--border-accent) !important;
+  background: var(--bg-hover) !important;
 }
 
 .affixSetListItemInfoMain {
-  background-color: #292929;
-  border: #5e5e5e 3px solid;
-  border-top: #5e5e5e 0px solid;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  max-height: 400px;
+  overflow-y: auto;
 }
+
+.dropDownContainer {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
 .affixItem {
-  width: 100px;
+  width: 80px;
   text-align: center;
+}
+
+.affixText {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+#AffixInfoShower {
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-default);
+  margin: 12px auto;
+  max-width: 450px;
 }
 </style>
 

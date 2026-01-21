@@ -80,7 +80,6 @@ const numChest = (run) => {
 
 <style scoped>
 .cWidth {
-  
   min-width: 200px;
   width: 100%;
 }
@@ -90,14 +89,20 @@ const numChest = (run) => {
   width: 100%;
 }
 #Box {
-  border: 1px solid #696969;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   height: 200px;
   width: 100%;
+  overflow: hidden;
+  background: var(--bg-surface);
 }
 
 #Header {
-  background-color: #414141;
-  padding: 5px;
+  background: var(--bg-elevated);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-default);
 }
 #Container {
   position: relative;
@@ -105,26 +110,32 @@ const numChest = (run) => {
   height: 100%;
 }
 .dark {
-  background-color: #2b2b2b;
+  background: var(--bg-elevated);
 }
 .runRow {
   position: relative;
-  height: 20px;
+  height: 24px;
+  padding: 2px 0;
+  transition: background var(--transition-fast);
+}
+.runRow:hover {
+  background: var(--bg-hover);
 }
 .placeLeft {
   position: absolute;
-  left: 5px;
+  left: 8px;
+  color: var(--text-primary);
 }
 .placeRight {
   position: absolute;
-  right: 5px;
+  right: 8px;
+  color: var(--text-secondary);
 }
 .chestDiv {
     height: 20px;
     width: 30px;
 }
 .chestDiv2 {
- 
 }
 .viewItem {
   min-width: 800px;
@@ -132,6 +143,10 @@ const numChest = (run) => {
 }
 .Pointer {
   cursor: pointer;
+  transition: color var(--transition-fast);
+}
+.Pointer:hover {
+  color: var(--text-accent);
 }
 </style>
 

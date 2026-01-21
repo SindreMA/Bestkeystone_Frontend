@@ -22,22 +22,28 @@ export default {
 
 <style scoped>
 .projectCard {
-  background-color: rgb(44, 44, 44);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
   width: 500px;
   margin: 15px 15px;
   min-height: 105px;
-  padding: 10px;
+  padding: 16px;
+  transition: all var(--transition-normal);
 }
 .projectCard:hover {
-  zoom: 1.05;
+  transform: translateY(-4px) scale(1.02);
+  border-color: var(--border-accent);
 }
 .imageSize {
   width: 65px;
   height: 65px;
+  border-radius: var(--radius-md);
 }
 .InstallButton {
   height: 30px;
   width: 200px;
-  background-color: rgb(100, 65, 165);
+  background: var(--gradient-primary);
+  border-radius: var(--radius-full);
 }
 </style>

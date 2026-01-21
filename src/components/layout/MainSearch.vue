@@ -1,6 +1,6 @@
 <template>
   <q-select
-          class="search"
+          class="search-modern"
           ref="SearchBox"
           dark
           filled
@@ -16,7 +16,7 @@
           :placeholder="placeholderValue"
           :options="searchList"
           @filter="(x,a,b) => filterFn(x,a,b)"
-          popup-content-class="searchResultsBox"
+          popup-content-class="search-results-modern"
         >
           <template v-slot:append>
             <q-avatar>
@@ -190,21 +190,79 @@ import ClassTextColor from "../containers/classTextColor.vue";
       })
   </script>
 
-  <style scouped>
-  .search {
-    min-width: min(250px, 20vw);
-    max-width: 350px;
+  <style scoped>
+  .search-modern {
+    min-width: min(280px, 25vw);
+    max-width: 400px;
   }
-  .bar {
-    background-color: #181818;
-    position: sticky;
-    top: 0px;
-    z-index: 100001;
+
+  .search-modern :deep(.q-field__control) {
+    background: var(--bg-elevated) !important;
+    border: 1px solid var(--border-default) !important;
+    border-radius: var(--radius-full) !important;
+    padding: 0 16px;
+    transition: all var(--transition-normal);
   }
-  .searchResultsBox {
-      max-height: 300px;
+
+  .search-modern :deep(.q-field__control:hover) {
+    border-color: var(--border-accent) !important;
   }
+
+  .search-modern :deep(.q-field--focused .q-field__control) {
+    border-color: var(--border-accent) !important;
+    box-shadow: var(--shadow-glow) !important;
+  }
+
+  .search-modern :deep(.q-field__native) {
+    color: var(--text-primary) !important;
+  }
+
+  .search-modern :deep(.q-field__native::placeholder) {
+    color: var(--text-muted) !important;
+  }
+
+  .search-modern :deep(.q-avatar) {
+    color: var(--text-secondary);
+  }
+
+  .search-results-modern {
+    max-height: 350px;
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-default) !important;
+    border-radius: var(--radius-lg) !important;
+    box-shadow: var(--shadow-lg) !important;
+    margin-top: 8px;
+    padding: 8px !important;
+  }
+
+  .search-results-modern :deep(.q-item) {
+    border-radius: var(--radius-md);
+    margin: 2px 0;
+    transition: all var(--transition-fast);
+  }
+
+  .search-results-modern :deep(.q-item:hover) {
+    background: var(--bg-hover) !important;
+  }
+
+  .search-results-modern :deep(.q-item-label) {
+    color: var(--text-primary);
+  }
+
+  .search-results-modern :deep(.q-item__label--caption) {
+    color: var(--text-muted) !important;
+  }
+
   .tableIcon {
-    width: 30px;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+  }
+
+  #factionImage {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-md);
   }
   </style>

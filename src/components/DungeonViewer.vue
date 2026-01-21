@@ -176,52 +176,82 @@ const SetSize = () => {
 </script>
 <style>
 #points {
-  background-color: #252525;
-  color: rgb(161, 161, 161);
-  border-radius: 10px;
-  padding: 0 5px;
-  border: rgb(161, 161, 161) 0.5px solid;
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
 }
 
 #nameBox {
-  color: rgb(161, 161, 161);
-  border-radius: 10px;
-  padding: 1px 12px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  color: var(--text-primary);
+  border-radius: var(--radius-full);
+  padding: 6px 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
 }
 
 #rankBox {
-  color: rgb(161, 161, 161);
-  border-radius: 50px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  color: var(--text-accent);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-accent);
+  font-weight: 700;
+  box-shadow: var(--shadow-glow);
 }
 
 .DungeonWindow {
   z-index: 3;
   position: relative;
-  height: 70px;
-  border-radius: 10px;
-  margin: 10px 5px;
+  height: 80px;
+  border-radius: var(--radius-lg);
+  margin: 12px 8px;
+  border: 1px solid var(--border-default);
+  overflow: hidden;
+  transition: all var(--transition-normal);
 }
 
 .DungeonWindow:hover {
-  border: rgb(161, 161, 161) 1px solid;
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-glow);
   cursor: pointer;
+  transform: translateY(-2px);
 }
 
 #DungeonMoreInfoWindow {
-  padding: 5px;
-  padding-top: 38px;
+  padding: 8px;
+  padding-top: 40px;
   z-index: 2;
-  margin: 0px 10px -45px 10px;
+  margin: 0px 12px -45px 12px;
   position: relative;
-  border-radius: 15px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   top: -50px;
-  border: rgb(161, 161, 161) 1px solid;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-top: 0px;
 }
+
+#DungeonMoreInfoWindow .q-tabs {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+}
+
+#DungeonMoreInfoWindow .q-tab {
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+#DungeonMoreInfoWindow .q-tab--active {
+  color: var(--text-primary);
+}
+
+#DungeonMoreInfoWindow .q-tab-panels {
+  background: transparent !important;
+}
+
 .noBg {
   background: none !important;
 }

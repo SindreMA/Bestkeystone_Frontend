@@ -28,13 +28,13 @@ export default {
 </script>
 <style scoped>
 #ToolsTabs {
-    border-radius: 0px 0 25px 25px ;
-    border: rgb(161, 161, 161) 1px solid;
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+    border: 1px solid var(--border-default);
     border-top: 0px;
     padding: 1px;
+    background: var(--bg-surface);
 }
 .tab {
-    border-radius: 0px 0 25px 25px ;
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
-
 </style>

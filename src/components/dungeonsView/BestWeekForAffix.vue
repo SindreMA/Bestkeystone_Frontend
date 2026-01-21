@@ -346,11 +346,11 @@ const getBestPeriode = (periodes) => {
 const getPeriodes = () => {
   var apiUrl = _data.apiUrl;
   axios
-    .get(apiUrl + "/Periode?weeks=50")
+    .get(apiUrl + "/Periode?weeks=500")
     .then(function (response) {
       allPeriodes.value = SF._sortBy(response.data, "id");
       rangeValues.value = {
-        min: allPeriodes.value[allPeriodes.value.length - 1].id - 10,
+        min: allPeriodes.value[allPeriodes.value.length - 1].id - 50,
         max: allPeriodes.value[allPeriodes.value.length - 1].id,
       };
     })

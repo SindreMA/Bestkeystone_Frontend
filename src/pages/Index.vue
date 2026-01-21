@@ -1,100 +1,136 @@
 <template>
-  <q-page ref="PageRef">
-    <WarningRunAmount :Selected="Selected"></WarningRunAmount>
-    <br>
-    <div class="flex flex-center">
-      <div class="Centertext HeaderSize HeaderFont">What's the "best" dungeon this week?</div>
-    </div>
-    <div class="flex flex-center">
-      <p class="HeaderFont HeaderSize2">(ish)</p>
-    </div>
-  <AffixSelector></AffixSelector>
+  <q-page ref="PageRef" class="home-page">
 
-  
-    <div v-if="!Selected && SelectedAffixSet" class="HeaderFont">
-      <div class="col-12 flex flex-center">
-        <q-spinner-puff style="color: rgb(161, 161, 161)" :size="500" />
+    <!-- Massive Hero Section -->
+    <section class="massive-hero">
+      <div class="hero-inner">
+        <!-- Title -->
+        <div class="hero-title-wrapper">
+          <div class="title-sub">Find Your</div>
+          <div class="title-main">Best Keystone</div>
+          <div class="title-desc">Mythic+ Dungeon Rankings</div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="hero-stats" v-if="Selected">
+          <div class="hero-stat">
+            <span class="stat-value">{{ getTotalRuns() }}</span>
+            <span class="stat-label">Runs Analyzed</span>
+          </div>
+          <div class="hero-stat highlight">
+            <span class="stat-value">{{ Selected.dungeons[0]?.name || '...' }}</span>
+            <span class="stat-label">Top Dungeon</span>
+          </div>
+          <div class="hero-stat">
+            <span class="stat-value">{{ Selected.dungeons.length }}</span>
+            <span class="stat-label">Dungeons</span>
+          </div>
+        </div>
       </div>
-      <div class="col-12 flex flex-center">
-        <p>if you see this, then that means the webpage have'nt loaded the affix data</p>
+    </section>
+
+    <WarningRunAmount :Selected="Selected"></WarningRunAmount>
+
+    <!-- Affix Selector -->
+    <section class="affix-section">
+      <div class="affix-section-inner">
+        <span class="affix-label">This Week's Affixes</span>
+        <AffixSelector></AffixSelector>
       </div>
+    </section>
+
+    <!-- Loading State -->
+    <div v-if="!Selected && SelectedAffixSet" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading data...</p>
     </div>
-    <div v-if="Selected != null">
-      <div class="HeaderFont relative-position" style=" height: 20px;">
-        <div class="absolute-left">
-          <div class="center" style="margin-left: 30px;">
-            <div>Rank</div>
+
+    <!-- Main Content with New Layout -->
+    <div v-if="Selected != null" class="main-content">
+
+      <!-- Top Dungeon -->
+      <section class="top-dungeon">
+        <div class="top-dungeon-inner">
+          <span class="top-label">Top Dungeon This Week</span>
+          <h2 class="top-name">{{ Selected.dungeons[0]?.name || 'Loading...' }}</h2>
+          <div class="top-stats">
+            <span><strong>#1</strong> Rank</span>
+            <span><strong>{{ Math.round(Selected.dungeons[0]?.score || 0) }}</strong> Score</span>
+            <span><strong>{{ (Selected.dungeons[0]?.total_runs || 0).toLocaleString() }}</strong> Runs</span>
           </div>
         </div>
-        <div class="absolute-center">
-          <div>Dungeon</div>
-        </div>
-        <div class="absolute-right">
-          <div class="center" style="margin-right: 32px;">
-            <div>Score</div>
+      </section>
+
+      <!-- Dungeon Rankings -->
+      <section class="rankings-section">
+        <h2 class="section-title">Dungeon Rankings</h2>
+        <div class="dungeon-list">
+          <div v-for="dungeon in Selected.dungeons" :key="dungeon.name">
+            <DungeonViewer :Selected="Selected" @click="ExpandedDungeon = $event" :expanded="ExpandedDungeon" :dungeon="dungeon"></DungeonViewer>
           </div>
         </div>
+      </section>
+
+      <!-- Two Column Layout -->
+      <div class="two-column-layout">
+        <!-- Compositions -->
+        <section class="content-card" v-if="Selected && Selected.compositions">
+          <h3 class="card-title">Top Compositions</h3>
+          <CompositionsLists :Selected="Selected" :Compositions="Selected.compositions" :Affixes="Selected.affixes"></CompositionsLists>
+        </section>
+
+        <!-- Specs -->
+        <section class="content-card">
+          <h3 class="card-title">Spec Performance</h3>
+          <SpecList :Selected="Selected"></SpecList>
+        </section>
       </div>
-      <div v-for="dungeon in Selected.dungeons" :key="dungeon.name">
-        <DungeonViewer :Selected="Selected" @click="ExpandedDungeon = $event" :expanded="ExpandedDungeon" :dungeon="dungeon"></DungeonViewer>
-      </div>
-      <CompositionsLists v-if="Selected && Selected.compositions" :Selected="Selected" :Compositions="Selected.compositions" :Affixes="Selected.affixes"></CompositionsLists>
-      <SpecList :Selected="Selected"></SpecList>
-      <ClassLists :Selected="Selected"></ClassLists>
-      <FactionShower :Selected="Selected"></FactionShower>
+
+      <!-- Classes -->
+      <section class="classes-section">
+        <h2 class="section-title">Class Rankings</h2>
+        <ClassLists :Selected="Selected"></ClassLists>
+      </section>
+
+      <!-- Faction Section -->
+      <section class="faction-section-new">
+        <FactionShower :Selected="Selected"></FactionShower>
+      </section>
     </div>
-  
-  
-  
-  
-    <div class="flex-center Centertext HeaderFont">
-      <div class="InfoField">
-        <p class="HeaderSize3">So how does it work?</p>
-        <p>For every affix combination it will try to collect the top runs for every dungeon(max 5000) that are +6 or higher.</p>
-        <p>It will limit the amount of runs to the lowest amount dungeon. (This is so the most popular dungeon, dont get top score by default)</p>
-        <p>For every run it will gather the RIO score and combind it to make a dungeon score.</p>
-        <p>The score displayed is that score divided by 1000, so its easier to read.</p>
-        <br>
-        <p>So the dungeons that have the highest dungeons completed in time, will score highest.</p>
-        <p>The dungeons with the highest score, will probably be the easiest one to do with those affixes.</p>
-      </div>
-      <div class="InfoField">
-        <p class="HeaderSize3">When does it update?</p>
-  
-        <p>The current affix combination updates every 4 hour.</p>
-        <div class=" flex justify-center">
-          <div style="margin: 0px 15px;">
-  
-            <p class="no-margin">Time since last update</p>
-            <DataUpdaterView v-if="RIOData" :date="RIOData.dataupdated" :countup="true"></DataUpdaterView>
+
+    <!-- Footer -->
+    <section class="page-footer">
+      <div class="footer-content">
+        <div class="footer-info">
+          <div class="footer-brand">BestKeystone</div>
+          <p>Mythic+ analytics for World of Warcraft</p>
+        </div>
+
+        <div class="footer-meta">
+          <div class="meta-item">Updates every 4 hours</div>
+          <div class="meta-item">Up to 5,000 runs per dungeon</div>
+          <div class="meta-item">Min key level: +6</div>
+        </div>
+
+        <div class="footer-timers" v-if="RIOData">
+          <div class="timer-item">
+            <span class="timer-label">Last Update</span>
+            <DataUpdaterView :date="RIOData.dataupdated" :countup="true"></DataUpdaterView>
           </div>
-          <div style="margin: 0px 15px;">
-            <p class="no-margin">Time to next update</p>
-            <DataUpdaterView v-if="RIOData" :date="RIOData.dataupdated" :countdown="true"></DataUpdaterView>
+          <div class="timer-item">
+            <span class="timer-label">Next Update</span>
+            <DataUpdaterView :date="RIOData.dataupdated" :countdown="true"></DataUpdaterView>
           </div>
         </div>
-      </div>
-      <br>
-      <br>
-      <br>
-      <p>Feel free to send me a email at sindrema@gmail.com if you have any ideas or found a bug</p>
-  
-      <div class="InfoField  flex flex-center">
-        <div class="InfoFieldCreated" @mouseout="ShowDonate = false" @mouseover="DonateHover()">
-          <div class="flex justify-around">
-            <div id="donatediv">
-              <div v-if="ShowDonate">
-                <p>Want to buy me a beer?</p>
-                <div class=" flex justify-around">
-                  <div class="greyBackground shadow-16" id="DonateButton" @click="Redirect('https://paypal.me/SindreMA')">Donate</div>
-                </div>
-              </div>
-              <p v-else class="HeaderSize2">Site created by SindreMA</p>
-            </div>
-          </div>
+
+        <div class="footer-links">
+          <a href="mailto:sindrema@gmail.com">Contact</a>
+          <button @click="Redirect('https://paypal.me/SindreMA')">Support Project</button>
         </div>
+
+        <div class="footer-credit">Made by SindreMA</div>
       </div>
-    </div>
+    </section>
   </q-page>
 </template>
 
@@ -113,36 +149,40 @@
     mapActions,
     mapMutations
   } from 'vuex';
-  
+
     import AffixSelector from '../components/ListViews/AffixSelector.vue';
 
-  
+
   export default {
     name: 'PageIndex',
     data() {
       return {
         startdetect: true,
-        //Selected: null,
-        //SelectedAffixSet: null,
-        //RIOData: null,
         ShowSelectAffix: false,
         ShowDonate: false,
-  
         ExpandedDungeon: null
       }
     },
     methods: {
       ...mapActions(['GetSelectedData']),
       ...mapMutations(['SaveSelectedAffixSet', 'SaveRIOData']),
-  
+
       DonateHover() {
         this.ShowDonate = true
-  
-  
+      },
+      getTotalRuns() {
+        if (this.Selected && this.Selected.dungeons) {
+          let total = 0;
+          this.Selected.dungeons.forEach(d => {
+            total += d.total_runs || 0;
+          });
+          return total.toLocaleString();
+        }
+        return '...';
       },
       GetSelectList(list) {
         var ls = []
-  
+
         if (this.RIOData) {
           var index = 0;
           list.forEach(item => {
@@ -158,7 +198,7 @@
           });
         }
         return ls
-  
+
       },
       GetSelectorWidth() {
         if (this.$refs.selectBox !== undefined) {
@@ -166,7 +206,7 @@
         } else {
           return "500px"
         }
-  
+
       },
       Redirect(url) {
         window.location.href = url
@@ -183,22 +223,22 @@
       RIOData() {
         return this.GetRIOData
       }
-  
+
     },
     watch: {
       SelectedAffixSet(newValue, oldValue) {
         if (this.startdetect) {
           var ls = newValue
           var vm = this
-  
+
           var payload = [ls[0].id, ls[1].id, ls[2].id, ls[3].id]
           this.GetSelectedData(payload)
-  
+
         }
       }
     },
     created() {
-   
+
   var apiUrl = this.$store.state.data.apiUrl;
       var w = window
       setTimeout(function() {
@@ -210,7 +250,7 @@
         axios.get(apiUrl + '/keystonedata/GetAffixes')
           .then(function(response) {
             vm.SaveRIOData(response.data)
-  
+
             if (vm.SelectedAffixSet == null) vm.SaveSelectedAffixSet(vm.RIOData.affixes[vm.RIOData.affixes.length - 1])
           })
           .catch(function(error) {
@@ -233,129 +273,346 @@
 </script>
 
 <style>
-  .HeaderFont {
-    color: rgb(161, 161, 161);
-    ;
+/* Clean Homepage Styles */
+.home-page {
+  background: var(--bg-base);
+}
+
+/* Hero Section */
+.massive-hero {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.hero-inner {
+  text-align: center;
+  max-width: 800px;
+}
+
+.hero-title-wrapper {
+  margin-bottom: 40px;
+}
+
+.title-sub {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.title-main {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.title-desc {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+}
+
+/* Hero Stats */
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  text-align: center;
+  padding: 16px 24px;
+}
+
+.hero-stat.highlight {
+  color: #f59e0b;
+}
+
+.hero-stat .stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.hero-stat.highlight .stat-value {
+  color: #f59e0b;
+}
+
+.hero-stat .stat-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Affix Section */
+.affix-section {
+  padding: 24px 20px;
+  border-top: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.affix-section-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.affix-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+/* Loading */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 20px;
+  color: var(--text-muted);
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border-default);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Main Content */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Top Dungeon */
+.top-dungeon {
+  padding: 40px 0;
+  text-align: center;
+}
+
+.top-dungeon-inner {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.top-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.top-name {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 12px 0 20px;
+}
+
+.top-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.top-stats strong {
+  color: #f59e0b;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 40px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+/* Rankings */
+.rankings-section {
+  padding: 20px 0;
+}
+
+/* Two Column Layout */
+.two-column-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 20px 0;
+}
+
+.content-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+}
+
+/* Classes Section */
+.classes-section {
+  padding: 20px 0 40px;
+}
+
+/* Faction Section */
+.faction-section-new {
+  padding: 20px 0;
+}
+
+/* Footer */
+.page-footer {
+  margin-top: 60px;
+  padding: 40px 20px;
+  border-top: 1px solid var(--border-default);
+  background: var(--bg-surface);
+}
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-brand {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.footer-info p {
+  color: var(--text-muted);
+  margin: 0 0 24px;
+}
+
+.footer-meta {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.footer-timers {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+
+.timer-item {
+  text-align: center;
+}
+
+.timer-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 8px 16px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.footer-links a:hover {
+  border-color: var(--border-accent);
+  color: var(--text-primary);
+}
+
+.footer-links button {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.footer-links button:hover {
+  background: #d97706;
+}
+
+.footer-credit {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .title-main {
+    font-size: 2.5rem;
   }
-  
-  .greyBackground {
-    position: relative;
-    background-color: #292929;
-    color: rgb(161, 161, 161);
-    ;
-    border-radius: 10px;
-    padding: 0 5px;
+
+  .hero-stats {
+    flex-direction: column;
+    gap: 16px;
   }
-  
-  .greyBackground:hover {
-    cursor: pointer;
+
+  .two-column-layout {
+    grid-template-columns: 1fr;
   }
-  
-  hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
+
+  .top-stats {
+    flex-direction: column;
+    gap: 12px;
   }
-  
-  .InfoField {
-    margin-top: 50px;
+
+  .footer-meta {
+    flex-direction: column;
+    gap: 8px;
   }
-  
-  .HeaderSize {
-    font-size: 40px;
+
+  .footer-timers {
+    flex-direction: column;
+    gap: 16px;
   }
-  
-  .HeaderSize2 {
-    font-size: 10px;
-  }
-  
-  .HeaderSize3 {
-    font-size: 30px;
-  }
-  
-  .HeaderSize4 {
-    font-size: 20px;
-  }
-  
-  .affixImage {
-    height: 38px;
-    width: 38px;
-    border: rgb(161, 161, 161) solid 1px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .Centertext {
-    text-align: center;
-  }
-  
-  #SelectboxAffix {
-    width: 100%;
-    height: 20px;
-  }
-  
-  #SelectboxAffix:hover {
-    background-color: #3a3a3a;
-  }
-  
-  .border {
-    width: 110px;
-  }
-  
-  i.icon-grey {
-    color: rgb(161, 161, 161);
-  }
-  
-  .affixSetListItem {
-    min-height: 40px;
-    width: 100%;
-    border: rgb(161, 161, 161) solid 1px;
-  }
-  
-  .affixSetListItem:hover {
-    background-color: #3a3a3a;
-  }
-  
-  .SelectBox {
-    background-color: #252525;
-    border: rgb(161, 161, 161) solid 1px;
-    width: 63%;
-  }
-  
-  .affixImageSmall {
-    width: 28px;
-    height: 28px;
-  }
-  
-  .FactionImage {
-    width: 100%;
-    height: 100%;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
-    .center {
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
-  .FactionPointer {
-    font-size: 50px;
-  }
-  
-  .icon-size {}
-  
-  .InfoFieldCreated {
-    overflow: hidden;
-    width: 170px;
-    height: 80px;
-  }
-  
-  #DonateButton {
-    left: 0px;
-    width: 80px;
-  }
+}
+
+/* Legacy support */
+.HeaderFont { color: var(--text-secondary); }
+.Centertext { text-align: center; }
 </style>

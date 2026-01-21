@@ -158,7 +158,7 @@
       <br />
       <br />
       <div class="flex justify-center">
-        <q-spinner-bars color="grey" size="15em" />
+        <q-spinner-bars style="color: var(--text-accent)" size="15em" />
       </div>
     </div>
   </div>
@@ -388,6 +388,9 @@ onBeforeMount(() => {
   min-height: 300px;
   min-width: 300px;
   margin: 15px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 16px;
 }
 #roleImage {
   width: 23px;
@@ -396,9 +399,14 @@ onBeforeMount(() => {
 .itemIcon {
   width: 23px;
   height: 23px;
-  border: 1px solid grey;
-  border-radius: 5px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
   margin: 0 2px;
+  transition: all var(--transition-fast);
+}
+.itemIcon:hover {
+  border-color: var(--border-accent);
+  transform: scale(1.1);
 }
 .AffixImg {
   width: 35px;

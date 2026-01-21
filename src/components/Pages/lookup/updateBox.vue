@@ -118,22 +118,30 @@ fetchDetails() {
 
 <style scoped>
 #Box {
-  border: 1px solid #696969;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   width: 100%;
   max-width: 1250px;
   min-height: 100px;
   position: relative;
+  overflow: hidden;
+  background: var(--bg-surface);
 }
 
 #Header {
-  background-color: #414141;
-  padding: 5px;
+  background: var(--bg-elevated);
+  padding: 12px 16px;
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-default);
 }
 #Container {
+  padding: 16px;
 }
 .boxRow1 {
   min-width: 200px;
   min-height: 29px;
   margin: 0 5px;
+  color: var(--text-secondary);
 }
 </style>

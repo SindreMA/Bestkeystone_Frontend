@@ -1,1 +1,260 @@
 // app global css in Sass form
+// Modern Dark Theme Design System
+
+// ============================================
+// CSS Custom Properties (Design Tokens)
+// ============================================
+\:root
+  // Base colors
+  --bg-base: #0d1117
+  --bg-surface: #161b22
+  --bg-elevated: #21262d
+  --bg-hover: #2d333b
+  --bg-active: #363d47
+
+  // Borders
+  --border-default: #30363d
+  --border-muted: #21262d
+  --border-accent: #6366f1
+
+  // Text colors
+  --text-primary: #e6edf3
+  --text-secondary: #8b949e
+  --text-muted: #6e7681
+  --text-accent: #6366f1
+
+  // Accent colors (simpler, no excessive gradients)
+  --accent-primary: #6366f1
+  --accent-secondary: #22d3ee
+  --accent-warm: #f59e0b
+  --accent-success: #22c55e
+
+  // Shadows (subtle, no glow)
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2)
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3)
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.35)
+
+  // Spacing (less rounded)
+  --radius-sm: 4px
+  --radius-md: 6px
+  --radius-lg: 8px
+  --radius-xl: 12px
+  --radius-full: 9999px
+
+  // Transitions
+  --transition-fast: 150ms ease
+  --transition-normal: 250ms ease
+  --transition-slow: 350ms ease
+
+// ============================================
+// Global Resets & Base Styles
+// ============================================
+*
+  box-sizing: border-box
+
+body
+  background: var(--bg-base)
+  color: var(--text-primary)
+  line-height: 1.6
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+
+// ============================================
+// Utility Classes
+// ============================================
+
+// Backgrounds
+.bg-base
+  background: var(--bg-base)
+
+.bg-surface
+  background: var(--bg-surface)
+
+.bg-elevated
+  background: var(--bg-elevated)
+
+.bg-accent
+  background: var(--accent-primary)
+
+// Text
+.text-primary
+  color: var(--text-primary)
+
+.text-secondary
+  color: var(--text-secondary)
+
+.text-muted
+  color: var(--text-muted)
+
+.text-accent
+  color: var(--accent-primary)
+
+// Borders
+.border-accent
+  border: 1px solid var(--border-accent)
+
+// Cards
+.card-modern
+  background: var(--bg-surface)
+  border: 1px solid var(--border-default)
+  border-radius: var(--radius-lg)
+  transition: border-color var(--transition-fast)
+
+  &:hover
+    border-color: var(--border-accent)
+
+// Buttons
+.btn-modern
+  background: var(--accent-primary)
+  border: none
+  border-radius: var(--radius-md)
+  padding: 10px 20px
+  color: white
+  font-weight: 500
+  cursor: pointer
+  transition: background var(--transition-fast)
+
+  &:hover
+    background: #5558e3
+
+.btn-ghost
+  background: transparent
+  border: 1px solid var(--border-default)
+  border-radius: var(--radius-md)
+  padding: 10px 20px
+  color: var(--text-primary)
+  cursor: pointer
+  transition: border-color var(--transition-fast)
+
+  &:hover
+    border-color: var(--border-accent)
+
+// Simple fade animation (only one needed)
+@keyframes fadeIn
+  from
+    opacity: 0
+  to
+    opacity: 1
+
+.animate-fadeIn
+  animation: fadeIn 0.2s ease forwards
+
+// ============================================
+// Quasar Component Overrides
+// ============================================
+
+// Buttons
+.q-btn
+  border-radius: var(--radius-md) !important
+  text-transform: none !important
+  font-weight: 500
+
+.q-btn-toggle
+  border-radius: var(--radius-md) !important
+  overflow: hidden
+
+  .q-btn
+    border-radius: 0 !important
+
+    &:first-child
+      border-radius: var(--radius-md) 0 0 var(--radius-md) !important
+
+    &:last-child
+      border-radius: 0 var(--radius-md) var(--radius-md) 0 !important
+
+.q-btn-toggle .q-btn--active
+  background: var(--accent-primary) !important
+
+// Inputs & Selects
+.q-field--filled .q-field__control
+  background: var(--bg-elevated) !important
+  border-radius: var(--radius-md) !important
+  border: 1px solid var(--border-default) !important
+
+  &:hover
+    border-color: var(--border-accent) !important
+
+.q-field--focused .q-field__control
+  border-color: var(--border-accent) !important
+
+// Menus & Dropdowns
+.q-menu
+  background: var(--bg-surface) !important
+  border: 1px solid var(--border-default) !important
+  border-radius: var(--radius-lg) !important
+  box-shadow: var(--shadow-lg) !important
+  overflow: hidden
+
+.q-item
+  &:hover
+    background: var(--bg-hover) !important
+
+.q-item--active
+  background: var(--bg-active) !important
+
+// Sliders
+.q-slider__track-container
+  background: var(--bg-elevated) !important
+
+.q-slider__track
+  background: var(--accent-primary) !important
+
+.q-slider__thumb
+  background: var(--accent-primary) !important
+
+// Toggles
+.q-toggle__inner
+  &--truthy
+    .q-toggle__track
+      background: var(--accent-primary) !important
+      opacity: 1 !important
+
+// Radio buttons
+.q-radio__inner--truthy
+  .q-radio__bg
+    color: #6366f1 !important
+
+// Scrollbars
+::-webkit-scrollbar
+  width: 8px
+  height: 8px
+
+::-webkit-scrollbar-track
+  background: var(--bg-surface)
+
+::-webkit-scrollbar-thumb
+  background: var(--bg-hover)
+  border-radius: var(--radius-full)
+
+  &:hover
+    background: var(--bg-active)
+
+// Tooltips
+.q-tooltip
+  background: var(--bg-elevated) !important
+  color: var(--text-primary) !important
+  border-radius: var(--radius-md) !important
+  border: 1px solid var(--border-default) !important
+  font-size: 13px !important
+  padding: 8px 12px !important
+
+// Separators
+.q-separator--dark
+  background: var(--border-default) !important
+
+// Tables - cleaner on mobile
+@media (max-width: 768px)
+  .q-table
+    border: none !important
+
+    th, td
+      border: none !important
+
+    thead
+      border-bottom: 1px solid var(--border-default) !important
+
+    tbody tr
+      border-bottom: 1px solid var(--border-muted) !important
+
+    &__container
+      border: none !important

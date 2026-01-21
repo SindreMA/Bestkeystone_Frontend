@@ -23,7 +23,7 @@
         "
         class="flex flex-center"
       >
-        <q-spinner-puff style="color: rgb(161, 161, 161)" size="500" />
+        <q-spinner-puff style="color: var(--text-accent)" size="500" />
       </div>
 
       <div

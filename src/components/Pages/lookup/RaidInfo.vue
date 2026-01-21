@@ -111,8 +111,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 .MainWindow {
     min-width: 300px;
     min-height: 129px;
@@ -120,48 +118,57 @@ export default {
     padding: 0 2px;
 }
 #RaidDivContainer {
-  border: 1px solid #696969;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   overflow: hidden;
+  background: var(--bg-surface);
 }
 #RaidDivHeader {
-  background-color: #414141;
+  background: var(--bg-elevated);
   width: 100%;
   height: 37px;
+  border-bottom: 1px solid var(--border-default);
 }
 .raidItemContainer {
   height: 30px;
   padding: 5px;
+  transition: background var(--transition-fast);
 }
 .raidItemContainer:hover {
     cursor: pointer;
-    background-color: #3d3d3d;
+    background: var(--bg-hover);
 }
 .lighter {
-  background-color: #313131;
+  background: var(--bg-elevated);
 }
 .minorlighter {
-  background-color: #292929;
+  background: var(--bg-surface);
 }
 .raidItemName {
   width: 82%;
+  color: var(--text-primary);
 }
 .raidItemProgress {
   width: 12%;
+  color: var(--text-secondary);
 }
 .raidItemKills {
   width: 5%;
+  color: var(--text-secondary);
 }
 .bossItemContainer {
-      height: 30px;
+  height: 30px;
   padding: 5px;
+  border-top: 1px solid var(--border-subtle);
 }
 .raidItemHeader {
-     height: 30px;
+  height: 30px;
   padding: 5px;
-    position: relative;
-    top: 15px;
-    padding: 0 15px;
-    height: 0;
+  position: relative;
+  top: 15px;
+  padding: 0 15px;
+  height: 0;
+  color: var(--text-muted);
 }
 </style>
 

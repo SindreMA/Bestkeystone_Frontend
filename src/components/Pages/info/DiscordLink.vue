@@ -57,23 +57,28 @@ export default {
 .DiscordCard {
     max-width: 550px;
     min-width: 300px;
-    padding: 5px;
-    border-radius: 25px;
+    padding: 12px;
+    border-radius: var(--radius-xl);
     min-height: 50px;
-    margin: 5px;
-    background-color: rgb(44, 44, 44);
+    margin: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    transition: all var(--transition-normal);
 }
 .DiscordCard:hover {
-    zoom: 1.05;
-    background-color: rgb(46, 46, 46);
+    transform: translateY(-4px) scale(1.02);
+    background: var(--bg-elevated);
+    border-color: var(--border-accent);
 }
 .logoImg {
     border-radius: 100%;
     margin: 1px 7px;
     width: 47px;
     height: 47px;
+    border: 2px solid var(--border-default);
 }
 .Description {
     font-size: 12px;
+    color: var(--text-secondary);
 }
 </style>

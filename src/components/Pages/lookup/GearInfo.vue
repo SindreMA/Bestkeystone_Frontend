@@ -104,7 +104,10 @@ const items = computed(() => {
 </script>
 <style scoped>
 #gearDivContainer {
-    border: 1px solid #696969;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--bg-surface);
 }
 
 .item {
@@ -113,17 +116,27 @@ const items = computed(() => {
 }
 
 .itemIcon {
-    border: #696969 solid 1px;
-    border-radius: 7px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-normal);
+}
 
+.itemIcon:hover {
+    border-color: var(--border-accent);
+    transform: scale(1.1);
 }
 
 #gearDivHeader {
-    background-color: #414141;
-    padding: 5px;
+    background: var(--bg-elevated);
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-default);
 }
 
-.gearContent {}
+#gearContent {
+    padding: 12px;
+}
 
 .wowhead-tooltip-powered * {
     opacity: 0;
@@ -134,9 +147,12 @@ const items = computed(() => {
 }
 
 .ilvlBox {
-    background-color: #414141;
-    border-radius: 10px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-full);
     margin-bottom: 2px;
+    font-size: 11px;
+    padding: 2px 4px;
+    color: var(--text-secondary);
 }
 </style>
 
