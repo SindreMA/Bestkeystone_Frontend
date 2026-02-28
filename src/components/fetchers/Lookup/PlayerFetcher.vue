@@ -23,6 +23,8 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['update:status'])
+
 const { realm, name, season, region } = toRefs(props)
 
 const blizzId = computed(() => $router.currentRoute.value.params.key as string)
@@ -37,6 +39,10 @@ const store = useStore()
 const data = store.state.data
 
 const $router = useRouter()
+
+const emitStatus = () => {
+  emit('update:status', { loading: loading.value, notFound: notFound.value })
+}
 
 const FetchPlayer = () => {
   var apiUrl = data.apiUrl;
@@ -63,6 +69,7 @@ const FetchPlayer = () => {
       }
     }).finally(() => {
       loading.value = false
+      emitStatus()
     });
 }
 
@@ -72,6 +79,7 @@ const FetchData = () => {
   notFound.value = false;
   extractedBlizzardId.value = isBlizz ? Number(blizzId.value) : null;
   loading.value = true;
+  emitStatus()
   FetchPlayer();
 }
 

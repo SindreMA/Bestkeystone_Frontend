@@ -15,6 +15,9 @@
           hide-bottom-space
           borderless
           :filled="filled"
+          style="min-width: 200px;"
+          :options-cover="false"
+          popup-content-class="periode-dropdown"
         />
       </div>
       <q-menu no-parent-event v-model="showing">
@@ -135,10 +138,18 @@ const settings = computed(() => data.settings);
 const GetSeasons = computed(() => data.Seasons)
 
 const Periodes = computed(()=> {
-      var ls = [...GetSeasons.value.filter(x=> (settings.value?.region ?? 'us') == x.region).map(x=> ({
-        label: x.name,
-        value: x,
-      }))];
+      const seen = new Set();
+      var ls = [...GetSeasons.value
+        .filter(x=> (settings.value?.region ?? 'us') == x.region)
+        .filter(x => {
+          if (seen.has(x.name)) return false;
+          seen.add(x.name);
+          return true;
+        })
+        .map(x=> ({
+          label: x.name,
+          value: x,
+        }))];
 
       if (!onlySeasons.value) {
         ls.push({
@@ -245,5 +256,12 @@ onBeforeMount(() => {
   padding: 20px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-default);
+}
+</style>
+
+<style>
+.periode-dropdown {
+  max-height: 250px !important;
+  overflow-y: auto !important;
 }
 </style>

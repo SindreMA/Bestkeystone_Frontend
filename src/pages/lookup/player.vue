@@ -1,13 +1,13 @@
 <template>
   <div id="LookupMain" class="HeaderFont">
-    <div class="flex full-width justify-end ">
+    <div v-show="showPeriodeSelector" class="flex full-width justify-end ">
       <PeriodeSelector id="PeriodeSelectorcomp" :region="region" v-model="periode" />
       <br>
       <br>
     </div>
       <PlayerFetcher :name="playerName" :realm="realm" :region="region" :season="periode?.season?.id"
-        v-slot="{ characterData, loading, error, notFound, blizzardId }">
-
+        v-slot="{ characterData, loading, error, notFound, blizzardId }"
+        @update:status="onStatusUpdate">
 
         <div v-if="loading && !error && !characterData && !notFound" class="flex full-width justify-center">
           <q-spinner-bars size="100px" color="primary" />
@@ -44,6 +44,16 @@ const $router = useRouter()
 const region = computed(() => $router.currentRoute.value.params.region as string)
 const realm = computed(() => $router.currentRoute.value.params.realm as string)
 const playerName = computed(() => $router.currentRoute.value.params.name as string)
+
+const isLoading = ref(true)
+const isNotFound = ref(false)
+
+const showPeriodeSelector = computed(() => !isLoading.value && !isNotFound.value)
+
+const onStatusUpdate = (status: { loading: boolean, notFound: boolean }) => {
+  isLoading.value = status.loading
+  isNotFound.value = status.notFound
+}
 </script>
 
 <style scoped>
