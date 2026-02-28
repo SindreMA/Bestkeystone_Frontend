@@ -31,7 +31,7 @@
     </div>
 
     <div v-if="lastVersionData" class="q-pa-md">
-      <div class="text-center q-mb-lg">
+      <div class="flex justify-between items-center q-mb-lg">
         <q-btn
           flat
           color="primary"
@@ -39,13 +39,14 @@
           label="Back"
           @click="lastVersionData = null"
         />
+        <PeriodeSelector :region="region" v-model="localPeriode" />
       </div>
       <PlayerView 
         :data="lastVersionData" 
         :player="name" 
         :realm="realm" 
         :region="region" 
-        :periode="periode"
+        :periode="localPeriode"
       />
     </div>
 
@@ -56,11 +57,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'src/store'
 import axios from 'axios'
 import PlayerView from 'src/components/lookup/player/PlayerView.vue'
+import PeriodeSelector from 'src/components/lookup/PeriodeSelector.vue'
 
 const props = defineProps<{
   blizzardId?: number | string
@@ -78,6 +80,8 @@ const data = store.state.data
 const loadingLastVersion = ref(false)
 const lastVersionData = ref(null)
 const lastVersionError = ref(false)
+const localPeriode = ref(props.periode)
+const resolvedBlizzardId = ref<number | string | null>(null)
 
 const canShowLastVersion = computed(() => {
   return (props.blizzardId || (props.name && props.realm && props.region)) && props.season
@@ -108,19 +112,18 @@ const searchForBlizzardId = async (): Promise<number | null> => {
   }
 }
 
-const showLastVersion = async () => {
-  if (!props.season) return
-  
+const fetchLastVersion = async (seasonId: number) => {
   loadingLastVersion.value = true
   lastVersionError.value = false
   
   try {
     const apiUrl = data.apiUrl
-    let blizzId = props.blizzardId
+    let blizzId = resolvedBlizzardId.value || props.blizzardId
     
     // If we don't have blizzardId, search for it first
     if (!blizzId && props.name && props.realm && props.region) {
       blizzId = await searchForBlizzardId()
+      resolvedBlizzardId.value = blizzId
     }
     
     if (!blizzId) {
@@ -128,7 +131,7 @@ const showLastVersion = async () => {
       return
     }
     
-    const url = `${apiUrl}/Player/full/db/${blizzId}?region=${props.region}&season=${props.season}`
+    const url = `${apiUrl}/Player/full/db/${blizzId}?region=${props.region}&season=${seasonId}`
     const response = await axios.get(url)
     lastVersionData.value = response.data
   } catch (err) {
@@ -137,6 +140,18 @@ const showLastVersion = async () => {
     loadingLastVersion.value = false
   }
 }
+
+const showLastVersion = async () => {
+  if (!props.season) return
+  await fetchLastVersion(props.season)
+}
+
+// Watch for periode changes and refetch
+watch(localPeriode, (newPeriode) => {
+  if (newPeriode?.season?.id && lastVersionData.value) {
+    fetchLastVersion(newPeriode.season.id)
+  }
+})
 </script>
 
 <style scoped>
