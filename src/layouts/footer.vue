@@ -4,7 +4,7 @@
           <div class="TextBox">
             <h5 class="footer-title">Bestkeystone.com</h5>
             <p class="footer-tagline">Bringing you keystone statistics since 2018</p>
-            <p class="footer-copyright">© 2024 @SindreMA. All rights reserved.</p>
+            <p class="footer-copyright">© {{ currentYear }} @SindreMA. All rights reserved.</p>
           </div>
           <div class="gap-10 socials flex column">
             <div v-for="(social, index) in socials" :key="index" class="social-row">
@@ -19,6 +19,8 @@
 </template>
 
 <script lang="ts" setup>
+
+const currentYear = new Date().getFullYear()
 
 const socials = [
   {
