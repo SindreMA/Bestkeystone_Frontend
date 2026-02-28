@@ -6,12 +6,22 @@
       <br>
     </div>
       <PlayerFetcher :name="playerName" :realm="realm" :region="region" :season="periode?.season?.id"
-        v-slot="{ characterData, loading, error }">
+        v-slot="{ characterData, loading, error, notFound, blizzardId }">
 
 
-        <div v-if="loading && !error && !characterData" class="flex full-width justify-center">
+        <div v-if="loading && !error && !characterData && !notFound" class="flex full-width justify-center">
           <q-spinner-bars size="100px" color="primary" />
         </div>
+        <template v-else-if="notFound">
+          <CharacterNotFound 
+            :blizzardId="blizzardId" 
+            :region="region" 
+            :season="periode?.season?.id"
+            :name="playerName"
+            :realm="realm"
+            :periode="periode"
+          />
+        </template>
         <template v-else-if="error">error:{{ error }}</template>
         <template v-else-if="!loading && !error && characterData">
           <PlayerView :data="characterData" :player="playerName" :realm="realm" :region="region" :periode="periode" />
@@ -24,6 +34,7 @@
 import PeriodeSelector from "../../components/lookup/PeriodeSelector.vue";
 import PlayerFetcher from "../../components/fetchers/Lookup/PlayerFetcher.vue";
 import PlayerView from "../../components/lookup/player/PlayerView.vue";
+import CharacterNotFound from "./CharacterNotFound.vue";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 

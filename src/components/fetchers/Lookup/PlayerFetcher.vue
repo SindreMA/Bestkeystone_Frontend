@@ -1,5 +1,5 @@
 <template>
-  <slot :characterData="playerData" :loading="loading" :error="error" />
+  <slot :characterData="playerData" :loading="loading" :error="error" :notFound="notFound" :blizzardId="extractedBlizzardId" />
 </template>
 
 <script lang="ts" setup>
@@ -30,6 +30,8 @@ const blizzId = computed(() => $router.currentRoute.value.params.key as string)
 const playerData = ref(null)
 const error = ref(null)
 const loading = ref(null)
+const notFound = ref(false)
+const extractedBlizzardId = ref<number | null>(null)
 
 const store = useStore()
 const data = store.state.data
@@ -47,9 +49,18 @@ const FetchPlayer = () => {
   `${apiUrl}/Player/full?character=${name.value}&realm=${realm.value}&region=${region.value}&season=${season.value}`
 
   axios.get(url).then(x => {
-      if (x.data) playerData.value = x.data
+      if (x.data) {
+        playerData.value = x.data
+        if (x.data.blizzard_id) {
+          extractedBlizzardId.value = x.data.blizzard_id
+        }
+      }
     }).catch(x => {
-      error.value = x;
+      if (x.response && x.response.status === 404) {
+        notFound.value = true
+      } else {
+        error.value = x;
+      }
     }).finally(() => {
       loading.value = false
     });
@@ -58,9 +69,13 @@ const FetchPlayer = () => {
 const FetchData = () => {
   playerData.value = null;
   error.value = null;
+  notFound.value = false;
+  extractedBlizzardId.value = isBlizz ? Number(blizzId.value) : null;
   loading.value = true;
   FetchPlayer();
 }
+
+const isBlizz = computed(() => $router.currentRoute.value.path.includes("blizz"))
 
 watch([name,realm, region,season, blizzId], () => {
   FetchData();
