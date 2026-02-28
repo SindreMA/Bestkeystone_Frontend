@@ -34,7 +34,7 @@ let dungeonCount = ref(0)
 
 const GetDungeonData = computed(x=> data.Dungeons_Data)
 const GetDungeonCountData = computed(x=> data.Dungeon_Count_Data)
-const GetPeriodes = computed(x=> data.Periodes)
+const GetPeriodes = computed(() => store.getters.GetPeriodes)
 
 const newestWeekid = computed(() => GetPeriodes?.value ?  GetPeriodes.value[0].id : null)
 

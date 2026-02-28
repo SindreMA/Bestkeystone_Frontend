@@ -77,7 +77,7 @@ let amountOfRuns = ref(0);
 let runs = ref([]);
 let leaderboard = ref(null);
 
-const GetPeriodes = computed((x) => data.Periodes);
+const GetPeriodes = computed(() => store.getters.GetPeriodes);
 const GetSpecs = computed((x) => data.Specs);
 const GetClasses = computed((x) => data.Classes);
 const GetSettings = computed((x) => data.settings);

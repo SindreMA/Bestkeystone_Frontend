@@ -103,7 +103,9 @@ const state = {
         },
         SavePeriodes(state, data) {
             state.Periodes = data
-            state.SelectedPeriode = state.Periodes[0].id
+            // Select the first period that has valid affix data
+            const validPeriod = data.find(p => p.affixes && p.affixes.length > 0)
+            state.SelectedPeriode = validPeriod ? validPeriod.id : (data[0]?.id ?? null)
         },
         ChangeSelectedPeriode(state, data) {
             state.SelectedPeriode = data
@@ -397,7 +399,15 @@ const state = {
             return state.Affixes
         },
         GetPeriodes(state) {
-            return state.Periodes
+            if (!state.Periodes) return state.Periodes;
+            // Filter out periods with empty or missing affixes (between seasons)
+            return state.Periodes.filter(p => p.affixes && p.affixes.length > 0);
+        },
+        isBetweenSeasons(state) {
+            // Check if we filtered out any periods (newest week has no data)
+            if (!state.Periodes || state.Periodes.length === 0) return false;
+            const validPeriodes = state.Periodes.filter(p => p.affixes && p.affixes.length > 0);
+            return validPeriodes.length < state.Periodes.length;
         },
         GetSelectedPeriode(state) {
             return state.SelectedPeriode
@@ -406,6 +416,8 @@ const state = {
             if (state.Periodes)
                 for (let i = 0; i < state.Periodes.length; i++) {
                     const periode = state.Periodes[i];
+                    // Skip periods with no affixes
+                    if (!periode.affixes || periode.affixes.length === 0) continue;
                     if (periode.id == state.SelectedPeriode) {
                         return periode
                     }

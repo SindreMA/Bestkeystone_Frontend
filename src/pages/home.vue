@@ -1,5 +1,6 @@
 <template>
   <div class="home-dashboard">
+    <BetweenSeasonsBanner />
     <div class="dashboard-content">
       <section class="dashboard-section">
         <h2 class="section-heading">Live Run Tracking</h2>
@@ -23,6 +24,7 @@
 </template>
 
 <script lang="ts" setup>
+import BetweenSeasonsBanner from 'components/Warnings/BetweenSeasonsBanner.vue'
 import CurrentAffixes from 'components/ItemViews/CurrentAffixes.vue'
 import QuickRunsView from 'components/ItemViews/QuickRunsView.vue'
 import QuickDungeonView from 'components/ItemViews/QuickDungeonView.vue'
