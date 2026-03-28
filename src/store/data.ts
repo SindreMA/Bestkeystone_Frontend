@@ -404,10 +404,10 @@ const state = {
             return state.Periodes.filter(p => p.affixes && p.affixes.length > 0);
         },
         isBetweenSeasons(state) {
-            // Check if we filtered out any periods (newest week has no data)
+            // Check if the newest period has no affix data (between seasons)
             if (!state.Periodes || state.Periodes.length === 0) return false;
-            const validPeriodes = state.Periodes.filter(p => p.affixes && p.affixes.length > 0);
-            return validPeriodes.length < state.Periodes.length;
+            const newest = state.Periodes[0];
+            return !newest.affixes || newest.affixes.length === 0;
         },
         GetSelectedPeriode(state) {
             return state.SelectedPeriode
