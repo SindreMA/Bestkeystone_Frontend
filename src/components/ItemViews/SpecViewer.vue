@@ -113,13 +113,6 @@ export default {
   background-position: center;
   position: relative;
   border: 1px solid var(--border-default);
-  transition: all var(--transition-normal);
-}
-
-.SpecViewWindow:hover {
-  border-color: var(--border-accent);
-  box-shadow: var(--shadow-glow);
-  transform: scale(1.01);
 }
 
 .DarkerGreyOverlay {

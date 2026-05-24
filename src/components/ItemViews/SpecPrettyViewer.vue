@@ -65,12 +65,8 @@ const classColor = computed(() => {
     background: var(--bg-elevated);
     border: 2px solid;
     padding: 20px;
-    transition: all var(--transition-normal);
     min-width: 300px;
     max-width: 350px;
-}
-.Container:hover {
-    transform: translateY(-4px) scale(1.02);
 }
 .spec-content {
     display: flex;

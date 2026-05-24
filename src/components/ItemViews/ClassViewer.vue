@@ -126,13 +126,11 @@ export default {
     overflow: hidden;
     background: var(--bg-surface);
     border: 1px solid var(--border-default);
-    transition: all var(--transition-normal);
+    transition: border-color var(--transition-fast);
 }
 
 .ClassViewWindowMAIN:hover {
     border-color: var(--border-accent);
-    box-shadow: var(--shadow-glow);
-    transform: translateY(-4px) scale(1.02);
 }
 
 .ClassViewWindow {

@@ -158,10 +158,10 @@ const GetClass = (class_id) => {
 }
 
 const GetColorString = (className) => {
+        if (!className) return 'var(--text-primary)'
         var s = RAID_CLASS_COLORS[String(className).replace(' ', '').toUpperCase()]
-        var rtn = 'rgb(' + s[0] * 255 + ', ' + s[1] * 255 + ', ' + s[2] * 255 + ')'
-        return rtn
-
+        if (!s) return 'var(--text-primary)'
+        return 'rgb(' + s[0] * 255 + ', ' + s[1] * 255 + ', ' + s[2] * 255 + ')'
       }
 
 </script>

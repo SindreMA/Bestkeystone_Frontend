@@ -18,40 +18,39 @@
               color="none"
             >
               <q-menu id="SettingsBox" @before-hide="onSettingsClose">
-                <q-scroll-area
-                  style="height: 448px; max-width: 300px"
-                  id="SettingsContent"
-                  class="HeaderFont"
-                  ref="scrollArea"
-                >
-                  <div>
-                    Region:
-                    <q-btn-toggle
-                      v-model="region"
-                      :options="[
-                        { label: 'EU', value: 'eu' },
-                        { label: 'US', value: 'us' },
-                        { label: 'TW', value: 'tw' },
-                        { label: 'KR', value: 'kr' },
-                      ]"
-                    />
+                <div id="SettingsContent" class="HeaderFont">
+                  <div class="settings-header">
+                    <div class="settings-title">Settings</div>
+                    <transition name="fade">
+                      <span v-if="data_saved" class="settings-saved">Saved</span>
+                    </transition>
                   </div>
-                  <br />
-                  <div class="flex">
-                    <div>View:</div>
+
+                  <div class="settings-row">
+                    <div class="settings-label">View</div>
                     <q-btn-toggle
                       v-model="viewMode"
+                      no-caps
+                      unelevated
+                      spread
+                      toggle-color="primary"
+                      class="settings-toggle"
                       :options="[
                         { label: 'Classic', value: 'classic' },
                         { label: 'Tables', value: 'table' },
                       ]"
                     />
                   </div>
-                  <br />
-                  <div>
-                    Score Type:
+
+                  <div v-if="viewMode !== 'table'" class="settings-row">
+                    <div class="settings-label">Score type</div>
                     <q-btn-toggle
                       v-model="score_type"
+                      no-caps
+                      unelevated
+                      spread
+                      toggle-color="primary"
+                      class="settings-toggle"
                       :options="[
                         { label: 'Total', value: 'total' },
                         { label: 'Percent', value: 'percent' },
@@ -59,90 +58,69 @@
                       ]"
                     />
                   </div>
-                  <br />
-                  <div class="row">
-                    <div class="col-8">
-                      Limit the amount of runs to the same as the lowest dungeon:
-                    </div>
-                    <div class="col-4 flex flex-center">
-                      <q-toggle v-model="limitbylowestdungeon" />
-                    </div>
-                  </div>
-                  <br />
-                  <div>
-                    Only base data on runs higher than:
-                    <div class="row">
-                      <div class="col-1" style="padding-top: 3.5px">
-                        {{ min_keystonelevel }}
-                      </div>
-                      <div class="col-11 relContainer">
-                        <q-slider
-                          class="Slider"
-                          v-model="min_keystonelevel"
-                          :min="0"
-                          :max="25"
-                          :step="1"
-                          label
-                          snap
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div class="text-center">Amount of runs to base data on:</div>
-                    <div class="flex justify-around">
-                      <q-radio dense v-model="max_runs" :val="10" label="10" />
-                      <q-radio dense v-model="max_runs" :val="100" label="100" />
-                      <q-radio dense v-model="max_runs" :val="1000" label="1000" />
-                      <q-radio dense v-model="max_runs" :val="5000" label="5000" />
-                    </div>
-                  </div>
-                  <br />
-                  <div>
-                    Weeks to show:
-                    <div class="row">
-                      <div class="col-1" style="padding-top: 3.5px">
-                        {{ WeeksToShow }}
-                      </div>
-                      <div class="col-11 relContainer">
-                        <q-slider
-                          class="Slider"
-                          v-model="WeeksToShow"
-                          :min="4"
-                          :max="60"
-                          :step="1"
-                          label
-                          snap
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <!--<q-toggle v-model="showMoreAds" label="Show More Ads to support creator" />-->
 
-                  <div class="row">
-                    <div class="col-5">
-                      <transition name="fade">
-                        <p v-if="data_saved">Settings saved!</p>
-                      </transition>
+                  <div class="settings-divider"></div>
+
+                  <div class="settings-row">
+                    <div class="settings-label-inline">
+                      <span>Minimum keystone level</span>
+                      <span class="settings-value">{{ min_keystonelevel }}</span>
                     </div>
-                    <div class="offset-3 col-3">
-                      <q-btn
-                        v-if="settings_changed"
-                        outline
-                        style="width: 70px"
-                        @click="reload()"
-                        rounded
-                        color="primary"
-                        label="Reload"
-                      >
-                        <q-tooltip
-                          >You might want to refresh the page to take all the changes in
-                          use</q-tooltip
-                        >
-                      </q-btn>
-                    </div>
+                    <q-slider
+                      v-model="min_keystonelevel"
+                      :min="0"
+                      :max="25"
+                      :step="1"
+                      color="primary"
+                      label
+                      snap
+                    />
                   </div>
-                </q-scroll-area>
+
+                  <div class="settings-row">
+                    <div class="settings-label-inline">
+                      <span>Weeks to show</span>
+                      <span class="settings-value">{{ WeeksToShow }}</span>
+                    </div>
+                    <q-slider
+                      v-model="WeeksToShow"
+                      :min="4"
+                      :max="60"
+                      :step="1"
+                      color="primary"
+                      label
+                      snap
+                    />
+                  </div>
+
+                  <div class="settings-row">
+                    <div class="settings-label">Runs per dungeon</div>
+                    <q-btn-toggle
+                      v-model="max_runs"
+                      no-caps
+                      unelevated
+                      spread
+                      toggle-color="primary"
+                      class="settings-toggle"
+                      :options="[
+                        { label: '10', value: 10 },
+                        { label: '100', value: 100 },
+                        { label: '1k', value: 1000 },
+                        { label: '5k', value: 5000 },
+                      ]"
+                    />
+                  </div>
+
+                  <div class="settings-row settings-row-toggle">
+                    <div class="settings-label-toggle">
+                      <span>Limit to lowest dungeon</span>
+                      <span class="settings-hint"
+                        >Cap runs to match the smallest sample</span
+                      >
+                    </div>
+                    <q-toggle v-model="limitbylowestdungeon" color="primary" />
+                  </div>
+                </div>
               </q-menu>
             </q-btn>
           </div>
@@ -529,15 +507,108 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 #SettingsBox {
   width: 320px;
-  height: 480px;
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
+  overflow: hidden;
 }
 #SettingsContent {
-  padding: 20px;
-  margin: 0px;
+  padding: 18px 20px 20px;
+  color: var(--text-primary);
+}
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.settings-title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+.settings-saved {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-success);
+  background: rgba(34, 197, 94, 0.12);
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+.settings-row {
+  margin-bottom: 14px;
+}
+.settings-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.settings-label-inline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+.settings-value {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-primary);
+}
+.settings-toggle {
+  width: 100%;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-base);
+  overflow: hidden;
+}
+.settings-toggle .q-btn {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  min-height: 30px;
+}
+.settings-toggle .q-btn.bg-primary {
+  color: #fff;
+}
+.settings-divider {
+  height: 1px;
+  background: var(--border-default);
+  margin: 4px 0 14px;
+}
+.settings-row-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0;
+}
+.settings-label-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.settings-label-toggle > span:first-child {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+.settings-hint {
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .fade-enter-active,

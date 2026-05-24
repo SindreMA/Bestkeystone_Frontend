@@ -211,14 +211,12 @@ const SetSize = () => {
   margin: 12px 8px;
   border: 1px solid var(--border-default);
   overflow: hidden;
-  transition: all var(--transition-normal);
+  transition: border-color var(--transition-fast);
 }
 
 .DungeonWindow:hover {
   border-color: var(--border-accent);
-  box-shadow: var(--shadow-glow);
   cursor: pointer;
-  transform: translateY(-2px);
 }
 
 #DungeonMoreInfoWindow {
