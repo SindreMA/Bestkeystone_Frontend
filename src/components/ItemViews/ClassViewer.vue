@@ -21,12 +21,6 @@
                     <div class=" Rank flex flex-center">
                         <div >{{ClassItem.rank}}</div>
                     </div>
-                    <div class=" flex flex-center">
-                        <div class="ShowMore">
-                            <i v-if="true" class="material-icons  keyboard_arrow_down icon-grey">keyboard_arrow_down</i>
-                            <i v-else class="material-icons  keyboard_arrow_up icon-grey">keyboard_arrow_up</i>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div v-if="ShowDetails" class="MoreDetails">
@@ -201,26 +195,6 @@ export default {
     box-shadow: var(--shadow-glow);
 }
 
-.ShowMore {
-    background: var(--bg-elevated);
-    border-radius: var(--radius-full);
-    bottom: -12px;
-    position: absolute;
-    padding: 2px;
-    border: 1px solid var(--border-default);
-    transition: all var(--transition-fast);
-}
-
-.ShowMore:hover {
-    cursor: pointer;
-    background: var(--bg-hover);
-    border-color: var(--border-accent);
-}
-
-.ShowMore .material-icons {
-    color: var(--text-secondary);
-    font-size: 20px;
-}
 
 .MoreDetails {
     background: var(--bg-elevated);
