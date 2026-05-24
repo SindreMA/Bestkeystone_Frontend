@@ -17,7 +17,7 @@
               size="20px"
               color="none"
             >
-              <q-menu id="SettingsBox">
+              <q-menu id="SettingsBox" @before-hide="onSettingsClose">
                 <q-scroll-area
                   style="height: 448px; max-width: 300px"
                   id="SettingsContent"
@@ -279,6 +279,14 @@ const reload = () => {
   GetPeriodesData();
   SaveReloadTimestamp();
   fetchDungeonData();
+  fetchSpecData();
+  settings_changed.value = false;
+};
+
+const onSettingsClose = () => {
+  if (settings_changed.value) {
+    reload();
+  }
 };
 const settingsScrollToEnd = () => {
   if (scrollArea.value?.setScrollPosition)

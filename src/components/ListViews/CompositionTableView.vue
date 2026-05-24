@@ -283,8 +283,13 @@ const SelectedPeriode = computed(()=> state.SelectedPeriode)
 const GetSpecs = computed(()=> state.Specs)
 const GetClasses = computed(()=> state.Classes)
 const Settings = computed(()=> state.settings)
+const getReloaded_Timestamp = computed(()=> state.Reloaded_Timestamp)
 
 watch(SelectedPeriode, () => {
+  DataChange();
+})
+
+watch(getReloaded_Timestamp, () => {
   DataChange();
 })
 

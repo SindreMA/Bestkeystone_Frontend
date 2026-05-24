@@ -49,6 +49,9 @@ export default {
         Settings() {
             return this.$store.state.data.settings;
         },
+        Reloaded_Timestamp() {
+            return this.$store.state.data.Reloaded_Timestamp;
+        },
     },
     methods: {
         classDetails(id) {
@@ -92,6 +95,11 @@ export default {
     },
     watch: {
         SelectedPeriode() {
+            this.data = null
+            this.error = false
+            this.fetchData()
+        },
+        Reloaded_Timestamp() {
             this.data = null
             this.error = false
             this.fetchData()

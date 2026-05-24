@@ -203,6 +203,7 @@ const GetClasses = data.Classes
 const GetDungeonSpecData = data.Spec_Dungeon_Data
 const GetDungeonData = data.Dungeons_Data
 const SelectedPeriode = computed(() =>data.SelectedPeriode)
+const getReloaded_Timestamp = computed(() => data.Reloaded_Timestamp)
 const GetSettings = data.settings
 
 
@@ -403,6 +404,9 @@ onBeforeMount(() => {
     watch(SelectedPeriode, ()=> {
       runData.value = null;
       error.value = false;
+      fetchIntimeData();
+    })
+    watch(getReloaded_Timestamp, ()=> {
       fetchIntimeData();
     })
     watch(GetDungeonSpecData, ()=> {

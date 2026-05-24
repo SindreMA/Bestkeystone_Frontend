@@ -126,6 +126,9 @@ import sf from '../../SharedFunctions'
         this.DataChange()
 
       },
+      Reloaded_Timestamp() {
+        this.DataChange()
+      },
       type() {
       this.SpecFilter = ''
 
@@ -149,6 +152,9 @@ import sf from '../../SharedFunctions'
       },
       Settings() {
           return this.$store.state.data.settings;
+      },
+      Reloaded_Timestamp() {
+        return this.$store.state.data.Reloaded_Timestamp;
       },
     },
     methods: {

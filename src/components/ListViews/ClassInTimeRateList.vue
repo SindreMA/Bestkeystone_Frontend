@@ -42,6 +42,7 @@ const _data = store.state.data;
 const SelectedPeriode = computed(() => _data.SelectedPeriode);
 const GetClasses = computed(() => _data.Classes);
 const Settings = computed(() => _data.settings);
+const getReloaded_Timestamp = computed(() => _data.Reloaded_Timestamp);
 
 onBeforeMount(() => {
   if (SelectedPeriode.value) {
@@ -86,6 +87,12 @@ const classDetails = (id) => {
 };
 
 watch(SelectedPeriode, () => {
+  data.value = null;
+  error.value = false;
+  fetchData();
+});
+
+watch(getReloaded_Timestamp, () => {
   data.value = null;
   error.value = false;
   fetchData();

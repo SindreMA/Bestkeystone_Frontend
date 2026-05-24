@@ -307,6 +307,9 @@ watch(inTimeData, ()=> {
       error.value = false;
       fetchIntimeData();
     })
+    watch(getReloaded_Timestamp, () => {
+      fetchIntimeData();
+    })
 
 onBeforeMount(() => {
   if (SelectedPeriode.value) {
