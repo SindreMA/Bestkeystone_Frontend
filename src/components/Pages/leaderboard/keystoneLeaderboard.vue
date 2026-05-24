@@ -53,6 +53,12 @@
 
         </div>
       </template>
+      <template v-slot:no-data>
+        <div class="full-width row flex-center text-grey-5 q-gutter-sm" style="padding: 24px 8px">
+          <q-icon size="20px" name="info" />
+          <span>No runs match these filters.</span>
+        </div>
+      </template>
       <template v-slot:bottom v-if="loading">
         <q-linear-progress indeterminate color="amber" />
       </template>
@@ -354,9 +360,9 @@ const Columns = ref([
     const store = useStore();
     const data = store.state.data
 
+    let requestSeq = 0;
+
     const fetchLeaderboard = (pagination) => {
-
-
       if (pagination) {
         if (pagination.page) paginationControl.value.page = pagination.page;
         if (pagination.rowsPerPage) paginationControl.value.rowsPerPage = pagination.rowsPerPage;
@@ -364,9 +370,17 @@ const Columns = ref([
       }
       var { page, rowsPerPage, sortBy } = paginationControl.value;
 
+      const seasonId = season.value?.season?.id;
+      if (!seasonId) {
+        loading.value = false;
+        return;
+      }
+
+      const myReq = ++requestSeq;
+
       var apiUrl = data.apiUrl;
       var apiString = `/KeystoneRun/leaderboard?from=${(page - 1) *
-        rowsPerPage}&amount=${rowsPerPage}&seasonId=${season.value?.season?.id === 6 ? 5 : season.value?.season?.id}`;
+        rowsPerPage}&amount=${rowsPerPage}&seasonId=${seasonId}`;
       if (zone.value) apiString += `&zone=${zone.value.keystone_id}`;
       if (affix1.value) apiString += `&affix1=${affix1.value.id}`;
       if (affix2.value) apiString += `&affix2=${affix2.value.id}`;
@@ -377,20 +391,20 @@ const Columns = ref([
       axios
         .get(`${apiUrl}${apiString}`)
         .then(x => {
+          if (myReq !== requestSeq) return;
           paginationControl.value.rowsNumber = x.data.maxRows;
-
-          leaderboardData.value = x.data.list;
-
+          leaderboardData.value = x.data.list ?? [];
           paginationControl.value.page = page;
           paginationControl.value.rowsPerPage = rowsPerPage;
           paginationControl.value.sortBy = sortBy;
-
           activeColumns.value = visableColumns.value;
-
           loading.value = false;
         })
         .catch(x => {
+          if (myReq !== requestSeq) return;
           console.log("Error", x);
+          leaderboardData.value = [];
+          loading.value = false;
         });
       }
 

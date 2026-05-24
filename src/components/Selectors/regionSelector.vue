@@ -32,10 +32,10 @@
           <q-item
             v-bind="scope.itemProps"
             v-on="scope.itemEvents"
-            
+
           >
             <q-item-section >
-              <q-item-label v-html="scope.opt" />
+              <q-item-label>{{ scope.opt.toUpperCase() }}</q-item-label>
             </q-item-section>
           </q-item>
             </template>

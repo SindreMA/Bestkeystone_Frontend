@@ -12,8 +12,11 @@
     >
       <template v-slot:selected="scope">
         <template v-if="affix">
-          <q-item v-bind="(scope as any)?.itemProps" v-on="(scope as any)?.itemEvents">
+          <q-item v-bind="(scope as any)?.itemProps" v-on="(scope as any)?.itemEvents" class="selectedItem">
             <affixImg class="affixImg" size="10px" :affixid="affix.id" />
+            <q-item-section>
+              <q-item-label v-html="affix.name" />
+            </q-item-section>
           </q-item>
         </template>
         <template v-else>
