@@ -62,23 +62,23 @@ export default {
     min-height: 50px;
     margin: 8px;
     background: var(--bg-surface);
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--line-default);
     transition: all var(--transition-normal);
 }
 .DiscordCard:hover {
     transform: translateY(-4px) scale(1.02);
-    background: var(--bg-elevated);
-    border-color: var(--border-accent);
+    background: var(--bg-raised);
+    border-color: var(--line-strong);
 }
 .logoImg {
     border-radius: 100%;
     margin: 1px 7px;
     width: 47px;
     height: 47px;
-    border: 2px solid var(--border-default);
+    border: 2px solid var(--line-default);
 }
 .Description {
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--text-mid);
 }
 </style>

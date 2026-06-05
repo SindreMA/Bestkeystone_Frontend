@@ -1,6 +1,6 @@
 <template>
   <div id="Main" class="HeaderFont">
-    <q-spinner-bars v-if="runData == null" class="absolute-center" style="color: rgb(161, 161, 161)" size="200" />
+    <q-spinner-bars v-if="runData == null" class="absolute-center" style="color: var(--text-mid)" size="200" />
     <div v-else-if="runData.length == 0" class="HeaderFont">
       <br />
       <br />
@@ -103,7 +103,7 @@
         </q-tr>
       </template>
     </q-table>
-    <q-spinner-bars v-else class="absolute-center" style="color: rgb(161, 161, 161)" size="200" />
+    <q-spinner-bars v-else class="absolute-center" style="color: var(--text-mid)" size="200" />
 
   </div>
 </template>
@@ -464,7 +464,7 @@ onBeforeMount(() => {
 }
 
 .hideHover:hover {
-  background-color: #252525 !important;
+  background-color: var(--bg-inset) !important;
 }
 
 .tableIcon {

@@ -369,7 +369,7 @@ a {
 .starIcon {
   transform: scale(0.6);
   width: 7px;
-  color: goldenrod;
+  color: var(--rank-gold);
 }
 .upperButtons {
   right: 0px;

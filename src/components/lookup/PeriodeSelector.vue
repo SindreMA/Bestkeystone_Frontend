@@ -251,11 +251,11 @@ onBeforeMount(() => {
   max-height: 400px;
 }
 .CustomBox {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
+  background: var(--bg-raised);
+  color: var(--text-hi);
   padding: 20px;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
 }
 </style>
 

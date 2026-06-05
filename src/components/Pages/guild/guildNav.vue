@@ -48,7 +48,7 @@ export default {
 
 .nav-tabs {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   padding: 4px;
 }
@@ -59,6 +59,6 @@ export default {
 }
 
 .nav-tabs :deep(.q-tab--active) {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
 }
 </style>

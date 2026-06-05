@@ -1,46 +1,44 @@
 <template>
-    <div class="flex-center Centertext HeaderFont">
-        <RunsCompletedCount/>
+  <div class="kc-root kc-runs">
+    <div class="kc-container">
+      <KcPageHeader eyebrow="Statistics" title="Runs / Activity" sub="Run volume, faction split, and keystone activity over time per region." />
 
-        <FactionBar/>
-        <br>
-          <q-option-group
-            color="secondary"
-            type="checkbox"
-            v-model="regions"
-            inline
-            :options="regionlist"
-        />
-
-<h4>Keys per hour</h4>
- <apexchart
-      width="100%"
-      height="300px"
-      type="line"
-      :options="getHourTimestamps()"
-      :series="getHourDataValues()"
-    ></apexchart>
-<h4>Keys per day</h4>
-<apexchart
-      width="100%"
-      height="300px"
-      type="line"
-      :options="getDayTimestamps()"
-      :series="getDayDataValues()"
-    ></apexchart>
-
-
-<div>
-  <br><br>
-        <LevelStats  @fetch="levelData = $event"/>
-        <br>
-        <PerWeekChart :data="levelData" />
-        <br>
-        <!--<ChestsChart/>-->
+      <div class="kc-runs__top">
+        <KcCard :level="1" header="Runs completed">
+          <div class="kc-runs__count"><RunsCompletedCount /></div>
+        </KcCard>
+        <KcCard :level="1" header="Faction split">
+          <FactionBar />
+        </KcCard>
       </div>
+
+      <div class="kc-runs__regions">
+        <span class="kc-eyebrow">Regions</span>
+        <q-option-group color="primary" type="checkbox" v-model="regions" inline :options="regionlist" />
+      </div>
+
+      <div class="kc-runs__charts">
+        <KcCard :level="1" header="Keys per hour · last 24h">
+          <apexchart width="100%" height="280px" type="line" :options="getHourTimestamps()" :series="getHourDataValues()" />
+        </KcCard>
+        <KcCard :level="1" header="Keys per day · last 7 days">
+          <apexchart width="100%" height="280px" type="line" :options="getDayTimestamps()" :series="getDayDataValues()" />
+        </KcCard>
+      </div>
+
+      <KcCard :level="1" header="Success &amp; volume by keystone level" class="kc-runs__block">
+        <LevelStats @fetch="levelData = $event" />
+      </KcCard>
+
+      <KcCard :level="1" header="Runs per week" class="kc-runs__block">
+        <PerWeekChart :data="levelData" />
+      </KcCard>
     </div>
+  </div>
 </template>
 <script lang="ts" setup>
+import KcPageHeader from "components/layout/KcPageHeader.vue";
+import KcCard from "components/keystone/KcCard.vue";
 import LevelStats from "components/ListViews/LevelStats.vue";
 import RunsCompletedCount from "components/Pages/runs/RunsCompletedCount.vue";
 import PerWeekChart from "components/Pages/runs/PerWeekChart.vue";
@@ -122,14 +120,14 @@ const getHourTimestamps = () => {
         yaxis: {
           labels: {
             style: {
-              colors: ls.map(x=> "rgb(161, 161, 161)"),
+              colors: ls.map(x=> "#9AA7B8"),
             },
           },
         },
         xaxis: {
           labels: {
             style: {
-              colors: ls.map(x=> "rgb(161, 161, 161)"),
+              colors: ls.map(x=> "#9AA7B8"),
             },
           },
           categories: ls,
@@ -180,14 +178,14 @@ const getDayTimestamps = () => {
         yaxis: {
           labels: {
             style: {
-              colors: ls.map(x=> "rgb(161, 161, 161)"),
+              colors: ls.map(x=> "#9AA7B8"),
             },
           },
         },
         xaxis: {
           labels: {
             style: {
-              colors: ls.map(x=> "rgb(161, 161, 161)"),
+              colors: ls.map(x=> "#9AA7B8"),
             },
           },
           categories: ls,
@@ -263,7 +261,15 @@ onBeforeMount(() => {
 </script>
 
 <style scoped>
-tspan * {
-  color: rgb(161, 161, 161) !important;
+.kc-runs { padding: var(--kc-sp-6) 0; }
+.kc-container { width: 100%; max-width: var(--kc-content-wide); margin: 0 auto; padding: 0 24px; }
+.kc-runs__top { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--kc-sp-5); margin-bottom: var(--kc-sp-5); }
+.kc-runs__count { text-align: center; }
+.kc-runs__regions { display: flex; align-items: center; gap: 14px; margin-bottom: var(--kc-sp-5); flex-wrap: wrap; }
+.kc-runs__charts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--kc-sp-5); }
+.kc-runs__block { margin-top: var(--kc-sp-5); }
+@media (max-width: 920px) {
+  .kc-runs__top, .kc-runs__charts { grid-template-columns: 1fr; }
 }
+tspan * { color: #9AA7B8 !important; }
 </style>

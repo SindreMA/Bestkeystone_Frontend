@@ -197,38 +197,38 @@ import ClassTextColor from "../containers/classTextColor.vue";
   }
 
   .search-modern :deep(.q-field__control) {
-    background: var(--bg-elevated) !important;
-    border: 1px solid var(--border-default) !important;
+    background: var(--bg-raised) !important;
+    border: 1px solid var(--line-default) !important;
     border-radius: var(--radius-full) !important;
     padding: 0 16px;
     transition: all var(--transition-normal);
   }
 
   .search-modern :deep(.q-field__control:hover) {
-    border-color: var(--border-accent) !important;
+    border-color: var(--line-strong) !important;
   }
 
   .search-modern :deep(.q-field--focused .q-field__control) {
-    border-color: var(--border-accent) !important;
+    border-color: var(--line-strong) !important;
     box-shadow: var(--shadow-glow) !important;
   }
 
   .search-modern :deep(.q-field__native) {
-    color: var(--text-primary) !important;
+    color: var(--text-hi) !important;
   }
 
   .search-modern :deep(.q-field__native::placeholder) {
-    color: var(--text-muted) !important;
+    color: var(--text-low) !important;
   }
 
   .search-modern :deep(.q-avatar) {
-    color: var(--text-secondary);
+    color: var(--text-mid);
   }
 
   .search-results-modern {
     max-height: 350px;
     background: var(--bg-surface) !important;
-    border: 1px solid var(--border-default) !important;
+    border: 1px solid var(--line-default) !important;
     border-radius: var(--radius-lg) !important;
     box-shadow: var(--shadow-lg) !important;
     margin-top: 8px;
@@ -246,18 +246,18 @@ import ClassTextColor from "../containers/classTextColor.vue";
   }
 
   .search-results-modern :deep(.q-item-label) {
-    color: var(--text-primary);
+    color: var(--text-hi);
   }
 
   .search-results-modern :deep(.q-item__label--caption) {
-    color: var(--text-muted) !important;
+    color: var(--text-low) !important;
   }
 
   .tableIcon {
     width: 32px;
     height: 32px;
     border-radius: var(--radius-md);
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--line-default);
   }
 
   #factionImage {

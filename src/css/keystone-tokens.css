@@ -1,0 +1,153 @@
+/* ============================================================
+   KEYSTONE CONSOLE — Design tokens (scoped redesign)
+   Dark-first analytics instrument. Ported from the Claude Design
+   "Keystone Console" prototype (BestKeystone/tokens.css).
+
+   SCOPED under .kc-root so the rest of the live app keeps its
+   existing GitHub-dark token system untouched. This is a test
+   surface for the Home redesign only.
+   ============================================================ */
+
+.kc-root {
+  /* ---- Canvas & surfaces (4-step low-contrast elevation) ---- */
+  --kc-bg-canvas:  #0A0E14;
+  --kc-bg-deep:    #06090F;
+  --kc-bg-surface: #11161F;
+  --kc-bg-raised:  #161D28;
+  --kc-bg-inset:   #0D121A;
+  --kc-bg-hover:   #1B2430;
+  --kc-bg-active:  #222D3C;
+
+  /* ---- Borders / hairlines ---- */
+  --kc-line-hairline: #1E2733;
+  --kc-line-default:  #2A3645;
+  --kc-line-strong:   #3A4759;
+  --kc-border-glow:   rgba(91,141,239,0.40);
+
+  /* ---- Text ---- */
+  --kc-text-hi:      #E8EEF6;
+  --kc-text-mid:     #9AA7B8;
+  --kc-text-low:     #5E6B7D;
+  --kc-text-ghost:   #3D4757;
+  --kc-text-inverse: #06090F;
+
+  /* ---- Brand accent (ONE primary — cool blue, never gold) ---- */
+  --kc-accent:        #5B8DEF;
+  --kc-accent-hover:  #6E9DF5;
+  --kc-accent-quiet:  rgba(91,141,239,0.12);
+  --kc-signal-cyan:   #3DD6D0;   /* reserved for LIVE / realtime only */
+  --kc-brand-gradient: linear-gradient(135deg, #5B8DEF 0%, #3DD6D0 100%);
+
+  /* ---- Tier ladder ramp (heat, not virtue) ---- */
+  --kc-tier-s: #FF4D6D;
+  --kc-tier-a: #FF9F1C;
+  --kc-tier-b: #E8C84A;
+  --kc-tier-c: #4ADE80;
+  --kc-tier-d: #5AA9E6;
+
+  /* ---- Rank / medal (top-3 only) ---- */
+  --kc-rank-gold:   #F5C518;
+  --kc-rank-silver: #C7D0DA;
+  --kc-rank-bronze: #CD7F47;
+
+  /* ---- Status / delta (desaturated; amber = status only) ---- */
+  --kc-pos:     #3FB950;
+  --kc-neg:     #E5534B;
+  --kc-warn:    #D29922;
+  --kc-neutral: #6E7B8C;
+
+  /* ---- Faction ---- */
+  --kc-faction-alliance: #5B8DEF;
+  --kc-faction-horde:    #C8313A;
+
+  /* ---- Score magnitude / chest fire ramp ---- */
+  --kc-fire-0: #6E7B8C;   /* untimed / depleted */
+  --kc-fire-1: #3FB950;   /* timed (1 chest) */
+  --kc-fire-2: #E0A33B;   /* 2 chest */
+  --kc-fire-3: #F25C54;   /* 3 chest, hottest */
+
+  /* ---- Keystone heat (dedicated — NOT --tier-s) ---- */
+  --kc-key-hot: #F25C54;
+
+  /* ---- Spacing scale (8px) ---- */
+  --kc-sp-1: 4px;
+  --kc-sp-2: 8px;
+  --kc-sp-3: 12px;
+  --kc-sp-4: 16px;
+  --kc-sp-5: 24px;
+  --kc-sp-6: 32px;
+  --kc-sp-7: 48px;
+  --kc-sp-8: 64px;
+
+  /* ---- Layout ---- */
+  --kc-content-max:  1320px;
+  --kc-content-wide: 1560px;
+
+  /* ---- Radii (low / sharp = instrument) ---- */
+  --kc-r-sm:   4px;
+  --kc-r-md:   6px;
+  --kc-r-lg:   8px;
+  --kc-r-xl:   12px;
+  --kc-r-pill: 9999px;
+
+  /* ---- Elevation shadows ---- */
+  --kc-shadow-sm: 0 1px 2px rgba(0,0,0,0.40);
+  --kc-shadow-md: 0 2px 8px rgba(0,0,0,0.45);
+  --kc-shadow-lg: 0 8px 24px rgba(0,0,0,0.50);
+
+  /* ---- Motion ---- */
+  --kc-motion-fast: 120ms;
+  --kc-motion-base: 200ms;
+  --kc-motion-slow: 320ms;
+  --kc-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---- Type families ---- */
+  --kc-font-ui:      'Inter', system-ui, -apple-system, sans-serif;
+  --kc-font-display: 'Chakra Petch', 'Rajdhani', var(--kc-font-ui);
+  --kc-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* establish the dark instrument canvas for the scoped area */
+  background: var(--kc-bg-canvas);
+  color: var(--kc-text-hi);
+  font-family: var(--kc-font-ui);
+  font-size: 14px;
+  line-height: 22px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Typographic helpers (prefixed, only active inside .kc-root) ---- */
+.kc-root .kc-tnum { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
+.kc-root .kc-mono { font-family: var(--kc-font-mono); font-variant-numeric: tabular-nums; }
+.kc-root .kc-disp { font-family: var(--kc-font-display); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+.kc-root .kc-eyebrow {
+  font-family: var(--kc-font-display);
+  font-size: 11px; line-height: 14px;
+  font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--kc-text-low);
+}
+
+.kc-root em { font-style: italic; color: var(--kc-text-hi); }
+.kc-root a { color: var(--kc-accent); text-decoration: none; }
+.kc-root a:hover { color: var(--kc-accent-hover); }
+.kc-root h1, .kc-root h2, .kc-root h3, .kc-root h4 { margin: 0; color: var(--kc-text-hi); }
+.kc-root *, .kc-root *::before, .kc-root *::after { box-sizing: border-box; }
+
+/* ---- Shared keyframes (prefixed) ---- */
+@keyframes kc-breathe { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.82); } }
+@keyframes kc-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes kc-flashin { 0% { background: var(--kc-accent-quiet); } 100% { background: transparent; } }
+@keyframes kc-fadeup { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes kc-pulsekey {
+  0%,100% { box-shadow: 0 0 0 1px var(--kc-key-hot), 0 0 8px -1px rgba(242,92,84,0.5); }
+  50%     { box-shadow: 0 0 0 1px var(--kc-key-hot), 0 0 14px 1px rgba(242,92,84,0.75); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kc-root *, .kc-root *::before, .kc-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

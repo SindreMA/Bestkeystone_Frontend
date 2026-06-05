@@ -62,7 +62,7 @@
 
     <div v-else class="HeaderFont">
       <div class="col-12 flex flex-center">
-        <q-spinner-puff style="color: var(--text-accent)" :size="750" />
+        <q-spinner-puff style="color: var(--accent)" :size="750" />
       </div>
       <div class="col-12 flex flex-center">
         <p>if you see this, then that means the webpage have'nt loaded any data yet...</p>
@@ -173,7 +173,7 @@ hr {
   display: block;
   height: 2px;
   border: 0;
-  background: var(--gradient-primary);
+  background: var(--brand-gradient);
   margin: 1em 0;
   padding: 0;
   border-radius: var(--radius-full);
@@ -182,7 +182,7 @@ hr {
 .affixImage {
   height: 40px;
   width: 40px;
-  border: 2px solid var(--border-default);
+  border: 2px solid var(--line-default);
   border-radius: var(--radius-md);
   margin-bottom: 6px;
   background-size: 100% 100%;
@@ -192,7 +192,7 @@ hr {
 }
 
 .affixImage:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
   box-shadow: var(--shadow-glow);
   transform: scale(1.1);
 }
@@ -200,7 +200,7 @@ hr {
 #SelectboxAffix {
   width: 100%;
   height: 20px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-md);
 }
 
@@ -214,13 +214,13 @@ hr {
 }
 
 i.icon-grey {
-  color: var(--text-secondary);
+  color: var(--text-mid);
 }
 
 .affixSetListItem {
   min-height: 48px;
   width: 100%;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--line-default);
   padding: 8px 0;
   transition: all var(--transition-fast);
 }
@@ -230,8 +230,8 @@ i.icon-grey {
   padding: 8px 12px;
   min-height: 0;
   border: none;
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
+  background: var(--bg-raised);
+  color: var(--text-mid);
   font-size: 0.85rem;
 }
 
@@ -241,7 +241,7 @@ i.icon-grey {
 
 .SelectBox {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   width: 63%;
 }
@@ -252,25 +252,25 @@ i.icon-grey {
   background-size: 100% 100%;
   background-position: center;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
 }
 
 #dropDownButton {
   width: 100%;
-  border: 1px solid var(--border-default) !important;
+  border: 1px solid var(--line-default) !important;
   border-radius: var(--radius-full) !important;
   background: var(--bg-surface) !important;
   transition: all var(--transition-normal);
 }
 
 #dropDownButton:hover {
-  border-color: var(--border-accent) !important;
+  border-color: var(--line-strong) !important;
   background: var(--bg-hover) !important;
 }
 
 .affixSetListItemInfoMain {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
   max-height: 400px;
@@ -288,7 +288,7 @@ i.icon-grey {
 }
 
 .affixText {
-  color: var(--text-secondary);
+  color: var(--text-mid);
   font-size: 0.75rem;
   font-weight: 500;
 }
@@ -297,7 +297,7 @@ i.icon-grey {
   padding: 12px 16px;
   background: var(--bg-surface);
   border-radius: var(--radius-xl);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   margin: 12px auto;
   max-width: 450px;
 }

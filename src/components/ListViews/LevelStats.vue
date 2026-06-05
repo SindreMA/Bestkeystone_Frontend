@@ -116,7 +116,7 @@ const emits = defineEmits(['fetch'])
 
 const s_chartOptions = ref({
         chart: {
-          foreColor: "#a1a1a1"
+          foreColor: "#9AA7B8"
         },
         yaxis: {
           type: "numeric",
@@ -143,7 +143,7 @@ const s_chartOptions = ref({
       })
 const r_chartOptions = ref({
         chart: {
-          foreColor: "#a1a1a1"
+          foreColor: "#9AA7B8"
         },
         yaxis: {
           title: {

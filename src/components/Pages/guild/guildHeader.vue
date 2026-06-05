@@ -86,7 +86,7 @@ export default {
 <style scoped>
 .guild-header {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   padding: 20px 24px;
   margin-bottom: 16px;
@@ -124,11 +124,11 @@ export default {
 }
 
 .guild-name.horde {
-  color: #c41e3a;
+  color: var(--faction-horde);
 }
 
 .guild-name.alliance {
-  color: #0078ff;
+  color: var(--faction-alliance);
 }
 
 .guild-location {
@@ -139,7 +139,7 @@ export default {
 }
 
 .separator {
-  color: var(--text-muted);
+  color: var(--text-low);
 }
 
 .header-actions {
@@ -149,14 +149,14 @@ export default {
 }
 
 .update-btn {
-  color: var(--text-secondary);
-  border: 1px solid var(--border-default);
+  color: var(--text-mid);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-md);
 }
 
 .update-btn:hover:not(:disabled) {
-  border-color: var(--border-accent);
-  color: var(--text-primary);
+  border-color: var(--line-strong);
+  color: var(--text-hi);
 }
 
 .guild-header-skeleton {

@@ -1,16 +1,13 @@
 <template>
     <div>
-        <h2>Talent usage</h2>
-    <div>(Data is not limited to keystone runs)</div>
-    <div>(We also just fetch details on lookup, so data is a bit outdated )</div>
-    <div>(This will be changed later to fetch on keystone done)</div>
-    <br>
+        <KcPageHeader eyebrow="Overall" title="Talents" sub="Talent-build usage across tracked players. Not limited to keystone runs; details are fetched on lookup." />
     <TalentsTable :items="rows" />
     </div>
 </template>
 
 <script lang='ts' setup>
 import TalentsTable from 'components/ListViews/Tables/Talents/TalentTable.vue';
+import KcPageHeader from 'components/layout/KcPageHeader.vue';
 import axios from 'axios';
 import { useStore } from 'src/store';
 import { ref } from 'vue';
@@ -20,9 +17,9 @@ const data = store.state.data
 
 var rows = ref<Array<object>>([])
 
-axios.get(`${data.apiUrl}/talents`).then((response) => {
+axios.get(`${data.apiUrl}/Talent`).then((response) => {
   rows.value = response.data
-});
+}).catch((e) => console.log(e));
 
 </script>
 

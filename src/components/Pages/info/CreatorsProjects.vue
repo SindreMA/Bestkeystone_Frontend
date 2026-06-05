@@ -23,7 +23,7 @@ export default {
 <style scoped>
 .projectCard {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-xl);
   width: 500px;
   margin: 15px 15px;
@@ -33,7 +33,7 @@ export default {
 }
 .projectCard:hover {
   transform: translateY(-4px) scale(1.02);
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 .imageSize {
   width: 65px;
@@ -43,7 +43,7 @@ export default {
 .InstallButton {
   height: 30px;
   width: 200px;
-  background: var(--gradient-primary);
+  background: var(--brand-gradient);
   border-radius: var(--radius-full);
 }
 </style>

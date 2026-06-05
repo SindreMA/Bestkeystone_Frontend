@@ -1,14 +1,13 @@
 <template>
     <div class="textColor">
-        <h2>Playernames patterns</h2>
-        <p>This is a page where you can see how many players have a certain pattern in their name.</p>
-        <p>(Pattern with less than 50 occurances are not saved, it also only tracks m+ players)</p>
+        <KcPageHeader eyebrow="Overall" title="Player Names" sub="How many players share a pattern in their name — m+ players only, patterns with ≥50 occurrences." />
         <NamePatternTable v-model:search="search" v-model:length="length" v-model:useWords="useWords" :items="rows"  />
     </div>
 </template>
 
 <script lang='ts' setup>
 import NamePatternTable from 'components/ListViews/Tables/Names/NamePatternTable.vue';
+import KcPageHeader from 'components/layout/KcPageHeader.vue';
 import axios from 'axios';
 import { useStore } from 'src/store';
 import { ref, watch } from 'vue';

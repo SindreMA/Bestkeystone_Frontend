@@ -264,7 +264,7 @@ import sf from '../../SharedFunctions'
     height: 30px;
     color: rgb(161, 161, 161);
     border-radius: 50px;
-    background-color: #252525;
+    background-color: var(--bg-inset);
     border: rgb(161, 161, 161) 0.5px solid;
     position: relative;
     left: 80px;
@@ -278,7 +278,7 @@ import sf from '../../SharedFunctions'
     height: 30px;
     color: rgb(161, 161, 161);
     border-radius: 50px;
-    background-color: #252525;
+    background-color: var(--bg-inset);
     border: rgb(161, 161, 161) 0.5px solid;
     margin: 0 5px;
   }
@@ -288,7 +288,7 @@ import sf from '../../SharedFunctions'
     height: 30px;
     color: rgb(161, 161, 161);
     border-radius: 50px;
-    background-color: #252525;
+    background-color: var(--bg-inset);
     border: rgb(161, 161, 161) 0.5px solid;
     position: relative;
     left: 80px;
@@ -302,7 +302,7 @@ import sf from '../../SharedFunctions'
     height: 30px;
     color: rgb(161, 161, 161);
     border-radius: 50px;
-    background-color: #252525;
+    background-color: var(--bg-inset);
     border: rgb(161, 161, 161) 0.5px solid;
     margin: 0 5px;
   }
@@ -314,7 +314,7 @@ import sf from '../../SharedFunctions'
     height: 35px;
     color: rgb(161, 161, 161);
     border-radius: 50px;
-    background-color: #252525;
+    background-color: var(--bg-inset);
     border: rgb(161, 161, 161) 0.5px solid;
   }
 
@@ -326,7 +326,7 @@ import sf from '../../SharedFunctions'
     height: 30px;
     color: rgb(161, 161, 161);
     border-radius: 50px;
-    background-color: #252525;
+    background-color: var(--bg-inset);
     border: rgb(161, 161, 161) 0.5px solid;
   }
 
@@ -343,19 +343,19 @@ import sf from '../../SharedFunctions'
   .CompoItem {
     max-width: 900px;
     min-width: 300px;
-    background-color: #323232;
+    background-color: var(--line-default);
     border-radius: 20px;
   }
 
   .ComboShower {
     max-width: 700px;
-    background-color: #3d3d3d;
+    background-color: var(--line-default);
     border-radius: 25px 25px 25px 25px;
   }
 
   .ComboShowerTop {
     max-width: 900px;
-    background-color: #3d3d3d;
+    background-color: var(--line-default);
     border-radius: 25px 25px 25px 25px;
   }
 

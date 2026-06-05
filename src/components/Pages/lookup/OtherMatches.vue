@@ -52,8 +52,8 @@ const Specs = computed(() => data.Specs);
   text-align: center;
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
-  color: var(--text-primary);
+  border: 1px solid var(--line-default);
+  color: var(--text-hi);
 }
 .matchItem {
   display: flex;
@@ -66,19 +66,19 @@ const Specs = computed(() => data.Specs);
   min-height: 50px;
   padding: 2px 20px;
   text-align: center;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   transition: border-color var(--transition-fast);
 }
 .matchItem:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 a {
-  color: var(--text-accent);
+  color: var(--accent);
   transition: color var(--transition-fast);
 }
 a:hover {
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 </style>

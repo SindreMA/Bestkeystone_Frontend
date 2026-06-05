@@ -215,25 +215,25 @@ h5 {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: rgba(34, 197, 94, 0.1);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: rgba(63, 185, 80, 0.1);
+  border: 1px solid rgba(63, 185, 80, 0.3);
   border-radius: 50px;
   padding: 8px 18px;
   font-size: 0.7rem;
   font-weight: 700;
-  color: #22c55e;
+  color: var(--pos);
   letter-spacing: 2px;
   margin-top: 10px;
 }
 .pulse-dot {
   width: 8px;
   height: 8px;
-  background: #22c55e;
+  background: var(--pos);
   border-radius: 50%;
   animation: pulse-glow 2s ease-in-out infinite;
 }
 @keyframes pulse-glow {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-  50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(63, 185, 80, 0); }
 }
 </style>

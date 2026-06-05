@@ -201,7 +201,7 @@ const averageKeystoneLevel = computed(() => {
 <style scoped>
 .member-stats-container {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
   width: 100%;
@@ -209,11 +209,11 @@ const averageKeystoneLevel = computed(() => {
 }
 
 .info-header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
   font-weight: 600;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-default);
+  color: var(--text-hi);
+  border-bottom: 1px solid var(--line-default);
 }
 
 .info-content {
@@ -231,7 +231,7 @@ const averageKeystoneLevel = computed(() => {
 .section-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -248,7 +248,7 @@ const averageKeystoneLevel = computed(() => {
   align-items: center;
   gap: 10px;
   padding: 6px 10px;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-md);
 }
 
@@ -267,13 +267,13 @@ const averageKeystoneLevel = computed(() => {
 
 .class-count {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
   min-width: 24px;
 }
 
 .class-name {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--text-mid);
 }
 
 .class-bar {
@@ -304,14 +304,14 @@ const averageKeystoneLevel = computed(() => {
 
 .bracket-label {
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   min-width: 80px;
 }
 
 .bracket-bar {
   flex: 1;
   height: 8px;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -325,7 +325,7 @@ const averageKeystoneLevel = computed(() => {
 
 .bracket-count {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
   min-width: 30px;
   text-align: right;
 }
@@ -339,25 +339,25 @@ const averageKeystoneLevel = computed(() => {
 .overview-item {
   text-align: center;
   padding: 12px;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   transition: border-color var(--transition-fast);
 }
 
 .overview-item:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 
 .overview-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 
 .overview-label {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   margin-top: 4px;
 }
 

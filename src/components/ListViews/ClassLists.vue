@@ -1,7 +1,7 @@
 <template>
     <div>
       <div v-if="GetSelectedPeriode && c_data && GetSelectedPeriode != c_data.periode || !Classes('DAMAGE')" class="flex flex-center">
-          <q-spinner-puff style="color: var(--text-accent)" size="500" />
+          <q-spinner-puff style="color: var(--accent)" size="500" />
       </div>
        <div v-else-if="Classes('DAMAGE').length === 0 && Classes('TANK').length === 0 && Classes('HEALER').length === 0" class="HeaderFont nodataInfo">
           <h4 class="flex flex-center">No data found!</h4>

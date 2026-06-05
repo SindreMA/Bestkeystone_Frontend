@@ -513,7 +513,7 @@ export default {
   color: #e7e7e7;
 }
 .background {
-  background-color: #252525;
+  background-color: var(--bg-inset);
 }
 .transperant {
   background: transparent;
@@ -547,8 +547,8 @@ export default {
 }
 .greyBackground {
   position: relative;
-  background-color: #292929;
-  color: rgb(161, 161, 161);
+  background-color: var(--bg-raised);
+  color: var(--text-mid);
   border-radius: 10px;
   padding: 0 5px;
 }
@@ -558,7 +558,7 @@ export default {
 }
 
 .HeaderFont {
-  color: rgb(161, 161, 161) !important;
+  color: var(--text-mid) !important;
 }
 
 .HeaderSize {
@@ -588,11 +588,11 @@ export default {
     max-width: 1100px;
     margin: auto;
     padding: 25px 25px 25px 25px;
-    background-color: #252525;
+    background-color: var(--bg-inset);
   }
 }
 .GreyBackground {
-  background-color: #252525;
+  background-color: var(--bg-inset);
   min-height: 100vh;
   height: 100%;
 }
@@ -609,7 +609,7 @@ export default {
   width: 300px;
   height: 450px;
   background-color: #303030;
-  border: rgb(161, 161, 161) 1px solid;
+  border: var(--text-mid) 1px solid;
   border-radius: 15px;
 }
 #SettingsContent {

@@ -182,7 +182,7 @@
       </div>
 
       <div class="flex flex-center" v-if="fetchingData">
-        <q-spinner-puff style="color: rgb(161, 161, 161)" size="500" />
+        <q-spinner-puff style="color: var(--text-mid)" size="500" />
       </div>
       <div v-if="request_failed">
         <h3>API Request failed!</h3>
@@ -516,10 +516,10 @@ onBeforeMount(() => {
 #CompoItemScore {
   width: 110px;
   height: 30px;
-  color: rgb(161, 161, 161);
+  color: var(--text-mid);
   border-radius: 50px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  background-color: var(--bg-inset);
+  border: var(--text-mid) 0.5px solid;
   position: relative;
   left: 80px;
   top: 8px;
@@ -530,20 +530,20 @@ onBeforeMount(() => {
   top: 4px;
   width: 110px;
   height: 30px;
-  color: rgb(161, 161, 161);
+  color: var(--text-mid);
   border-radius: 50px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  background-color: var(--bg-inset);
+  border: var(--text-mid) 0.5px solid;
   margin: 0 5px;
 }
 
 #CompoItemRuns {
   width: 110px;
   height: 30px;
-  color: rgb(161, 161, 161);
+  color: var(--text-mid);
   border-radius: 50px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  background-color: var(--bg-inset);
+  border: var(--text-mid) 0.5px solid;
   position: relative;
   left: 80px;
   top: 15px;
@@ -554,10 +554,10 @@ onBeforeMount(() => {
   top: 4px;
   width: 110px;
   height: 30px;
-  color: rgb(161, 161, 161);
+  color: var(--text-mid);
   border-radius: 50px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  background-color: var(--bg-inset);
+  border: var(--text-mid) 0.5px solid;
   margin: 0 5px;
 }
 
@@ -566,10 +566,10 @@ onBeforeMount(() => {
   position: relative;
   width: 35px;
   height: 35px;
-  color: rgb(161, 161, 161);
+  color: var(--text-mid);
   border-radius: 50px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  background-color: var(--bg-inset);
+  border: var(--text-mid) 0.5px solid;
 }
 
 #CompoItemRankTop {
@@ -578,10 +578,10 @@ onBeforeMount(() => {
   position: relative;
   width: 30px;
   height: 30px;
-  color: rgb(161, 161, 161);
+  color: var(--text-mid);
   border-radius: 50px;
-  background-color: #252525;
-  border: rgb(161, 161, 161) 0.5px solid;
+  background-color: var(--bg-inset);
+  border: var(--text-mid) 0.5px solid;
 }
 
 .CompoItemInfo {
@@ -597,19 +597,19 @@ onBeforeMount(() => {
 .CompoItem {
   max-width: 900px;
   min-width: 300px;
-  background-color: #323232;
+  background-color: var(--line-default);
   border-radius: 20px;
 }
 
 .ComboShower {
   max-width: 700px;
-  background-color: #3d3d3d;
+  background-color: var(--line-default);
   border-radius: 25px 25px 25px 25px;
 }
 
 .ComboShowerTop {
   max-width: 900px;
-  background-color: #3d3d3d;
+  background-color: var(--line-default);
   border-radius: 25px 25px 25px 25px;
 }
 

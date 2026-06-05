@@ -158,9 +158,9 @@ const GetClass = (class_id) => {
 }
 
 const GetColorString = (className) => {
-        if (!className) return 'var(--text-primary)'
+        if (!className) return 'var(--text-hi)'
         var s = RAID_CLASS_COLORS[String(className).replace(' ', '').toUpperCase()]
-        if (!s) return 'var(--text-primary)'
+        if (!s) return 'var(--text-hi)'
         return 'rgb(' + s[0] * 255 + ', ' + s[1] * 255 + ', ' + s[2] * 255 + ')'
       }
 
@@ -175,7 +175,7 @@ const GetColorString = (className) => {
   }
 
   #Combodiv {
-    background: #3d3d3d;
+    background: var(--line-default);
     border-radius: 25px;
     padding: 5px 25px 5px 25px;
   }
@@ -191,7 +191,7 @@ const GetColorString = (className) => {
   .SideDiv {
     padding-top: 5px;
     height: 30px;
-    background: #323232;
+    background: var(--line-default);
     position: relative;
   }
 
@@ -213,25 +213,25 @@ const GetColorString = (className) => {
 
   .SideDiv:after {
     left: 100%;
-    border-top: 30px solid #323232;
+    border-top: 30px solid var(--line-default);
     border-right: 20px solid transparent;
   }
 
   .SideDiv:before {
     right: 100%;
-    border-bottom: 30px solid #323232;
+    border-bottom: 30px solid var(--line-default);
     border-left: 20px solid transparent;
   }
 
   .RoundLeftSideDiv:before {
     right: 100%;
-    border-left: 20px solid #323232;
+    border-left: 20px solid var(--line-default);
     border-radius: 15px 0px 0px 15px;
   }
 
   .RoundRightSideDiv:after {
     left: 100%;
-    border-right: 20px solid #323232;
+    border-right: 20px solid var(--line-default);
     border-radius: 0px 15px 15px 0px;
   }
 

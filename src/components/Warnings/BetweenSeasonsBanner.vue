@@ -21,13 +21,13 @@ const isBetweenSeasons = computed(() => store.getters.isBetweenSeasons)
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: rgba(210, 153, 34, 0.15);
+  border: 1px solid rgba(210, 153, 34, 0.4);
   border-radius: 8px;
   padding: 12px 20px;
   margin: 20px auto;
   max-width: 500px;
-  color: #f59e0b;
+  color: var(--warn);
   font-size: 0.9rem;
 }
 </style>

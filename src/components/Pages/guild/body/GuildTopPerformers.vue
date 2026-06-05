@@ -79,7 +79,7 @@ const getHighestKey = (player) => {
 <style scoped>
 .info-box {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
   flex: 1;
@@ -87,11 +87,11 @@ const getHighestKey = (player) => {
 }
 
 .info-header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
   font-weight: 600;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-default);
+  color: var(--text-hi);
+  border-bottom: 1px solid var(--line-default);
 }
 
 .info-content {
@@ -122,7 +122,7 @@ const getHighestKey = (player) => {
 .rank {
   width: 20px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-low);
   text-align: center;
 }
 
@@ -157,13 +157,13 @@ const getHighestKey = (player) => {
 
 .score {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 
 .highest-key {
   font-size: 0.85rem;
-  color: var(--accent-secondary);
-  background: var(--bg-elevated);
+  color: var(--signal-cyan);
+  background: var(--bg-raised);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
 }
@@ -171,6 +171,6 @@ const getHighestKey = (player) => {
 .empty-state {
   padding: 24px;
   text-align: center;
-  color: var(--text-muted);
+  color: var(--text-low);
 }
 </style>

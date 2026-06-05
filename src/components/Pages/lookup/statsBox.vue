@@ -127,19 +127,19 @@ export default {
 }
 
 #Box {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   min-height: 165px;
   overflow: auto;
   background: var(--bg-surface);
 }
 #Header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
   height: auto;
-  color: var(--text-primary);
+  color: var(--text-hi);
   font-weight: 600;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--line-default);
 }
 #Container {
     

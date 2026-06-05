@@ -1,165 +1,79 @@
 <template>
-  <div id="mainDivView" :class="`${noShadow ? '' : 'shadow-24'}`">
-    <div v-if="!fetching && runData">
-      <div class="text-center HeaderSize3">{{runData.zone.name}} +{{runData.level}}</div>
-      <div class="flex justify-center">
-        <p
-          v-if="FormatTimeUsed((runData.time.map_time - 1000) - runData.time.clear_time).startsWith('-')"
-        >
-          Cleared
-          <strong>{{" " + FormatTimeAgo(runData.time.completed_timestamp) + " "}}</strong> in
-          <strong>{{' ' + FormatTimeUsed(runData.time.clear_time)}}</strong>
-          . Over time by {{(`${FormatTimeUsed((runData.time.map_time - 1000) - runData.time.clear_time)}`).replace("-","")}} ({{(`${100 - Math.round(runData.time.clear_time / (runData.time.map_time - 1000) * 100)}`).replace("-","")}}%)
-        </p>
-        <p v-else>
-          Cleared
-          <strong>{{" " + FormatTimeAgo(runData.time.completed_timestamp) + " "}}</strong> in
-          <strong>{{' ' + FormatTimeUsed(runData.time.clear_time)}}</strong>
-          . Under time by {{FormatTimeUsed((runData.time.map_time - 1000) - runData.time.clear_time)}} ({{100 - Math.round(runData.time.clear_time / (runData.time.map_time - 1000) * 100)}}%)
-        </p>
-      </div>
-      <div class="flex justify-around text-center">
-        <div>
-          <br />
-          <div>Score</div>
-          <div>{{Math.round(runData.score * 100 ) / 100}}</div>
-        </div>
-
-        <div style="width: 70%;">
-          <div>Affixes</div>
-          <div class="flex justify-around">
-            <div v-for="(affix, index) in runData.affixes.filter((x,i)=> x > 0)" :key="index">
-              <div>Level {{getAffixLevelFromIndex(index)}}</div>
-              <div style="width: 35px; height: 35px;" class="flex justify-center">
-                <Affix
-                  :size="35"
-                  class="AffixImg"
-                  :affixid="affix"
-                  :border="true"
-                  :tooltip="true"
-                  :customSize="true"
-                />
-              </div>
-            </div>
+  <div class="kc-root kc-rundetail">
+    <div v-if="!fetching && runData" class="kc-rd__inner">
+      <!-- header -->
+      <div class="kc-rd__head">
+        <KcDungeonThumb :keystone-id="runData.zone.id" :size="52" radius="var(--kc-r-lg)" />
+        <div class="kc-rd__head-text">
+          <h1 class="kc-disp kc-rd__title">{{ runData.zone.name }} <span class="kc-rd__lvl">+{{ runData.level }}</span></h1>
+          <div class="kc-mono kc-rd__timing">
+            Cleared {{ FormatTimeAgo(runData.time.completed_timestamp) }} in {{ FormatTimeUsed(runData.time.clear_time) }}
+            <span :class="overTime ? 'kc-rd__neg' : 'kc-rd__pos'">· {{ overTime ? `over time by ${overBy}` : `under time by ${underBy}` }} ({{ parPct }}%)</span>
           </div>
         </div>
+      </div>
 
-        <div>
-          <br />
-          <div>Item Level</div>
-          <div>{{GroupIlvl}}</div>
+      <!-- trio -->
+      <div class="kc-rd__trio">
+        <div class="kc-rd__stat">
+          <div class="kc-eyebrow">Score</div>
+          <div class="kc-disp kc-tnum kc-rd__stat-num">{{ Math.round(runData.score * 100) / 100 }}</div>
+        </div>
+        <div class="kc-rd__stat">
+          <div class="kc-eyebrow">Affixes</div>
+          <div class="kc-rd__affixes">
+            <Affix v-for="(affix, index) in runData.affixes.filter((x) => x > 0)" :key="index" :size="28" :affixid="affix" :tooltip="true" />
+          </div>
+        </div>
+        <div class="kc-rd__stat">
+          <div class="kc-eyebrow">Group item level</div>
+          <div class="kc-disp kc-tnum kc-rd__stat-num">{{ GroupIlvl }}</div>
         </div>
       </div>
-      <br />
-      <q-table
-        :columns="columns "
-        :rows="runData.players"
-        dark
-        dense
-        :grid="$q.screen.width < 710"
-        :bordered="$q.screen.width < 710"
-        :flat="$q.screen.width < 710 || noShadow"
-        card-class="background HeaderFont"
-        table-class="HeaderFont"
-        table-header-class="HeaderFont"
-        :pagination.sync="paginationControl"
-        row-key="sqlId"
-        hide-bottom
-      >
-        <template v-slot:body="props">
-          <q-tr :props="props">
-            <q-td key="role" :props="props">
-              <CloudinaryFormat :url="`roles/${getRole(props.row.spec)?.toLowerCase()}.png`" v-slot="{ link }">
-                <q-img id="roleImage" :src="link" />
-              </CloudinaryFormat>
-            </q-td>
-            <q-td key="name" :props="props">
-              <div class="flex" style="gap: 5px;">
-                  <CloudinaryFormat :url="`${GetSpec(props.row.spec)?.icon_url}`" v-slot="{ link }">
 
-                    <q-img class="itemIcon" :src="link" />
-                  </CloudinaryFormat>
-                <ClassTextColor :spec="props.row.spec">
-                <a
-                  :href="`/lookup/player/${props.row.region}/${props.row.realm}/${props.row.name}`"
-                  @click="reload()"
-                >{{props.row.name}}</a>
-              </ClassTextColor>
-              </div>
-            </q-td>
-            <template v-if="props.row.details">
-              <q-td
-                key="ilvl"
-                :props="props"
-              >{{props.row.details.equipped_item_level}}</q-td>
-              <q-td key="talents" :props="props">
-                <div class="flex justify-center">
-                  <div>Hove to see</div>
-                  <q-tooltip>
-                  <div class="talentTooltip wrap">
-                    <Talent v-for="(talent) in getCurrentSpecTalents(props.row)" :talent="talent" :key="`${talent.id}`" />
-                  </div>
-                  </q-tooltip>
-                </div>
-              </q-td>
-              <q-td key="trinkets" :props="props">
-                <a
-                v-for="(item, index) in getItems(props.row,'TRINKET')" :key="index"
-                  :href="`http://www.wowhead.com/item=${item.id}`"
-                  :data-wowhead="getWowheadTooltipItemString(item)"
-                >
-                  <img
-                    class="itemIcon"
-                    :src="item.iconUrl ?? 'https://wow.zamimg.com/images/wow/icons/medium/' + item.icon + '.jpg'"
-                  />
-                </a>
-              </q-td>
-            </template>
-
-            <template v-else-if="props.row && props.row.renewing">
-              <q-td key="necklvl" :props="props">
-                <q-spinner-bars color="yellow" size="15px"/>
-                <q-tooltip>fetching info from blizzard</q-tooltip>
-              </q-td>
-              <q-td key="ilvl" :props="props">
-                <q-spinner-bars color="yellow" size="15px"/>
-                <q-tooltip>fetching info from blizzard</q-tooltip>
-              </q-td>
-              <q-td key="talents" :props="props">
-                <q-spinner-bars color="yellow" size="15px"/>
-                <q-tooltip>fetching info from blizzard</q-tooltip>
-              </q-td>
-              <q-td key="trinkets" :props="props">
-                <q-spinner-bars color="yellow" size="15px"/>
-                <q-tooltip>fetching info from blizzard</q-tooltip>
-              </q-td>
-            </template>
-            <template v-else>
-              <q-td key="ilvl" :props="props">
-                <i class="material-icons" style="color: red;">clear</i>
-                <q-tooltip>Could not gather details of player</q-tooltip>
-              </q-td>
-              <q-td key="talents" :props="props">
-                <i class="material-icons" style="color: red;">clear</i>
-                <q-tooltip>Could not gather details of player</q-tooltip>
-              </q-td>
-              <q-td key="trinkets" :props="props">
-                <i class="material-icons" style="color: red;">clear</i>
-                <q-tooltip>Could not gather details of player</q-tooltip>
-              </q-td>
-            </template>
-          </q-tr>
-        </template>
-      </q-table>
+      <!-- players -->
+      <div class="kc-rd__players">
+        <div class="kc-rd__phead">
+          <span class="kc-eyebrow">Player</span>
+          <span class="kc-eyebrow kc-rd__r">ilvl</span>
+          <span class="kc-eyebrow kc-rd__c">Talents</span>
+          <span class="kc-eyebrow kc-rd__r">Trinkets</span>
+        </div>
+        <div v-for="(p, i) in sortedPlayers" :key="i" class="kc-rd__prow">
+          <span class="kc-rd__pname">
+            <CloudinaryFormat :url="`${GetSpec(p.spec)?.icon_url}`" v-slot="{ link }"><img class="kc-rd__picon" :src="link" /></CloudinaryFormat>
+            <ClassTextColor :spec="p.spec">
+              <a :href="`/lookup/player/${p.region}/${p.realm}/${p.name}`">{{ p.name }}</a>
+            </ClassTextColor>
+          </span>
+          <template v-if="p.details">
+            <span class="kc-tnum kc-rd__ilvl kc-rd__r">{{ p.details.equipped_item_level }}</span>
+            <span class="kc-rd__c">
+              <span class="kc-chip-mini">Hover</span>
+              <q-tooltip><div class="talentTooltip"><Talent v-for="talent in getCurrentSpecTalents(p)" :talent="talent" :key="`${talent.id}`" /></div></q-tooltip>
+            </span>
+            <span class="kc-rd__trinkets kc-rd__r">
+              <a v-for="(item, index) in getItems(p, 'TRINKET')" :key="index" :href="`http://www.wowhead.com/item=${item.id}`" :data-wowhead="getWowheadTooltipItemString(item)">
+                <img class="kc-rd__picon" :src="item.iconUrl ?? 'https://wow.zamimg.com/images/wow/icons/medium/' + item.icon + '.jpg'" />
+              </a>
+            </span>
+          </template>
+          <template v-else-if="p.renewing">
+            <span class="kc-rd__r"><q-spinner-bars color="yellow" size="14px" /></span>
+            <span class="kc-rd__c"><q-spinner-bars color="yellow" size="14px" /></span>
+            <span class="kc-rd__r"><q-spinner-bars color="yellow" size="14px" /></span>
+          </template>
+          <template v-else>
+            <span class="kc-rd__ghost kc-rd__r">—</span>
+            <span class="kc-rd__ghost kc-rd__c">—</span>
+            <span class="kc-rd__ghost kc-rd__r">—</span>
+          </template>
+        </div>
+      </div>
     </div>
 
-    <div v-else-if="fetching && !runData">
-      <br />
-      <br />
-      <br />
-      <div class="flex justify-center">
-        <q-spinner-bars style="color: var(--text-accent)" size="15em" />
-      </div>
+    <div v-else-if="fetching && !runData" class="kc-rd__loading">
+      <q-spinner-bars style="color: var(--kc-accent)" size="6em" />
     </div>
   </div>
 </template>
@@ -175,6 +89,7 @@ import { useStore } from "src/store";
 import { LookupTalents } from "src/types/talents";
 import Talent from "../lookup/player/v2/Talent.vue";
 import ClassTextColor from "../containers/classTextColor.vue";
+import KcDungeonThumb from "components/keystone/KcDungeonThumb.vue";
 
 const props = defineProps({
   id: {
@@ -215,6 +130,12 @@ const GroupIlvl = computed(()=> {
         return Math.round(avg * 10) / 10;
       }
     })
+
+const overTime = computed(() => !!runData.value && FormatTimeUsed((runData.value.time.map_time - 1000) - runData.value.time.clear_time).startsWith('-'))
+const underBy = computed(() => runData.value ? FormatTimeUsed((runData.value.time.map_time - 1000) - runData.value.time.clear_time) : '')
+const overBy = computed(() => underBy.value.replace('-', ''))
+const parPct = computed(() => runData.value ? Math.abs(100 - Math.round(runData.value.time.clear_time / (runData.value.time.map_time - 1000) * 100)) : 0)
+const sortedPlayers = computed(() => runData.value ? [...runData.value.players].sort((a, b) => getRoleNr(a.spec) - getRoleNr(b.spec)) : [])
 
 const getItems = ( row,itemSlot) => {
       return row.details.equipment.filter(x=> x.slot.replace('_1','').replace('_2','') == itemSlot.toUpperCase())
@@ -384,43 +305,46 @@ onBeforeMount(() => {
 
 </script>
 <style scoped>
-#mainDivView {
-  min-height: 300px;
-  min-width: 300px;
-  margin: 15px;
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-}
-#roleImage {
-  width: 23px;
-  height: 23px;
-}
-.itemIcon {
-  width: 23px;
-  height: 23px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  margin: 0 2px;
-  transition: all var(--transition-fast);
-}
-.itemIcon:hover {
-  border-color: var(--border-accent);
-  transform: scale(1.1);
-}
-.AffixImg {
-  width: 35px;
-  height: 35px;
-}
-.talentTooltip {
-  min-width: 200px;
-  max-width: 600px;
-  display: flex;
-  gap: 5px;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
+.kc-rundetail { padding: var(--kc-sp-5); background: var(--kc-bg-surface); border: 1px solid var(--kc-line-default); border-radius: var(--kc-r-lg); }
+
+.kc-rd__head { display: flex; align-items: center; gap: 14px; margin-bottom: var(--kc-sp-5); }
+.kc-rd__title { font-size: 26px; font-weight: 700; color: var(--kc-text-hi); margin: 0; }
+.kc-rd__lvl { color: var(--kc-key-hot); }
+.kc-rd__timing { font-size: 13px; color: var(--kc-text-mid); margin-top: 4px; }
+.kc-rd__pos { color: var(--kc-pos); font-weight: 600; }
+.kc-rd__neg { color: var(--kc-neg); font-weight: 600; }
+
+.kc-rd__trio { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 12px; margin-bottom: var(--kc-sp-5); }
+.kc-rd__stat { padding: 12px 14px; background: var(--kc-bg-inset); border-radius: var(--kc-r-md); }
+.kc-rd__stat-num { font-size: 22px; font-weight: 700; margin-top: 4px; }
+.kc-rd__affixes { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+
+.kc-rd__players { border: 1px solid var(--kc-line-hairline); border-radius: var(--kc-r-md); overflow: hidden; }
+.kc-rd__phead, .kc-rd__prow { display: grid; grid-template-columns: 1fr 70px 100px 110px; align-items: center; gap: 12px; padding: 8px 14px; }
+.kc-rd__phead { background: var(--kc-bg-raised); border-bottom: 1px solid var(--kc-line-hairline); }
+.kc-rd__phead .kc-eyebrow { color: var(--kc-text-low); }
+.kc-rd__prow { border-bottom: 1px solid var(--kc-line-hairline); }
+.kc-rd__prow:last-child { border-bottom: none; }
+.kc-rd__prow:nth-child(odd) { background: var(--kc-bg-inset); }
+.kc-rd__r { text-align: right; justify-self: end; }
+.kc-rd__c { text-align: center; justify-self: center; }
+.kc-rd__pname { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.kc-rd__pname a { text-decoration: none; }
+.kc-rd__pname a:hover { text-decoration: underline; }
+.kc-rd__picon { width: 24px; height: 24px; border-radius: var(--kc-r-sm); border: 1px solid var(--kc-line-default); flex: none; }
+.kc-rd__trinkets { display: inline-flex; gap: 4px; }
+.kc-rd__ilvl { font-size: 13px; color: var(--kc-text-mid); }
+.kc-rd__ghost { color: var(--kc-text-ghost); }
+.kc-chip-mini { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: var(--kc-r-pill); background: var(--kc-bg-inset); border: 1px solid var(--kc-line-hairline); font-size: 11px; color: var(--kc-text-mid); cursor: help; }
+
+.kc-rd__loading { display: flex; justify-content: center; padding: 60px 0; }
+
+.talentTooltip { min-width: 200px; max-width: 600px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+
+@media (max-width: 700px) {
+  .kc-rd__trio { grid-template-columns: 1fr; }
+  .kc-rd__phead, .kc-rd__prow { grid-template-columns: 1fr auto auto; }
+  .kc-rd__c { display: none; }
 }
 </style>
 

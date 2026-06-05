@@ -119,12 +119,12 @@ export default {
     border-radius: var(--radius-lg);
     overflow: hidden;
     background: var(--bg-surface);
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--line-default);
     transition: border-color var(--transition-fast);
 }
 
 .ClassViewWindowMAIN:hover {
-    border-color: var(--border-accent);
+    border-color: var(--line-strong);
 }
 
 .ClassViewWindow {
@@ -158,8 +158,8 @@ export default {
     font-weight: 600;
     padding: 6px 16px;
     margin-top: 14px;
-    border: 1px solid var(--border-default);
-    color: var(--text-primary);
+    border: 1px solid var(--line-default);
+    color: var(--text-hi);
     box-shadow: var(--shadow-sm);
 }
 
@@ -167,7 +167,7 @@ export default {
     position: absolute;
     right: 12px;
     top: 12px;
-    background: var(--gradient-primary);
+    background: var(--brand-gradient);
     border-radius: var(--radius-full);
     font-size: 0.9rem;
     font-weight: 700;
@@ -182,7 +182,7 @@ export default {
     top: 12px;
     text-align: center;
     background: var(--bg-surface);
-    border: 2px solid var(--border-accent);
+    border: 2px solid var(--line-strong);
     border-radius: var(--radius-full);
     font-size: 1rem;
     font-weight: 700;
@@ -191,28 +191,28 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-accent);
+    color: var(--accent);
     box-shadow: var(--shadow-glow);
 }
 
 
 .MoreDetails {
-    background: var(--bg-elevated);
+    background: var(--bg-raised);
     padding: 12px;
-    border-top: 1px solid var(--border-default);
+    border-top: 1px solid var(--line-default);
 }
 
 .MoreDetails > div {
     padding: 8px 12px;
     border-radius: var(--radius-md);
-    color: var(--text-secondary);
+    color: var(--text-mid);
     font-size: 0.9rem;
     transition: all var(--transition-fast);
 }
 
 .MoreDetails > div:hover {
     background: var(--bg-hover);
-    color: var(--text-primary);
+    color: var(--text-hi);
 }
 
 .Marked {

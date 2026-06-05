@@ -29,7 +29,7 @@ export default {
 <style scoped>
 #ToolsTabs {
     border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-    border: 1px solid var(--border-default);
+    border: 1px solid var(--line-default);
     border-top: 0px;
     padding: 1px;
     background: var(--bg-surface);

@@ -58,7 +58,7 @@ const totalWeeklyRuns = computed(() => {
 <style scoped>
 .info-box {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
   flex: 1;
@@ -66,11 +66,11 @@ const totalWeeklyRuns = computed(() => {
 }
 
 .info-header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
   font-weight: 600;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-default);
+  color: var(--text-hi);
+  border-bottom: 1px solid var(--line-default);
 }
 
 .info-content {
@@ -86,26 +86,26 @@ const totalWeeklyRuns = computed(() => {
 .stat-item {
   text-align: center;
   padding: 12px;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-md);
   transition: border-color var(--transition-fast);
   border: 1px solid transparent;
 }
 
 .stat-item:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-hi);
   line-height: 1.2;
 }
 
 .stat-label {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   margin-top: 4px;
 }
 </style>

@@ -116,10 +116,10 @@ computed: {
   width: 40px;
   height: 40px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   transition: border-color var(--transition-fast);
 }
 .dungeonImage:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 </style>

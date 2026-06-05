@@ -158,7 +158,7 @@ width: 310px;
 }
 
 .imageBackground {
-    background-color: #292929;
+    background-color: var(--bg-raised);
     border: 1px grey solid;
     border-radius: 15px;
     padding-left:  5px;

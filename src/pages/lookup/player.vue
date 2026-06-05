@@ -77,7 +77,7 @@ const onStatusUpdate = (status: { loading: boolean, notFound: boolean }) => {
 
 .showStats {
   border-radius: var(--radius-full);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   width: 340px;
   background: var(--bg-surface);
   transition: all var(--transition-normal);
@@ -86,7 +86,7 @@ const onStatusUpdate = (status: { loading: boolean, notFound: boolean }) => {
 .showStats:hover {
   cursor: pointer;
   background: var(--bg-hover);
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 
 #LookupMain {
@@ -96,10 +96,10 @@ const onStatusUpdate = (status: { loading: boolean, notFound: boolean }) => {
 #LookupSearchField {
   margin-top: 10px;
   width: 900px;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-full);
   padding: 5px 25px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
 }
 
 .regionSelector {
@@ -115,7 +115,7 @@ const onStatusUpdate = (status: { loading: boolean, notFound: boolean }) => {
 }
 
 .NameScore {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   padding: 0 20px;
   text-align: center;
   border-radius: var(--radius-md);

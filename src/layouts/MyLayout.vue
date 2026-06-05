@@ -34,11 +34,11 @@ export default {
   max-width: 1100px;
   margin: auto;
   padding: 25px 25px 25px 25px;
-  background-color: #252525;
+  background-color: var(--bg-inset);
 }
 }
 .GreyBackground {
-  background-color: #252525;
+  background-color: var(--bg-inset);
   min-height: 100vh;
 
 }

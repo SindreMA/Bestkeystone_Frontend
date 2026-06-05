@@ -10,9 +10,9 @@ export default {
         computedColor() {
             if (this.faction) {
                 if (this.faction.toLowerCase().charAt(0) === "a") {
-                    return '#027be3'
+                    return 'var(--faction-alliance)'
                 } else {
-                    return '#b30000'
+                    return 'var(--faction-horde)'
                 }
                 return 'white'
             } else {

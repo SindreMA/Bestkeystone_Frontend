@@ -184,7 +184,7 @@ onBeforeMount(() => {
 </script>
 <style scoped>
 #Box {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   position: relative;
   overflow: hidden;
@@ -192,11 +192,11 @@ onBeforeMount(() => {
 }
 
 #Header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
-  color: var(--text-primary);
+  color: var(--text-hi);
   font-weight: 600;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--line-default);
 }
 
 #Container {
@@ -208,7 +208,7 @@ onBeforeMount(() => {
   height: 22px;
   margin-right: 2px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
 }
 .dungeonItem {
   gap: 10px;
