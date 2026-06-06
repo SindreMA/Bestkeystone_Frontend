@@ -27,7 +27,15 @@ watch([search, length, useWords],() => {
 
 
 const fetchData = async () => {
-  axios.get(`${data.apiUrl}/Player/names?search=${search.value}&length=${length.value}&useWords=${useWords.value}`).then((response) => {
+  // Build the query so empty/undefined params are omitted. Previously `length`
+  // was always sent and, when unset, became the literal string "length=undefined"
+  // which the backend rejects -> the table loaded empty. Omitting it makes the
+  // page run the default DB search (top name patterns) on load.
+  const params = new URLSearchParams()
+  if (search.value) params.set('search', search.value)
+  if (length.value != null && !Number.isNaN(length.value)) params.set('length', String(length.value))
+  params.set('useWords', String(useWords.value))
+  axios.get(`${data.apiUrl}/Player/names?${params.toString()}`).then((response) => {
     rows.value = response.data
   }).catch((e) => console.log(e));
 }
