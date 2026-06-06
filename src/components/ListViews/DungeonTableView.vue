@@ -3,7 +3,7 @@
     <q-spinner-bars
       v-if="runData == null"
       class="absolute-center"
-      style="color: rgb(161, 161, 161)"
+      style="color: var(--text-mid)"
       size="200"
     />
     <div v-else-if="runData.length == 0" class="HeaderFont">
@@ -335,7 +335,7 @@ onBeforeMount(() => {
   background-size: cover; /* Resize the background image to cover the entire container */
   border-radius: 20px;
   border: 1px solid grey;
-  background-color: #252525 !important;
+  background-color: var(--bg-inset) !important;
 }
 </style>
 

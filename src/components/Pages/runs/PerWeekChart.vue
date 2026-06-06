@@ -29,15 +29,18 @@ export default {
     return {
       chartOptions: {
         chart: {
-          foreColor: "#a1a1a1",
+          foreColor: "#9AA7B8",
+          background: "transparent",
           stacked: true,
-          toolbar: {
-            show: true
-          },
-          zoom: {
-            enabled: true
-          }
+          toolbar: { show: false },
+          zoom: { enabled: false }
         },
+        theme: { mode: "dark" },
+        colors: ["#5B8DEF", "#3DD6D0", "#D29922", "#F25C54", "#9C6ADE"],
+        stroke: { curve: "smooth", width: 2 },
+        grid: { borderColor: "rgba(255,255,255,0.06)", strokeDashArray: 3 },
+        tooltip: { theme: "dark" },
+        legend: { labels: { colors: "#9AA7B8" } },
         dataLabels: {
                 style: {
     },

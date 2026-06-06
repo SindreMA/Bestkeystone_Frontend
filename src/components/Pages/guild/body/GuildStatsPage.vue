@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="flex justify-around">
+    <div class="flex justify-around weekly-runs-row">
             <WeeklyRuns :guildMembers="guildMembers" :region="region" />
             <WeeklyRuns :guildMembers="guildMembers" :region="region" />
     </div>
@@ -18,6 +18,14 @@ export default {
     components: {
         WeeklyRuns
     }
-    
+
 }
 </script>
+
+<style scoped>
+.weekly-runs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+</style>

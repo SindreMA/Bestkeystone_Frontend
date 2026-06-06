@@ -48,7 +48,7 @@ export default {
   width: 100%;
   height: auto;
   font-size: 16px;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   text-align: center;
   padding: 8px;
   border-radius: var(--radius-md);
@@ -60,10 +60,10 @@ export default {
 }
 .fs25 {
   font-size: 35px;
-  color: var(--text-accent);
+  color: var(--accent);
 }
 .marginTop {
   margin-top: 5px;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 </style>

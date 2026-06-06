@@ -1,180 +1,573 @@
 <template>
-  <div>
-    <div class="flex flex-center">
-      <div class="Centertext HeaderSize HeaderFont">
-        What's the "best" dungeon this week?
-      </div>
-    </div>
-    <div class="flex flex-center">
-      <p class="HeaderFont HeaderSize2">(ish)</p>
-    </div>
-    <AffixSelector></AffixSelector>
-
-    <template v-if="viewMode === 'table'">
-      <DungeonTableView />
-      <BestWeekForAffixTableView />
-    </template>
-    <template v-else>
-      <div
-        v-if="
-          SelectedPeriode && GetDungeonData && SelectedPeriode != GetDungeonData.periode
-        "
-        class="flex flex-center"
+  <div class="kc-root kc-dungeons">
+    <div class="kc-container">
+      <KcPageHeader
+        eyebrow="Statistics"
+        title="Dungeons"
+        :sub="mode === 'tier'
+          ? `Easiest → hardest to time at ${levelLabel} this week.`
+          : `What's the best dungeon to run this week — ranked by score and success rate.`"
       >
-        <q-spinner-puff style="color: rgb(161, 161, 161)" size="500" />
-      </div>
+        <template #right>
+          <div class="kc-seg">
+            <button
+              v-for="o in MODES"
+              :key="o.v"
+              class="kc-seg__btn"
+              :class="{ 'is-sel': o.v === mode }"
+              @click="mode = o.v"
+            >{{ o.label }}</button>
+          </div>
+        </template>
+      </KcPageHeader>
 
-      <div
-        v-else-if="
-          GetDungeonData &&
-          GetDungeonData.data.filter((x) => {
-            return x.score === 0;
-          }).length === GetDungeonData.data.length
-        "
-        class="HeaderFont nodataInfo"
-      >
-        <h4 class="flex flex-center">No data found!</h4>
-        <p class="flex flex-center">Try to change the settings up in the right</p>
-      </div>
-      <div v-else>
-        <div
-          v-if="SelectedPeriode && GetDungeonData && GetDungeonData.data && GetDungeons"
-        >
-          <div class="HeaderFont relative-position" style="height: 20px">
-            <div class="absolute-left">
-              <div class="Ccenter" style="margin-left: 30px">
-                <div style="width: 0px">Rank</div>
-              </div>
-            </div>
-            <div class="HeaderFont dungeonTitle relative">
-              <div class="title">Dungeon</div>
-            </div>
-            <div class="absolute-right">
-              <div class="Ccenter" style="margin-right: 32px">
-                <div>Score</div>
-              </div>
-            </div>
+      <!-- ============ RANKING MODE (existing real-data content) ============ -->
+      <template v-if="mode === 'rank'">
+        <KcCard v-if="ranked.length" :level="1" :body-style="{ padding: '0' }">
+          <div class="kc-dgn__head">
+            <span class="kc-eyebrow" style="text-align:center;">#</span>
+            <span class="kc-eyebrow">Dungeon</span>
+            <span class="kc-eyebrow" style="text-align:right;">Runs</span>
+            <span class="kc-eyebrow" style="text-align:right;">{{ scoreLabel }}</span>
+            <span class="kc-eyebrow" style="text-align:center;">Success</span>
           </div>
-          <div v-for="dungeon in dungeonsWithRank(GetDungeonData.data)" :key="dungeon.id">
-            <DungeonViewer
-              :totalScore="_GetTotalScore()"
-              :Selected="Selected"
-              @click="ExpandedDungeon = $event"
-              :expanded="ExpandedDungeon === dungeon.id"
-              :dungeon="dungeon"
-            ></DungeonViewer>
+          <div
+            v-for="(d, i) in ranked"
+            :key="d.id"
+            class="kc-dgn__row"
+            :style="{ borderLeftColor: tierColor(tierFor(i, ranked.length)) }"
+          >
+            <KcRankChip :rank="i + 1" size="sm" />
+            <span class="kc-dgn__name">
+              <KcDungeonThumb :keystone-id="d.id" :size="34" />
+              <span class="kc-dgn__name-text">
+                <span class="kc-dgn__name-main">{{ dungeonName(d.id) }}</span>
+                <span class="kc-eyebrow kc-dgn__name-short">{{ dungeonShort(d.id) }}</span>
+              </span>
+            </span>
+            <span class="kc-tnum kc-dgn__runs">{{ fmtNum(d.total_runs) }}</span>
+            <KcScorePill :score="d._val" :column-max="columnMax" :tier="tierFor(i, ranked.length)" :mode="scoreType === 'percent' ? 'share' : 'total'" :sample="null" />
+            <span class="kc-dgn__success">
+              <KcSuccessRing :pct="successFor(d.id)" :size="36" :caption="false" />
+            </span>
           </div>
+        </KcCard>
+        <div v-else class="kc-dungeons__loading"><q-skeleton height="320px" /></div>
+
+        <!-- Best week for each dungeon -->
+        <div class="kc-dungeons__bestweek">
+          <KcBestWeek />
         </div>
-      </div>
-      <DungeonInTimeRateList />
-      <BestWeekForAffix />
-    </template>
+      </template>
+
+      <!-- ============ TIER LIST MODE (real /Meta/dungeon-tier endpoint) ============ -->
+      <template v-else>
+        <KcCard :level="1" header="Time difficulty" :body-style="{ padding: '0' }">
+          <template #headerRight>
+            <div class="kc-dgn__scope">
+              <button
+                v-for="lb in levelBands"
+                :key="lb"
+                class="kc-chip"
+                :class="{ 'is-sel': lb === level }"
+                @click="level = lb"
+              >{{ lb }}</button>
+            </div>
+          </template>
+
+          <!-- loaded -->
+          <template v-if="!tierLoading && !tierError && tierRows.length">
+            <div class="kc-dgn__head kc-dgn__head--tier">
+              <span class="kc-eyebrow" style="text-align:center;">Tier</span>
+              <span class="kc-eyebrow">Dungeon</span>
+              <span class="kc-eyebrow">Timed-rate band</span>
+              <span class="kc-eyebrow" style="text-align:center;">Timed</span>
+              <span class="kc-eyebrow" style="text-align:right;">Avg clear</span>
+              <span class="kc-eyebrow" style="text-align:right;">Δ wk</span>
+            </div>
+            <div
+              v-for="r in tierRows"
+              :key="r.zone"
+              class="kc-dgn__row kc-dgn__row--tier"
+              :style="{ borderLeftColor: tierColor(String(r.tier).toLowerCase()) }"
+            >
+              <span class="kc-dgn__tier"><KcTierBadge :tier="r.tier" lg /></span>
+              <span class="kc-dgn__name">
+                <KcDungeonThumb :keystone-id="r.zone" :size="34" />
+                <span class="kc-dgn__name-text">
+                  <span class="kc-dgn__name-main">{{ r.name || dungeonByKeystoneId(r.zone)?.name || r.zone }}</span>
+                  <span class="kc-eyebrow kc-dgn__name-short">{{ r.short_name || dungeonByKeystoneId(r.zone)?.short_name }}</span>
+                </span>
+              </span>
+              <span class="kc-dgn__band">
+                <span class="kc-dgn__band-fill" :style="{ width: `${r.timed * 100}%`, background: tierColor(String(r.tier).toLowerCase()) }" />
+              </span>
+              <span class="kc-dgn__success">
+                <KcSuccessRing :pct="Math.round(r.timed * 100)" :size="36" :caption="false" />
+              </span>
+              <span class="kc-dgn__clear">
+                <span class="kc-mono kc-tnum kc-dgn__clear-num">{{ fmtMs(r.avgMs) }}</span>
+                <span class="kc-eyebrow">avg clear</span>
+              </span>
+              <span class="kc-dgn__delta"><KcDeltaChip :delta="r.delta" /></span>
+            </div>
+
+            <div class="kc-dgn__foot">
+              Tier from the corpus timed-rate distribution at {{ levelLabel }} · Δ vs last week.
+              Drive “at +N” with the <strong>Level</strong> chips above.
+            </div>
+          </template>
+
+          <!-- loading skeleton -->
+          <div v-else-if="tierLoading" class="kc-dungeons__loading">
+            <q-skeleton height="320px" />
+          </div>
+
+          <!-- error -->
+          <div v-else-if="tierError" class="kc-dungeons__empty">
+            Couldn’t load tier data for {{ levelLabel }}. Please try again.
+          </div>
+
+          <!-- empty -->
+          <div v-else class="kc-dungeons__empty">No tier data for {{ levelLabel }}.</div>
+        </KcCard>
+
+        <!-- ============ SUPPORTING CARDS (tier-list mode only, live /Meta endpoints) ============ -->
+        <div class="kc-dgn__secondary">
+          <!-- A6 — Tyrannical vs Fortified (GET /Meta/affix-compare) -->
+          <KcCard :level="1" header="Affix impact · Tyrannical vs Fortified" :body-style="{ padding: '0' }">
+            <template #headerRight><span class="kc-eyebrow" style="margin:0;">this week</span></template>
+
+            <template v-if="!affixLoading && !affixError && affixCompare.length">
+              <div class="kc-affix__head">
+                <span class="kc-eyebrow">Dungeon</span>
+                <span class="kc-eyebrow" style="text-align:center;">Tyrannical</span>
+                <span class="kc-eyebrow" style="text-align:center;">Fortified</span>
+                <span class="kc-eyebrow" style="text-align:right;">Δ timed</span>
+              </div>
+              <div
+                v-for="r in affixCompare"
+                :key="r.zone"
+                class="kc-affix__row"
+              >
+                <span class="kc-dgn__name">
+                  <KcDungeonThumb :keystone-id="r.zone" :size="28" />
+                  <span class="kc-dgn__name-main kc-affix__name">{{ r.name || dungeonByKeystoneId(r.zone)?.name || r.zone }}</span>
+                </span>
+                <span class="kc-affix__col">
+                  <span class="kc-tnum kc-affix__pct">{{ Math.round(r.tyr.timed * 100) }}%</span>
+                  <span class="kc-mono kc-affix__time">{{ fmtMs(r.tyr.ms) }}</span>
+                </span>
+                <span class="kc-affix__col">
+                  <span class="kc-tnum kc-affix__pct">{{ Math.round(r.fort.timed * 100) }}%</span>
+                  <span class="kc-mono kc-affix__time">{{ fmtMs(r.fort.ms) }}</span>
+                </span>
+                <span class="kc-affix__delta">
+                  <KcDeltaChip :delta="Math.round((r.fort.timed - r.tyr.timed) * 1000) / 10" />
+                </span>
+              </div>
+            </template>
+
+            <div v-else-if="affixLoading" class="kc-dungeons__loading"><q-skeleton height="220px" /></div>
+            <div v-else-if="affixError" class="kc-dungeons__empty">Couldn’t load affix comparison. Please try again.</div>
+            <div v-else class="kc-dungeons__empty">No affix comparison data yet.</div>
+          </KcCard>
+
+          <!-- A7 — chest cushion distribution (GET /Meta/cushion) -->
+          <KcCard :level="1" header="Time-vs-par cushion" :body-style="{ padding: '0' }">
+            <template #headerRight>
+              <span class="kc-cush__legend">
+                <span v-for="s in CUSHION_SEG" :key="s.k" class="kc-cush__legend-item">
+                  <span class="kc-cush__sw" :style="{ background: s.color }" />{{ s.label }}
+                </span>
+              </span>
+            </template>
+
+            <template v-if="!cushionLoading && !cushionError && cushion.length">
+              <div
+                v-for="r in cushion"
+                :key="r.zone"
+                class="kc-cush__row"
+              >
+                <span class="kc-dgn__name">
+                  <KcDungeonThumb :keystone-id="r.zone" :size="28" />
+                  <span class="kc-dgn__name-main kc-affix__name">{{ r.name || dungeonByKeystoneId(r.zone)?.name || r.zone }}</span>
+                </span>
+                <span class="kc-cush__stack">
+                  <span
+                    v-for="s in CUSHION_SEG"
+                    v-show="(r as any)[s.k] > 0"
+                    :key="s.k"
+                    class="kc-cush__seg"
+                    :style="{ width: `${(r as any)[s.k]}%`, background: s.color }"
+                    :title="`${s.label}: ${(r as any)[s.k]}%`"
+                  >{{ (r as any)[s.k] >= 12 ? `${(r as any)[s.k]}%` : '' }}</span>
+                </span>
+                <span class="kc-cush__median kc-mono kc-tnum">+{{ fmtMs(r.medianMs) }}</span>
+              </div>
+              <div class="kc-dgn__foot">
+                Share finishing with 3 / 2 / 1-chest cushion vs depleted · median headroom over par.
+              </div>
+            </template>
+
+            <div v-else-if="cushionLoading" class="kc-dungeons__loading"><q-skeleton height="220px" /></div>
+            <div v-else-if="cushionError" class="kc-dungeons__empty">Couldn’t load cushion data. Please try again.</div>
+            <div v-else class="kc-dungeons__empty">No cushion data for {{ levelLabel }}.</div>
+          </KcCard>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import DungeonTableView from "../../components/ListViews/DungeonTableView.vue";
-import AffixSelector from "../../components/ListViews/AffixSelector.vue";
-import DungeonViewer from "../../components/DungeonViewer.vue";
-import DungeonInTimeRateList from "../../components/ListViews/DungeonInTimeRateList.vue";
-import BestWeekForAffix from "../../components/dungeonsView/BestWeekForAffix.vue";
-import BestWeekForAffixTableView from "../../components/dungeonsView/BestWeekForAffixTableView.vue";
-import sf from "../../SharedFunctions";
-import { computed, ref, watch } from "vue";
-import { useStore } from "src/store";
-import { useQuasar } from "quasar";
+import { computed, onMounted, ref, watch } from 'vue'
+import axios from 'axios'
+import SF from 'src/SharedFunctions'
+import { useKc } from 'components/keystone/useKc'
+import KcPageHeader from 'components/layout/KcPageHeader.vue'
+import KcCard from 'components/keystone/KcCard.vue'
+import KcRankChip from 'components/keystone/KcRankChip.vue'
+import KcScorePill from 'components/keystone/KcScorePill.vue'
+import KcSuccessRing from 'components/keystone/KcSuccessRing.vue'
+import KcDungeonThumb from 'components/keystone/KcDungeonThumb.vue'
+import KcBestWeek from 'components/keystone/KcBestWeek.vue'
+import KcTierBadge from 'components/keystone/KcTierBadge.vue'
+import KcDeltaChip from 'components/keystone/KcDeltaChip.vue'
+// Level-band constants + response row types. Dungeon names/icons come from the
+// API rows (name/short_name) + the live store (dungeonByKeystoneId), never from
+// a static abbreviation map.
+import {
+  levelBands,
+  type DungeonTierRow,
+  type AffixCompareRow,
+  type CushionRow,
+} from 'src/data/metaReference'
 
-const ShowSelectAffix = ref(false);
-const ExpandedDungeon = ref(null);
-const NextWeekShown = ref(false);
+const { store, data, dungeonByKeystoneId, fmtNum } = useKc()
 
-const store = useStore();
-const data = store.state.data;
+/* ---------------- mode + level scope ---------------- */
+const MODES = [
+  { v: 'rank', label: 'Ranking' },
+  { v: 'tier', label: 'Tier list' },
+] as const
+const mode = ref<'rank' | 'tier'>('rank')
 
-const GetSavedSelected = computed(() => data.Selected);
-const GetSelectedAffixSet = computed(() => data.SelectedAffixSet);
-const GetRIOData = computed(() => data.RIOData);
-const GetDungeonData = computed(() => data.Dungeons_Data);
-const GetDungeons = computed(() => data.Dungeons);
-const SelectedPeriode = computed(() => data.SelectedPeriode);
-const getReloaded_Timestamp = computed(() => data.Reloaded_Timestamp);
-const GetAffixes = computed(() => data.Affixes);
-const GetPeriodes = computed(() => data.Periodes);
-const GetSettings = computed(() => data.settings);
+const level = ref<string>('+15')
+const levelLabel = computed(() => (level.value === 'All' ? '+15' : level.value))
+// The dungeon-tier / cushion endpoints take an INTEGER level. The chip values
+// are strings like '+15' (and 'All', which these per-level endpoints have no
+// aggregate for — treat it as +15 to match levelLabel rather than sending a
+// non-numeric value that binds to 0 and returns nothing).
+const levelParam = computed(() => (level.value === 'All' ? 15 : parseInt(level.value.replace('+', ''), 10) || 15))
 
-const $q = useQuasar();
+/* ---------------- tier-list mode (real /Meta/dungeon-tier endpoint) ----------------
+   GET ${apiUrl}/Meta/dungeon-tier?periode=<SelectedPeriode>&level=<level>
+   -> { level, rows: [{ zone, tier, timed, avgMs, delta }] }
+   The endpoint may 404 until the backend deploys — that is acceptable, the view
+   shows a clean loading → empty / error state and NEVER fabricated numbers. */
+const tierRows = ref<DungeonTierRow[]>([])
+const tierLoading = ref(false)
+const tierError = ref(false)
 
-const viewMode = computed(() => sf.GetDefaultView($q.screen.width, GetSettings.value));
-
-const Selected = computed(() => GetSavedSelected);
-const SelectedAffixSet = computed(() => GetSelectedAffixSet);
-const RIOData = computed(() => GetRIOData);
-const Settings = computed(() => GetSettings);
-
-watch(getReloaded_Timestamp, () => {
-  ExpandedDungeon.value = null;
-});
-
-watch(GetPeriodes, () => {
-  var apiUrl = data.apiUrl;
-
-  if (!NextWeekShown.value) {
-    var currentWeek = GetPeriodes.value[0];
-  }
-});
-const GetSelectedData = () => store.dispatch("GetSelectedData");
-const fetchDungeonData = () => store.dispatch("fetchDungeonData");
-
-const SaveSelectedAffixSet = (affixSet) => store.commit("SaveSelectedAffixSet", affixSet);
-const SaveRIOData = (rioData) => store.commit("SaveRIOData", rioData);
-
-const GetAffixDetails = (id) => {
-  if (GetAffixes.value != null) {
-    for (let i = 0; i < GetAffixes.value.length; i++) {
-      const item = GetAffixes.value[i];
-      if (item.id === id) {
-        return item;
-      }
-    }
-    return "None";
-  }
-};
-
-const _GetTotalScore = () => sf.GetTotalScore(GetDungeonData.value.data);
-
-const dungeonsWithRank = (_item) => {
-  const item = [..._item].map(x=> ({...x}));
-
-  for (let i = 0; i < item.length; i++) {
-    const s = item[i];
-    s.display_score = sf.GetPoints(
-      s.score,
-      Settings.value.value.score_type,
-      _GetTotalScore(),
-      s.total_runs
-    );
-  }
-  return sf.getListWithRank(item);
-};
-
-const selectBox = ref(null);
-
-const GetSelectorWidth = () => {
-  if (selectBox.value !== undefined) {
-    return selectBox.value.clientWidth + "px";
-  } else {
-    return "500px";
-  }
-};
-</script>
-<style>
-.dungeonTitle {
-  margin: 0 50%;
+function fetchTier() {
+  if (mode.value !== 'tier') return
+  const apiUrl = data.apiUrl
+  const periode = data.SelectedPeriode
+  if (!apiUrl || periode == null) return
+  tierLoading.value = true
+  tierError.value = false
+  axios
+    .get(`${apiUrl}/Meta/dungeon-tier?periode=${periode}&level=${levelParam.value}`)
+    .then((r) => {
+      tierRows.value = (r.data?.rows || []) as DungeonTierRow[]
+    })
+    .catch((e) => {
+      console.log(e)
+      tierRows.value = []
+      tierError.value = true
+    })
+    .finally(() => {
+      tierLoading.value = false
+    })
 }
-.dungeonTitle .title {
-  text-align: center;
-  position: absolute;
-  width: 0;
-  left: -27px;
+
+/* Fetch when entering tier mode, when the level chip changes, or when the
+   selected periode changes (only re-fetches while tier mode is active). */
+watch(mode, fetchTier)
+watch(level, fetchTier)
+watch(() => data.SelectedPeriode, () => { if (mode.value === 'tier') fetchTier() })
+
+/* ---------------- supporting cards (live /Meta endpoints) ----------------
+   Both cards render only in tier-list mode. They hit real backend endpoints
+   that return 200 with [] until the aggregate job has run — in that case we
+   show a clean empty state and NEVER fabricated numbers.
+
+   A6  GET ${apiUrl}/Meta/affix-compare?periode=<periode>
+       -> [{ zone, tyr:{timed,ms}, fort:{timed,ms} }]
+   A7  GET ${apiUrl}/Meta/cushion?periode=<periode>&level=<level>
+       -> [{ zone, c3, c2, c1, dep, medianMs }]                        */
+
+const CUSHION_SEG = [
+  { k: 'c3', label: '3-chest', color: 'var(--kc-fire-3)' },
+  { k: 'c2', label: '2', color: 'var(--kc-fire-2)' },
+  { k: 'c1', label: '1', color: 'var(--kc-fire-1)' },
+  { k: 'dep', label: 'depleted', color: 'var(--kc-fire-0)' },
+] as const
+
+const affixCompare = ref<AffixCompareRow[]>([])
+const affixLoading = ref(false)
+const affixError = ref(false)
+
+function fetchAffixCompare() {
+  if (mode.value !== 'tier') return
+  const apiUrl = data.apiUrl
+  const periode = data.SelectedPeriode
+  if (!apiUrl || periode == null) return
+  affixLoading.value = true
+  affixError.value = false
+  axios
+    .get(`${apiUrl}/Meta/affix-compare?periode=${periode}`)
+    .then((r) => {
+      affixCompare.value = (r.data || []) as AffixCompareRow[]
+    })
+    .catch((e) => {
+      console.log(e)
+      affixCompare.value = []
+      affixError.value = true
+    })
+    .finally(() => {
+      affixLoading.value = false
+    })
+}
+
+const cushion = ref<CushionRow[]>([])
+const cushionLoading = ref(false)
+const cushionError = ref(false)
+
+function fetchCushion() {
+  if (mode.value !== 'tier') return
+  const apiUrl = data.apiUrl
+  const periode = data.SelectedPeriode
+  if (!apiUrl || periode == null) return
+  cushionLoading.value = true
+  cushionError.value = false
+  axios
+    .get(`${apiUrl}/Meta/cushion?periode=${periode}&level=${levelParam.value}`)
+    .then((r) => {
+      cushion.value = (r.data || []) as CushionRow[]
+    })
+    .catch((e) => {
+      console.log(e)
+      cushion.value = []
+      cushionError.value = true
+    })
+    .finally(() => {
+      cushionLoading.value = false
+    })
+}
+
+/* affix-compare is not level-scoped, cushion is. Both re-fetch on mode/periode;
+   only cushion re-fetches on the level chip. */
+watch(mode, () => { fetchAffixCompare(); fetchCushion() })
+watch(level, fetchCushion)
+watch(() => data.SelectedPeriode, () => {
+  if (mode.value === 'tier') { fetchAffixCompare(); fetchCushion() }
+})
+
+/* ---------------- existing ranking-mode data (unchanged) ---------------- */
+function ensureData() {
+  if (!data.SelectedPeriode) return
+  if (!data.Dungeons_Data || data.Dungeons_Data.periode !== data.SelectedPeriode) store.dispatch('fetchDungeonData')
+  store.dispatch('fetchDungeonSuccessRateData', data.SelectedPeriode)
+}
+onMounted(() => {
+  ensureData()
+  fetchTier()
+  fetchAffixCompare()
+  fetchCushion()
+})
+watch(() => data.SelectedPeriode, ensureData)
+
+const scoreType = computed<string>(() => data.settings?.score_type || 'mean')
+const scoreLabel = computed(() => ({ total: 'Total score', percent: 'Share %', mean: 'Avg score' }[scoreType.value] || 'Score'))
+
+const dungeonList = computed<any[]>(() => (data.Dungeons_Data && data.Dungeons_Data.data) || [])
+
+const ranked = computed<any[]>(() => {
+  const list = dungeonList.value
+  if (!list.length) return []
+  const total = SF.GetTotalScore(list)
+  const items = list.map((d: any) => {
+    let val: number
+    if (scoreType.value === 'mean') val = d.total_runs ? Math.round(d.score / d.total_runs) : 0
+    else if (scoreType.value === 'percent') val = total ? +((d.score / total) * 100).toFixed(1) : 0
+    else val = d.score
+    return { ...d, _val: val }
+  })
+  return items.sort((a, b) => b._val - a._val)
+})
+const columnMax = computed(() => Math.max(1, ...ranked.value.map((d) => d._val)))
+
+const dungeonName = (id: number) => dungeonByKeystoneId(id)?.name || '—'
+const dungeonShort = (id: number) => { const d: any = dungeonByKeystoneId(id); return d?.short_name || d?.name || '' }
+
+const tierFor = (i: number, n: number) => (i === 0 ? 's' : i < n * 0.2 ? 'a' : i < n * 0.45 ? 'b' : i < n * 0.75 ? 'c' : 'd')
+const tierColor = (t: string) => `var(--kc-tier-${t})`
+
+/* success rate per dungeon (defensive read of the success-rate store shape) */
+function successFor(keystoneId: number): number | null {
+  const raw: any = store.getters.GetDungeonSuccessRateData
+  if (!raw) return null
+  const entries: any[] = []
+  for (const e of raw) Array.isArray(e) ? entries.push(...e) : entries.push(e)
+  const s = data.settings
+  const entry = entries.find((e) =>
+    e && e.id === data.SelectedPeriode &&
+    (!e.settings || (e.settings.max_runs === s.max_runs && e.settings.min_keystonelevel === s.min_keystonelevel && e.settings.limitbylowestdungeon === s.limitbylowestdungeon))
+  ) || entries[0]
+  const rows: any[] = entry?.data || []
+  const row = rows.find((r) => (r.id ?? r.zone_id) === keystoneId)
+  return row != null && row.ontime_percent != null ? Math.round(row.ontime_percent) : null
+}
+
+/* ---------------- helpers ---------------- */
+function fmtMs(ms: number): string {
+  const total = Math.round(ms / 1000)
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  return `${m}:${String(s).padStart(2, '0')}`
+}
+</script>
+
+<style scoped>
+.kc-dungeons { padding: var(--kc-sp-6) 0; }
+.kc-container { width: 100%; max-width: var(--kc-content-wide); margin: 0 auto; padding: 0 24px; }
+@media (max-width: 600px) { .kc-container { padding-left: 0; padding-right: 0; } }
+
+/* ---- segmented control (matches compositions.vue) ---- */
+.kc-seg { display: inline-flex; background: var(--kc-bg-inset); border-radius: var(--kc-r-md); border: 1px solid var(--kc-line-default); padding: 2px; gap: 2px; }
+.kc-seg__btn { height: 28px; padding: 0 12px; border-radius: var(--kc-r-sm); border: none; cursor: pointer; font: 500 12px/1 var(--kc-font-ui); background: transparent; color: var(--kc-text-mid); white-space: nowrap; }
+.kc-seg__btn.is-sel { background: var(--kc-bg-active); color: var(--kc-text-hi); box-shadow: inset 0 0 0 1px var(--kc-line-strong); font-weight: 600; }
+
+/* ---- ranking table (existing) ---- */
+.kc-dgn__head, .kc-dgn__row {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 90px;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+}
+.kc-dgn__head > *, .kc-dgn__row > * { min-width: 0; }
+.kc-dgn__head > :first-child, .kc-dgn__row > :first-child { justify-self: center; }
+.kc-dgn__head { height: 38px; background: var(--kc-bg-raised); border-bottom: 1px solid var(--kc-line-hairline); }
+.kc-dgn__head .kc-eyebrow { color: var(--kc-text-low); }
+.kc-dgn__row {
+  min-height: 52px;
+  border-left: 3px solid var(--kc-line-strong);
+  border-bottom: 1px solid var(--kc-line-hairline);
+  transition: background var(--kc-motion-fast) ease;
+}
+.kc-dgn__row:hover { background: var(--kc-bg-hover); }
+.kc-dgn__name { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.kc-dgn__name-text { min-width: 0; }
+.kc-dgn__name-main { display: block; font-size: 14px; font-weight: 600; color: var(--kc-text-hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kc-dgn__name-short { color: var(--kc-text-low); }
+.kc-dgn__runs { text-align: right; font-size: 13px; color: var(--kc-text-mid); justify-self: end; }
+.kc-dgn__success { display: flex; justify-content: center; }
+
+.kc-dungeons__bestweek { margin-top: var(--kc-sp-7); }
+.kc-dungeons__empty { padding: var(--kc-sp-6); text-align: center; color: var(--kc-text-low); font-size: 13px; }
+
+@media (max-width: 720px) {
+  .kc-dgn__head { display: none; }
+  .kc-dgn__row { grid-template-columns: auto 1.6fr auto auto; gap: 10px; }
+  .kc-dgn__runs { display: none; }
+}
+
+/* ---- tier-list mode ---- */
+.kc-dgn__scope { display: flex; gap: 4px; flex-wrap: wrap; }
+.kc-chip {
+  height: 24px; padding: 0 9px; border-radius: var(--kc-r-sm);
+  border: 1px solid var(--kc-line-default); background: var(--kc-bg-inset);
+  color: var(--kc-text-mid); font: 600 11px/1 var(--kc-font-ui); cursor: pointer;
+  transition: color var(--kc-motion-fast) ease, border-color var(--kc-motion-fast) ease;
+}
+.kc-chip:hover { color: var(--kc-text-hi); border-color: var(--kc-line-strong); }
+.kc-chip.is-sel { background: var(--kc-accent); border-color: var(--kc-accent); color: var(--kc-text-inverse); }
+
+.kc-dgn__head--tier, .kc-dgn__row--tier {
+  grid-template-columns: 44px minmax(0, 1.7fr) minmax(0, 1fr) 56px minmax(0, 88px) 64px;
+}
+.kc-dgn__head--tier > :first-child, .kc-dgn__row--tier > :first-child { justify-self: center; }
+.kc-dgn__tier { display: flex; justify-content: center; }
+.kc-dgn__band { height: 7px; background: var(--kc-bg-inset); border-radius: 4px; overflow: hidden; }
+.kc-dgn__band-fill { display: block; height: 100%; border-radius: 4px; opacity: 0.85; }
+.kc-dgn__clear { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.15; }
+.kc-dgn__clear-num { font-size: 13px; font-weight: 700; color: var(--kc-text-hi); }
+.kc-dgn__delta { display: flex; justify-content: flex-end; }
+.kc-dgn__foot {
+  padding: 12px 16px; font-size: 12px; color: var(--kc-text-low);
+  border-top: 1px solid var(--kc-line-hairline);
+}
+.kc-dgn__foot strong { color: var(--kc-accent); font-weight: 700; }
+
+/* ---- secondary cards ---- */
+.kc-dgn__secondary {
+  margin-top: var(--kc-sp-7);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: var(--kc-sp-5);
+}
+.kc-dgn__secondary > * { min-width: 0; }
+.kc-affix__name { font-size: 13px; }
+
+/* affix compare */
+.kc-affix__head, .kc-affix__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+}
+.kc-affix__head { height: 34px; background: var(--kc-bg-raised); border-bottom: 1px solid var(--kc-line-hairline); }
+.kc-affix__head .kc-eyebrow { color: var(--kc-text-low); }
+.kc-affix__row { min-height: 48px; border-bottom: 1px solid var(--kc-line-hairline); transition: background var(--kc-motion-fast) ease; }
+.kc-affix__row:hover { background: var(--kc-bg-hover); }
+.kc-affix__col { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
+.kc-affix__pct { font-size: 13px; font-weight: 700; color: var(--kc-text-hi); }
+.kc-affix__time { font-size: 11px; color: var(--kc-text-low); }
+.kc-affix__delta { display: flex; justify-content: flex-end; }
+
+/* cushion */
+.kc-cush__legend { display: flex; gap: 10px; flex-wrap: wrap; }
+.kc-cush__legend-item { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--kc-text-low); }
+.kc-cush__sw { width: 9px; height: 9px; border-radius: 2px; }
+.kc-cush__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 2fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--kc-line-hairline);
+}
+.kc-cush__stack { display: flex; height: 18px; border-radius: 4px; overflow: hidden; background: var(--kc-bg-inset); }
+.kc-cush__seg {
+  display: grid; place-items: center; height: 100%;
+  font-size: 10px; font-weight: 700; color: #0A0E14;
+  overflow: hidden; white-space: nowrap;
+  transition: width var(--kc-motion-slow) var(--kc-ease-out);
+}
+.kc-cush__median { font-size: 12px; color: var(--kc-text-mid); text-align: right; white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .kc-dgn__head--tier { display: none; }
+  .kc-dgn__row--tier { grid-template-columns: auto 1.5fr auto auto; gap: 10px; }
+  .kc-dgn__band, .kc-dgn__clear { display: none; }
+  .kc-affix__head { display: none; }
+  .kc-affix__row { grid-template-columns: 1.4fr 1fr 1fr auto; gap: 8px; }
+  .kc-cush__row { grid-template-columns: 1.2fr 1.6fr; }
+  .kc-cush__median { display: none; }
 }
 </style>

@@ -223,7 +223,7 @@ export default {
   width: 84px;
   height: 84px;
   background: var(--bg-surface);
-  border: 2px solid var(--border-accent);
+  border: 2px solid var(--line-strong);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
@@ -232,20 +232,20 @@ export default {
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   padding: 8px 12px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
 }
 .InfoField {
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   padding: 8px 20px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   height: auto;
   min-width: 110px;
   margin: 0 10px;
   transition: all var(--transition-normal);
 }
 .InfoField:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
   transform: translateY(-2px);
 }
 .DetailsPos {

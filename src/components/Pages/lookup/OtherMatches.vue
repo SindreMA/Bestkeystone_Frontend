@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="matches.length > 0" class="MatchContainer">
+  <div v-if="matches?.length" class="MatchContainer">
     <div>There are multiple matches for this character path</div>
 
     <div v-for="(item, index) in matches" :key="index" class="matchItem flex wrap">
@@ -25,7 +25,7 @@ import {computed, toRefs} from 'vue';
 const props = defineProps({
   matches: {
     type: Array<MatchResult>,
-    required: true
+    default: () => []
   }
 });
 
@@ -52,8 +52,8 @@ const Specs = computed(() => data.Specs);
   text-align: center;
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-default);
-  color: var(--text-primary);
+  border: 1px solid var(--line-default);
+  color: var(--text-hi);
 }
 .matchItem {
   display: flex;
@@ -66,19 +66,19 @@ const Specs = computed(() => data.Specs);
   min-height: 50px;
   padding: 2px 20px;
   text-align: center;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   transition: border-color var(--transition-fast);
 }
 .matchItem:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 a {
-  color: var(--text-accent);
+  color: var(--accent);
   transition: color var(--transition-fast);
 }
 a:hover {
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <q-table
     dark
-    :rows="rows"
+    :rows="items ?? []"
     :columns="columns"
     :pagination="paginator"
     :filter="filter"
@@ -32,8 +32,6 @@
 
 <script setup lang="ts">
 import { ref, toRefs } from 'vue';
-import axios from 'axios';
-import { useStore } from 'src/store';
 import { QPagination, QTableColumn, QTableProps } from 'quasar';
 import ItemRow from './ItemRow.vue'
 const columns : Array<QTableColumn> = [
@@ -51,17 +49,7 @@ const paginator : QTableProps['pagination'] = {
   rowsPerPage: 20,
 }
 
-const store = useStore();
-const data = store.state.data
-
 const filter = ref('');
-
-var rows = ref<Array<object>>([])
-
-axios.get(`${data.apiUrl}/items`).then((response) => {
-  rows.value = response.data
-});
-
 
 const props = defineProps({
   items: {

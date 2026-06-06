@@ -134,31 +134,41 @@ export default {
 .infoContainer {
   margin: 0 10px;
   overflow: visible;
+  align-items: center;
 }
 
 .textHolder {
   font-size: 13px;
-  border: 20% grey solid;
+  border: 1px solid var(--kc-line-default);
   width: 40px;
   height: 20px;
-  margin: 2.5px 5px 0 5px;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .stats {
   display: flex;
+  flex-wrap: wrap;
+}
+
+.stats > div {
+  min-width: 0;
 }
 
 .horde.q-linear-progress {
-  background-color: #b30000;
-  color: #b30000;
-  fill: #b30000;
+  background-color: var(--faction-horde);
+  color: var(--faction-horde);
+  fill: var(--faction-horde);
   height: 25px;
 }
 
 .alliance.q-linear-progress {
-  background-color: #0078ff;
-  color: #0078ff;
-  fill: #0078ff;
+  background-color: var(--faction-alliance);
+  color: var(--faction-alliance);
+  fill: var(--faction-alliance);
   height: 25px;
 }
 .q-linear-progress__model--determinate {

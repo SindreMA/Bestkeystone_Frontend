@@ -1,134 +1,17 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-page-container class="BlackBackground">
-      <div
-        id="HeaderLine"
-        class="lineBackground flex justify-center HeaderFont shadow-24"
-      ></div>
+      <CustomToolbar />
+      <KcContextBar />
 
       <div class="GreyBackground MiddleAndSize pageContainer ">
-        <CustomToolbar />
         <div class="MainPadd">
-          <div class="StaticSettingButton" v-if="showSettingBtn">
-            <q-btn
-              class="StaticSettingButtonbtn"
-              round
-              icon="settings"
-              size="20px"
-              color="none"
-            >
-              <q-menu id="SettingsBox" @before-hide="onSettingsClose">
-                <div id="SettingsContent" class="HeaderFont">
-                  <div class="settings-header">
-                    <div class="settings-title">Settings</div>
-                    <transition name="fade">
-                      <span v-if="data_saved" class="settings-saved">Saved</span>
-                    </transition>
-                  </div>
-
-                  <div class="settings-row">
-                    <div class="settings-label">View</div>
-                    <q-btn-toggle
-                      v-model="viewMode"
-                      no-caps
-                      unelevated
-                      spread
-                      toggle-color="primary"
-                      class="settings-toggle"
-                      :options="[
-                        { label: 'Classic', value: 'classic' },
-                        { label: 'Tables', value: 'table' },
-                      ]"
-                    />
-                  </div>
-
-                  <div v-if="viewMode !== 'table'" class="settings-row">
-                    <div class="settings-label">Score type</div>
-                    <q-btn-toggle
-                      v-model="score_type"
-                      no-caps
-                      unelevated
-                      spread
-                      toggle-color="primary"
-                      class="settings-toggle"
-                      :options="[
-                        { label: 'Total', value: 'total' },
-                        { label: 'Percent', value: 'percent' },
-                        { label: 'Mean', value: 'mean' },
-                      ]"
-                    />
-                  </div>
-
-                  <div class="settings-divider"></div>
-
-                  <div class="settings-row">
-                    <div class="settings-label-inline">
-                      <span>Minimum keystone level</span>
-                      <span class="settings-value">{{ min_keystonelevel }}</span>
-                    </div>
-                    <q-slider
-                      v-model="min_keystonelevel"
-                      :min="0"
-                      :max="25"
-                      :step="1"
-                      color="primary"
-                      label
-                      snap
-                    />
-                  </div>
-
-                  <div class="settings-row">
-                    <div class="settings-label-inline">
-                      <span>Weeks to show</span>
-                      <span class="settings-value">{{ WeeksToShow }}</span>
-                    </div>
-                    <q-slider
-                      v-model="WeeksToShow"
-                      :min="4"
-                      :max="60"
-                      :step="1"
-                      color="primary"
-                      label
-                      snap
-                    />
-                  </div>
-
-                  <div class="settings-row">
-                    <div class="settings-label">Runs per dungeon</div>
-                    <q-btn-toggle
-                      v-model="max_runs"
-                      no-caps
-                      unelevated
-                      spread
-                      toggle-color="primary"
-                      class="settings-toggle"
-                      :options="[
-                        { label: '10', value: 10 },
-                        { label: '100', value: 100 },
-                        { label: '1k', value: 1000 },
-                        { label: '5k', value: 5000 },
-                      ]"
-                    />
-                  </div>
-
-                  <div class="settings-row settings-row-toggle">
-                    <div class="settings-label-toggle">
-                      <span>Limit to lowest dungeon</span>
-                      <span class="settings-hint"
-                        >Cap runs to match the smallest sample</span
-                      >
-                    </div>
-                    <q-toggle v-model="limitbylowestdungeon" color="primary" />
-                  </div>
-                </div>
-              </q-menu>
-            </q-btn>
-          </div>
           <router-view />
         </div>
       </div>
     </q-page-container>
     <Footer />
+    <KcLegacyBanner />
   </q-layout>
 </template>
 
@@ -141,6 +24,8 @@ import Footer from "./footer.vue";
 import { openURL } from "quasar";
 import AdView from "ItemViews/AdView.vue";
 import CustomToolbar from "components/layout/CustomToolbar.vue";
+import KcContextBar from "components/layout/KcContextBar.vue";
+import KcLegacyBanner from "components/layout/KcLegacyBanner.vue";
 import { useRouter } from "vue-router";
 
 const $q = useQuasar();
@@ -379,22 +264,22 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 #HeaderLine {
   height: 4px;
   margin: auto;
-  background: var(--gradient-primary);
+  background: var(--brand-gradient);
 }
 .BoxHeaderBackground {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
 }
 .relative {
   position: relative;
 }
 .lightBackground {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 .searchResultsBox {
   background: var(--bg-surface);
-  color: var(--text-primary);
-  border: 1px solid var(--border-default);
+  color: var(--text-hi);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
 }
 .gap-5 {
@@ -414,7 +299,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   z-index: 100000;
 }
 .lineBackground {
-  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-base) 100%);
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-canvas) 100%);
   height: 120px;
   width: 100%;
 }
@@ -433,10 +318,10 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 .greyBackground {
   position: relative;
   background: var(--bg-surface);
-  color: var(--text-secondary);
+  color: var(--text-mid);
   border-radius: var(--radius-lg);
   padding: 0 5px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
 }
 
 #DonateButton:hover {
@@ -444,7 +329,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 
 .HeaderFont {
-  color: var(--text-secondary) !important;
+  color: var(--text-mid) !important;
 }
 
 .HeaderSize {
@@ -469,6 +354,9 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   align-items: center;
   height: 100%;
 }
+.MainPadd {
+  padding: 0 12px;
+}
 @media screen and (min-width: 600px) {
   .MiddleAndSize {
     max-width: 1300px;
@@ -482,7 +370,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   background: var(--bg-surface);
 }
 .BlackBackground {
-  background: var(--bg-base);
+  background: var(--bg-canvas);
   min-height: 100vh;
   height: 100%;
   display: flex;
@@ -496,26 +384,26 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   position: absolute;
   top: -10px;
   right: -10px;
-  background: var(--bg-elevated) !important;
-  border: 1px solid var(--border-default);
+  background: var(--bg-raised) !important;
+  border: 1px solid var(--line-default);
   transition: all var(--transition-normal);
 }
 .StaticSettingButtonbtn:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
   box-shadow: var(--shadow-glow);
   transform: rotate(90deg);
 }
 #SettingsBox {
   width: 320px;
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 #SettingsContent {
   padding: 18px 20px 20px;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 .settings-header {
   display: flex;
@@ -527,15 +415,15 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 .settings-saved {
   font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--accent-success);
-  background: rgba(34, 197, 94, 0.12);
+  color: var(--pos);
+  background: rgba(63, 185, 80, 0.12);
   padding: 3px 8px;
   border-radius: var(--radius-full);
 }
@@ -547,7 +435,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   margin-bottom: 8px;
 }
 .settings-label-inline {
@@ -559,7 +447,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-secondary);
+  color: var(--text-mid);
 }
 .settings-value {
   font-size: 13px;
@@ -567,19 +455,19 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
   text-transform: none;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 .settings-toggle {
   width: 100%;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-md);
-  background: var(--bg-base);
+  background: var(--bg-canvas);
   overflow: hidden;
 }
 .settings-toggle .q-btn {
   font-size: 12px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   min-height: 30px;
 }
 .settings-toggle .q-btn.bg-primary {
@@ -587,7 +475,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 .settings-divider {
   height: 1px;
-  background: var(--border-default);
+  background: var(--line-default);
   margin: 4px 0 14px;
 }
 .settings-row-toggle {
@@ -604,11 +492,11 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 .settings-label-toggle > span:first-child {
   font-size: 13px;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 .settings-hint {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--text-low);
 }
 
 .fade-enter-active,
@@ -620,7 +508,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 .nodataInfo {
   margin: auto;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   max-width: 300px;
   margin-top: 50px;
@@ -635,7 +523,7 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   position: relative;
 }
 .HeaderFontv2 {
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 .Ad {
   padding: 10px 10px 5px 10px;
@@ -659,11 +547,11 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 .logoIcon {
   width: 48px;
   border-radius: var(--radius-full);
-  border: 2px solid var(--border-default);
+  border: 2px solid var(--line-default);
   transition: all var(--transition-normal);
 }
 .logoIcon:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
   box-shadow: var(--shadow-glow);
   transform: scale(1.05);
 }
@@ -684,15 +572,15 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
 }
 
 .apexcharts-legend-text {
-  color: var(--text-secondary) !important;
+  color: var(--text-mid) !important;
 }
 h1,h2,h3,h4,h5,h6 {
   margin: 0px;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 
 .textColor {
-  color: var(--text-secondary) !important;
+  color: var(--text-mid) !important;
 }
 
 </style>

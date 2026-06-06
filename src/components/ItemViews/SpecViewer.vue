@@ -98,8 +98,8 @@ export default {
   font-size: 0.85rem;
   font-weight: 500;
   padding: 4px 14px;
-  border: 1px solid var(--border-default);
-  color: var(--text-primary);
+  border: 1px solid var(--line-default);
+  color: var(--text-hi);
   box-shadow: var(--shadow-sm);
 }
 
@@ -112,7 +112,7 @@ export default {
   background-repeat: no-repeat;
   background-position: center;
   position: relative;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
 }
 
 .DarkerGreyOverlay {
@@ -125,19 +125,19 @@ export default {
 }
 
 .rankBoxSpec {
-  color: var(--text-accent);
+  color: var(--accent);
   border-radius: var(--radius-full);
   width: 28px;
   height: 28px;
   background: var(--bg-surface);
-  border: 2px solid var(--border-accent);
+  border: 2px solid var(--line-strong);
   font-weight: 700;
   font-size: 0.85rem;
   box-shadow: var(--shadow-glow);
 }
 
 #points {
-  background: var(--gradient-primary) !important;
+  background: var(--brand-gradient) !important;
   border: none !important;
   color: white !important;
   font-weight: 600;

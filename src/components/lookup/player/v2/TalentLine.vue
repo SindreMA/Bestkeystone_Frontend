@@ -1,25 +1,35 @@
 <template>
-    <div style="width: 100%">
-        <div class="flex justify-around talents">
-            <Talent v-for="(talent) in selSpecTalents" :talent="talent" :key="`${talent.id}`" />
-        </div>
-        <q-separator dark />
-        <div class="flex">
-            <div v-for="(spec, index) in specs" :key="spec" class="flex">
-                <div @click="selectedSpec = spec" class="pointer clickHover specButton text-center"
-                    :class="`${selectedSpec == spec && 'specButtonSelected'}`">{{ getSpec(spec)?.name }}</div>
-                <q-separator vertical dark v-if="index != specs.length - 1" />
-            </div>
-        </div>
+  <div class="kc-talents">
+    <div class="kc-talents__grid">
+      <span v-for="t in selSpecTalents" :key="t.id" class="kc-talents__node">
+        <CloudinaryFormat :url="t?.spell?.spellIconUrl" :size="36" v-slot="{ link }">
+          <img class="kc-talents__icon" :src="link" :alt="t.talent?.name" />
+        </CloudinaryFormat>
+        <q-tooltip max-width="280px">
+          <div class="kc-talents__tip-name">{{ t.talent?.name }}</div>
+          <div class="kc-talents__tip-desc">{{ t.talent?.description }}</div>
+        </q-tooltip>
+      </span>
+      <span v-if="!selSpecTalents.length" class="kc-talents__empty">No talent data.</span>
     </div>
+
+    <div v-if="specs.length > 1" class="kc-talents__specs">
+      <button
+        v-for="spec in specs"
+        :key="spec"
+        class="kc-talents__spec"
+        :class="{ 'is-sel': selectedSpec === spec }"
+        @click="selectedSpec = spec"
+      >{{ getSpec(spec)?.name }}</button>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import Talent from './Talent.vue'
+import CloudinaryFormat from 'components/data_formatters/CloudinaryFormat.vue'
 import { useStore } from 'src/store'
 import { LookupTalents } from 'src/types/talents';
 import { computed, onBeforeMount, ref, toRefs } from 'vue'
-
 
 const props = defineProps({
     talents: {
@@ -70,31 +80,25 @@ onBeforeMount(() => {
 </script>
 
 <style scoped>
-.specButton {
-    padding: 8px 12px;
-    min-width: 65px;
-    min-height: 25px;
-    color: var(--text-secondary);
-    transition: all var(--transition-fast);
+.kc-talents { width: 100%; }
+.kc-talents__grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.kc-talents__node { display: inline-flex; }
+.kc-talents__icon {
+  width: 36px; height: 36px; border-radius: var(--radius-sm);
+  border: 1px solid var(--line-default); cursor: help; display: block;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
 }
+.kc-talents__icon:hover { border-color: var(--line-strong); transform: scale(1.08); }
+.kc-talents__empty { font-size: 13px; color: var(--text-mid); }
+.kc-talents__tip-name { font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+.kc-talents__tip-desc { font-size: 12px; line-height: 1.5; }
 
-.pointer {
-    cursor: pointer;
+.kc-talents__specs { display: flex; gap: 4px; margin-top: 14px; flex-wrap: wrap; }
+.kc-talents__spec {
+  height: 28px; padding: 0 12px; border-radius: var(--radius-md); cursor: pointer;
+  background: var(--bg-inset); border: 1px solid var(--line-default); color: var(--text-mid);
+  font: 500 12px/1 var(--font-ui, inherit);
 }
-
-.clickHover:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-}
-
-.specButtonSelected {
-    background: var(--bg-elevated);
-    color: var(--text-accent);
-    font-weight: 500;
-}
-
-.talents {
-  gap: 5px 20px;
-  padding: 12px;
-}
+.kc-talents__spec:hover { background: var(--bg-hover); color: var(--text-hi); }
+.kc-talents__spec.is-sel { background: var(--bg-active); color: var(--accent); border-color: var(--line-strong); font-weight: 600; }
 </style>

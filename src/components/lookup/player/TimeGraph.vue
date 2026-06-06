@@ -49,7 +49,7 @@ export default {
       var vm = this;
       var settings = {
         chart: {
-          foreColor: "#a1a1a1"
+          foreColor: "#9AA7B8"
         },
         xaxis: {
           type: "numeric",

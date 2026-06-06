@@ -53,16 +53,16 @@ const getClass = (classId: number) => {
 
 const classColor = computed(() => {
   const spec = getSpec(data.value.spec);
-  if (!spec) return '#6366f1';
+  if (!spec) return 'var(--accent)';
   const cls = getClass(spec.class || spec.Class);
-  return cls?.color || '#6366f1';
+  return cls?.color || 'var(--accent)';
 });
 </script>
 
 <style scoped>
 .Container {
     border-radius: var(--radius-xl);
-    background: var(--bg-elevated);
+    background: var(--bg-raised);
     border: 2px solid;
     padding: 20px;
     min-width: 300px;
@@ -104,11 +104,11 @@ const classColor = computed(() => {
 }
 .score-info {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--text-low);
     margin-top: 4px;
 }
 .score-value {
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--text-hi);
 }
 </style>

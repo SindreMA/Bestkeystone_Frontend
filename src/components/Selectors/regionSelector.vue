@@ -1,14 +1,12 @@
 <template>
     <div id="mainDiv">
-        <q-select 
+        <q-select
             dark
-            dense
             v-model="region"
             :options="GetRegions"
             borderless
             clearable
-            :rounded="rounded"
-            :outlined ="filled"> 
+            :filled="filled">
             <template v-slot:selected="scope">
   
           <template v-if="region">
@@ -87,6 +85,6 @@ export default {
 
 <style scoped>
     #mainDiv {
-      min-width: 135;
+      min-width: 150px;
     }
 </style>

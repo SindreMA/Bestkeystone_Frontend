@@ -109,22 +109,22 @@ const playerLinks = computed(() => {
 <style scoped>
 a {
   text-decoration: inherit;
-  color: var(--text-accent);
+  color: var(--accent);
   transition: color var(--transition-fast);
 }
 a:hover {
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 
 .field {
   margin: 0 5px;
-  color: var(--text-secondary);
+  color: var(--text-mid);
 }
 
 .field .value {
   margin: 5px;
   font-size: 30px;
-  color: var(--text-primary);
+  color: var(--text-hi);
   font-weight: 600;
 }
 
@@ -133,11 +133,11 @@ a:hover {
   height: 120px;
   border-radius: 100%;
   margin-right: 15px;
-  border: 3px solid var(--border-default);
+  border: 3px solid var(--line-default);
   transition: border-color var(--transition-normal);
 }
 .avatarImage:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 
 .iconLink {

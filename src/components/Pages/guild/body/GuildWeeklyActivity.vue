@@ -97,7 +97,7 @@ const getClass = (id) => {
 <style scoped>
 .info-box {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
   flex: 1;
@@ -105,11 +105,11 @@ const getClass = (id) => {
 }
 
 .info-header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
   font-weight: 600;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-default);
+  color: var(--text-hi);
+  border-bottom: 1px solid var(--line-default);
 }
 
 .info-content {
@@ -125,20 +125,20 @@ const getClass = (id) => {
 .activity-main {
   text-align: center;
   padding: 16px 24px;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-md);
 }
 
 .big-number {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--accent-primary);
+  color: var(--accent);
   line-height: 1;
 }
 
 .big-label {
   font-size: 0.8rem;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   margin-top: 4px;
 }
 
@@ -154,25 +154,25 @@ const getClass = (id) => {
   display: flex;
   justify-content: space-between;
   padding: 8px 12px;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-sm);
 }
 
 .detail-label {
-  color: var(--text-secondary);
+  color: var(--text-mid);
   font-size: 0.9rem;
 }
 
 .detail-value {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 
 .section-label {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-muted);
+  color: var(--text-low);
   margin-bottom: 8px;
 }
 
@@ -210,8 +210,8 @@ const getClass = (id) => {
 
 .run-count {
   font-weight: 600;
-  color: var(--accent-secondary);
-  background: var(--bg-elevated);
+  color: var(--signal-cyan);
+  background: var(--bg-raised);
   padding: 2px 8px;
   border-radius: var(--radius-full);
   font-size: 0.85rem;

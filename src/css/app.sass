@@ -5,46 +5,135 @@
 // CSS Custom Properties (Design Tokens)
 // ============================================
 \:root
-  // Base colors
-  --bg-base: #0d1117
-  --bg-surface: #161b22
-  --bg-elevated: #21262d
-  --bg-hover: #2d333b
-  --bg-active: #363d47
+  // ============================================
+  // KEYSTONE CONSOLE — single dark palette (NEW)
+  // One palette only. Old token names are kept as
+  // aliases (bottom of this block) during migration.
+  // ============================================
 
-  // Borders
-  --border-default: #30363d
-  --border-muted: #21262d
-  --border-accent: #6366f1
+  // Canvas & surfaces (4-step low-contrast elevation)
+  --bg-canvas: #0A0E14
+  --bg-deep: #06090F
+  --bg-surface: #11161F
+  --bg-raised: #161D28
+  --bg-inset: #0D121A
+  --bg-hover: #1B2430
+  --bg-active: #222D3C
 
-  // Text colors
-  --text-primary: #e6edf3
-  --text-secondary: #8b949e
-  --text-muted: #6e7681
-  --text-accent: #6366f1
+  // Borders / hairlines
+  --line-hairline: #1E2733
+  --line-default: #2A3645
+  --line-strong: #3A4759
+  --border-glow: rgba(91, 141, 239, 0.40)
 
-  // Accent colors (simpler, no excessive gradients)
-  --accent-primary: #6366f1
-  --accent-secondary: #22d3ee
-  --accent-warm: #f59e0b
-  --accent-success: #22c55e
+  // Text
+  --text-hi: #E8EEF6
+  --text-mid: #9AA7B8
+  --text-low: #5E6B7D
+  --text-ghost: #3D4757
+  --text-inverse: #06090F
 
-  // Shadows (subtle, no glow)
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2)
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3)
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.35)
+  // Brand accent — one cool blue; cyan is LIVE-only
+  --accent: #5B8DEF
+  --accent-hover: #6E9DF5
+  --accent-quiet: rgba(91, 141, 239, 0.12)
+  --signal-cyan: #3DD6D0
+  --brand-gradient: linear-gradient(135deg, #5B8DEF 0%, #3DD6D0 100%)
 
-  // Spacing (less rounded)
+  // Tier ladder ramp (heat, not virtue)
+  --tier-s: #FF4D6D
+  --tier-a: #FF9F1C
+  --tier-b: #E8C84A
+  --tier-c: #4ADE80
+  --tier-d: #5AA9E6
+
+  // Rank / medal (top-3 only)
+  --rank-gold: #F5C518
+  --rank-silver: #C7D0DA
+  --rank-bronze: #CD7F47
+
+  // Status / delta (desaturated; amber = status only)
+  --pos: #3FB950
+  --neg: #E5534B
+  --warn: #D29922
+  --neutral: #6E7B8C
+
+  // Faction
+  --faction-alliance: #5B8DEF
+  --faction-horde: #C8313A
+
+  // Score magnitude / chest fire ramp
+  --fire-0: #6E7B8C
+  --fire-1: #3FB950
+  --fire-2: #E0A33B
+  --fire-3: #F25C54
+  --key-hot: #F25C54
+
+  // Item quality (clamped for contrast on #0A0E14)
+  --q-poor: #8B949E
+  --q-common: #E8EEF6
+  --q-uncommon: #4FB860
+  --q-rare: #4FA3E8
+  --q-epic: #B96BE0
+  --q-legendary: #E8943A
+
+  // Chart series palette (categorical, 8-step)
+  --series-1: #5B8DEF
+  --series-2: #3DD6D0
+  --series-3: #E8C84A
+  --series-4: #B96BE0
+  --series-5: #4FB860
+  --series-6: #FF9F1C
+  --series-7: #9AA7B8
+  --series-8: #F25C54
+
+  // Spacing scale (8px)
+  --sp-1: 4px
+  --sp-2: 8px
+  --sp-3: 12px
+  --sp-4: 16px
+  --sp-5: 24px
+  --sp-6: 32px
+  --sp-7: 48px
+  --sp-8: 64px
+
+  // Layout
+  --content-max: 1320px
+  --content-wide: 1560px
+
+  // Radii (low / sharp = instrument)
+  --r-sm: 4px
+  --r-md: 6px
+  --r-lg: 8px
+  --r-xl: 12px
+  --r-pill: 9999px
   --radius-sm: 4px
   --radius-md: 6px
   --radius-lg: 8px
   --radius-xl: 12px
   --radius-full: 9999px
 
-  // Transitions
-  --transition-fast: 150ms ease
-  --transition-normal: 250ms ease
-  --transition-slow: 350ms ease
+  // Elevation shadows
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.40)
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45)
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.50)
+
+  // Motion
+  --motion-fast: 120ms
+  --motion-base: 200ms
+  --motion-slow: 320ms
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1)
+  --transition-fast: 120ms ease
+  --transition-normal: 200ms ease
+  --transition-slow: 320ms ease
+
+  // Type families
+  --font-ui: 'Inter', system-ui, -apple-system, sans-serif
+  --font-display: 'Chakra Petch', 'Rajdhani', var(--font-ui)
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace
+
+  // Focus halo / active-lane shadow (semantic state token)
+  --shadow-glow: 0 0 0 1px var(--border-glow), 0 0 14px -2px var(--border-glow)
 
 // ============================================
 // Global Resets & Base Styles
@@ -53,8 +142,8 @@
   box-sizing: border-box
 
 body
-  background: var(--bg-base)
-  color: var(--text-primary)
+  background: var(--bg-canvas)
+  color: var(--text-hi)
   line-height: 1.6
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
@@ -65,47 +154,245 @@ body
 
 // Backgrounds
 .bg-base
-  background: var(--bg-base)
+  background: var(--bg-canvas)
 
 .bg-surface
   background: var(--bg-surface)
 
 .bg-elevated
-  background: var(--bg-elevated)
+  background: var(--bg-raised)
 
 .bg-accent
-  background: var(--accent-primary)
+  background: var(--accent)
 
 // Text
 .text-primary
-  color: var(--text-primary)
+  color: var(--text-hi)
 
 .text-secondary
-  color: var(--text-secondary)
+  color: var(--text-mid)
 
 .text-muted
-  color: var(--text-muted)
+  color: var(--text-low)
 
 .text-accent
-  color: var(--accent-primary)
+  color: var(--accent)
+
+// Typographic helpers — GLOBAL versions of the .kc-root-scoped helpers in
+// keystone-tokens.css, so shell chrome rendered OUTSIDE .kc-root (top nav,
+// context bar, footer, legacy banner) gets the same treatment instead of
+// silently falling back to Roboto. Inside .kc-root the more-specific
+// `.kc-root .kc-eyebrow` rules win with identical values, so no visual drift.
+.kc-eyebrow
+  font-family: var(--font-display)
+  font-size: 11px
+  line-height: 14px
+  font-weight: 600
+  text-transform: uppercase
+  letter-spacing: 0.06em
+  color: var(--text-low)
+
+.kc-disp
+  font-family: var(--font-display)
+  font-variant-numeric: tabular-nums
+  letter-spacing: -0.01em
+
+.kc-tnum
+  font-variant-numeric: tabular-nums
+  font-feature-settings: 'tnum' 1
+
+.kc-mono
+  font-family: var(--font-mono)
+  font-variant-numeric: tabular-nums
+
+// ============================================
+// Quasar QTable — Keystone Console theme
+// Applies app-wide so the remaining default Quasar data tables (Overall stats,
+// player deeper-analytics, guild) match the bespoke redesigned boards. Colour
+// and type only — no width/layout changes.
+// ============================================
+.q-table__card, .q-table__container
+  background: transparent
+  color: var(--text-mid)
+  box-shadow: none
+
+.q-table thead th
+  font-family: var(--font-display)
+  font-size: 11px
+  text-transform: uppercase
+  letter-spacing: 0.06em
+  font-weight: 600
+  color: var(--text-low)
+  border-bottom: 1px solid var(--line-default)
+
+.q-table tbody td
+  font-size: 13px
+  color: var(--text-mid)
+
+.q-table th, .q-table td
+  border-color: var(--line-hairline)
+
+.q-table tbody tr:hover > td
+  background: var(--bg-hover)
+
+.q-table__top, .q-table__bottom
+  color: var(--text-low)
+  border-color: var(--line-default)
+
+.q-table__bottom
+  border-top: 1px solid var(--line-default)
+
+.q-table__bottom .q-btn
+  color: var(--text-mid)
+
+// ============================================
+// kc-statlist — bespoke replacement for the player deeper-analytics QTables.
+// Each component sets --statcols (grid-template-columns) on the root.
+// ============================================
+.kc-statlist
+  background: var(--bg-surface)
+  border: 1px solid var(--line-default)
+  border-radius: var(--radius-lg)
+  overflow: hidden
+  display: flex
+  flex-direction: column
+
+.kc-statlist__head
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 10px
+  background: var(--bg-raised)
+  padding: 11px 16px
+  color: var(--text-hi)
+  font-weight: 600
+  font-size: 14px
+  border-bottom: 1px solid var(--line-default)
+
+.kc-statlist__count
+  font-size: 11px
+  font-weight: 600
+  letter-spacing: 0.04em
+  text-transform: uppercase
+  color: var(--text-low)
+
+.kc-statlist__cols, .kc-statlist__row
+  display: grid
+  grid-template-columns: var(--statcols, 1fr)
+  align-items: center
+  gap: 10px
+  padding: 0 14px
+
+.kc-statlist__cols
+  height: 32px
+  border-bottom: 1px solid var(--line-hairline)
+
+.kc-statlist__cols .kc-eyebrow.r
+  text-align: right
+
+.kc-statlist__scroll
+  overflow-y: auto
+
+.kc-statlist__row
+  min-height: 40px
+  border-bottom: 1px solid var(--line-hairline)
+  transition: background var(--transition-fast)
+
+.kc-statlist__row:last-child
+  border-bottom: none
+
+.kc-statlist__row:hover
+  background: var(--bg-hover)
+
+.kc-statlist__entity
+  display: flex
+  align-items: center
+  gap: 8px
+  min-width: 0
+  color: var(--text-hi)
+  font-size: 13px
+
+.kc-statlist__name
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
+
+.kc-statlist__icon
+  width: 24px
+  height: 24px
+  border-radius: var(--radius-sm)
+  border: 1px solid var(--line-default)
+  flex: none
+  object-fit: cover
+  display: block
+
+.kc-statlist__num
+  text-align: right
+  font-variant-numeric: tabular-nums
+  font-size: 13px
+  color: var(--text-mid)
+
+.kc-statlist__num--hi
+  color: var(--text-hi)
+  font-weight: 600
+
+.kc-statlist__win
+  text-align: right
+  font-variant-numeric: tabular-nums
+  font-size: 12px
+  font-weight: 700
+
+.kc-statlist__win--good
+  color: var(--pos)
+
+.kc-statlist__win--mid
+  color: var(--warn)
+
+.kc-statlist__win--bad
+  color: var(--neg)
+
+.kc-statlist__empty
+  padding: 22px 16px
+  text-align: center
+  color: var(--text-low)
+  font-size: 13px
+
+// On phones the 6-column stat lists collapse the name to nothing — drop the
+// secondary columns so the entity name + the essentials (key/runs/win) stay.
+@media (max-width: 600px)
+  .kc-statlist__cols, .kc-statlist__row
+    gap: 8px
+    padding: 0 10px
+  // stat tables: entity | key | (score) | (time) | runs | win  ->  entity | key | runs | win
+  .kc-statlist--stats .kc-statlist__cols, .kc-statlist--stats .kc-statlist__row
+    grid-template-columns: minmax(0, 1fr) 38px 38px 44px
+  .kc-statlist--stats .kc-statlist__cols > :nth-child(3), .kc-statlist--stats .kc-statlist__cols > :nth-child(4)
+    display: none
+  .kc-statlist--stats .kc-statlist__row > :nth-child(3), .kc-statlist--stats .kc-statlist__row > :nth-child(4)
+    display: none
+  // friends: role | name | runs | (team) | score  ->  role | name | runs | score
+  .kc-statlist--friends .kc-statlist__cols, .kc-statlist--friends .kc-statlist__row
+    grid-template-columns: 22px minmax(0, 1fr) 40px 52px
+  .kc-statlist--friends .kc-statlist__cols > :nth-child(4), .kc-statlist--friends .kc-statlist__row > :nth-child(4)
+    display: none
 
 // Borders
 .border-accent
-  border: 1px solid var(--border-accent)
+  border: 1px solid var(--line-strong)
 
 // Cards
 .card-modern
   background: var(--bg-surface)
-  border: 1px solid var(--border-default)
+  border: 1px solid var(--line-default)
   border-radius: var(--radius-lg)
   transition: border-color var(--transition-fast)
 
   &:hover
-    border-color: var(--border-accent)
+    border-color: var(--line-strong)
 
 // Buttons
 .btn-modern
-  background: var(--accent-primary)
+  background: var(--accent)
   border: none
   border-radius: var(--radius-md)
   padding: 10px 20px
@@ -115,19 +402,19 @@ body
   transition: background var(--transition-fast)
 
   &:hover
-    background: #5558e3
+    background: var(--accent-hover)
 
 .btn-ghost
   background: transparent
-  border: 1px solid var(--border-default)
+  border: 1px solid var(--line-default)
   border-radius: var(--radius-md)
   padding: 10px 20px
-  color: var(--text-primary)
+  color: var(--text-hi)
   cursor: pointer
   transition: border-color var(--transition-fast)
 
   &:hover
-    border-color: var(--border-accent)
+    border-color: var(--line-strong)
 
 // Simple fade animation (only one needed)
 @keyframes fadeIn
@@ -163,27 +450,28 @@ body
       border-radius: 0 var(--radius-md) var(--radius-md) 0 !important
 
 .q-btn-toggle .q-btn--active
-  background: var(--accent-primary) !important
+  background: var(--accent) !important
 
 // Inputs & Selects
 .q-field--filled .q-field__control
-  background: var(--bg-elevated) !important
+  background: var(--bg-raised) !important
   border-radius: var(--radius-md) !important
-  border: 1px solid var(--border-default) !important
+  border: 1px solid var(--line-default) !important
 
   &:hover
-    border-color: var(--border-accent) !important
+    border-color: var(--line-strong) !important
 
 .q-field--focused .q-field__control
-  border-color: var(--border-accent) !important
+  border-color: var(--line-strong) !important
 
 // Menus & Dropdowns
 .q-menu
   background: var(--bg-surface) !important
-  border: 1px solid var(--border-default) !important
+  border: 1px solid var(--line-default) !important
   border-radius: var(--radius-lg) !important
   box-shadow: var(--shadow-lg) !important
-  overflow: hidden
+  // auto (not hidden) so long dropdown lists can scroll while corners stay clipped
+  overflow: auto
 
 .q-item
   &:hover
@@ -194,25 +482,25 @@ body
 
 // Sliders
 .q-slider__track-container
-  background: var(--bg-elevated) !important
+  background: var(--bg-raised) !important
 
 .q-slider__track
-  background: var(--accent-primary) !important
+  background: var(--accent) !important
 
 .q-slider__thumb
-  background: var(--accent-primary) !important
+  background: var(--accent) !important
 
 // Toggles
 .q-toggle__inner
   &--truthy
     .q-toggle__track
-      background: var(--accent-primary) !important
+      background: var(--accent) !important
       opacity: 1 !important
 
 // Radio buttons
 .q-radio__inner--truthy
   .q-radio__bg
-    color: #6366f1 !important
+    color: var(--accent) !important
 
 // Scrollbars
 ::-webkit-scrollbar
@@ -231,16 +519,16 @@ body
 
 // Tooltips
 .q-tooltip
-  background: var(--bg-elevated) !important
-  color: var(--text-primary) !important
+  background: var(--bg-raised) !important
+  color: var(--text-hi) !important
   border-radius: var(--radius-md) !important
-  border: 1px solid var(--border-default) !important
+  border: 1px solid var(--line-default) !important
   font-size: 13px !important
   padding: 8px 12px !important
 
 // Separators
 .q-separator--dark
-  background: var(--border-default) !important
+  background: var(--line-default) !important
 
 // Tables - cleaner on mobile
 @media (max-width: 768px)
@@ -251,10 +539,10 @@ body
       border: none !important
 
     thead
-      border-bottom: 1px solid var(--border-default) !important
+      border-bottom: 1px solid var(--line-default) !important
 
     tbody tr
-      border-bottom: 1px solid var(--border-muted) !important
+      border-bottom: 1px solid var(--line-hairline) !important
 
     &__container
       border: none !important

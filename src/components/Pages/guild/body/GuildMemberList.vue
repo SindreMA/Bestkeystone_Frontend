@@ -45,17 +45,17 @@
         </div>
           </q-td>
           <q-td key="dungeons" :props="props" class="flex justify-start">
-            <template v-if="props.row.run_data.seasonBestRuns.length != 0">
+            <template v-if="props.row.run_data?.seasonBestRuns?.length">
               <dungeonRunMini
                 :run="run"
-                v-for="(run, index) in props.row.run_data.seasonBestRuns"
+                v-for="(run, index) in props.row.run_data?.seasonBestRuns"
                 style="margin-right: 15px"
                 :key="index"
               />
             </template>
             <template v-else> No run completed </template>
           </q-td>
-          <q-td key="score" :props="props">
+          <q-td key="weekly" :props="props">
             {{ props.row.run_data?.weeklyRuns?.length ?? 0 }}
             <q-tooltip v-if="props.row.run_data?.weeklyRuns?.length">
             <div class="flex gap-5 justify-around" style="">
@@ -115,8 +115,8 @@ const columns : any = [
     sortable: true,
     sort: (a, b) => a - b,
   },
-  { name: "dungeons", align: "left", label: "Dungeons", field: (x:Member) => x.run_data.seasonBestRuns, sortable: false },
-  { name: "weekly", align: "right", label: "Completed this week", field: (x:Member) => x.run_data.weeklyRuns.length, sortable: true },
+  { name: "dungeons", align: "left", label: "Dungeons", field: (x:Member) => x.run_data?.seasonBestRuns, sortable: false },
+  { name: "weekly", align: "right", label: "Completed this week", field: (x:Member) => x.run_data?.weeklyRuns?.length, sortable: true },
   {
     name: "score",
     label: "Score",

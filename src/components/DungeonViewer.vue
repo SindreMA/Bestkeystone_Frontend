@@ -176,7 +176,7 @@ const SetSize = () => {
 </script>
 <style>
 #points {
-  background: var(--gradient-primary);
+  background: var(--brand-gradient);
   color: white;
   border-radius: var(--radius-full);
   padding: 4px 12px;
@@ -185,20 +185,20 @@ const SetSize = () => {
 }
 
 #nameBox {
-  color: var(--text-primary);
+  color: var(--text-hi);
   border-radius: var(--radius-full);
   padding: 6px 18px;
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   font-weight: 600;
   box-shadow: var(--shadow-sm);
 }
 
 #rankBox {
-  color: var(--text-accent);
+  color: var(--accent);
   border-radius: var(--radius-full);
   background: var(--bg-surface);
-  border: 2px solid var(--border-accent);
+  border: 2px solid var(--line-strong);
   font-weight: 700;
   box-shadow: var(--shadow-glow);
 }
@@ -209,13 +209,13 @@ const SetSize = () => {
   height: 80px;
   border-radius: var(--radius-lg);
   margin: 12px 8px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   overflow: hidden;
   transition: border-color var(--transition-fast);
 }
 
 .DungeonWindow:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
   cursor: pointer;
 }
 
@@ -228,22 +228,22 @@ const SetSize = () => {
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   top: -50px;
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-top: 0px;
 }
 
 #DungeonMoreInfoWindow .q-tabs {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   border-radius: var(--radius-md);
 }
 
 #DungeonMoreInfoWindow .q-tab {
-  color: var(--text-secondary);
+  color: var(--text-mid);
   transition: all var(--transition-fast);
 }
 
 #DungeonMoreInfoWindow .q-tab--active {
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 
 #DungeonMoreInfoWindow .q-tab-panels {

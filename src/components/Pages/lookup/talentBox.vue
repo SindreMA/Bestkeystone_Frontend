@@ -106,7 +106,7 @@ export default {
 
 <style scoped>
 #Box {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   width: 518px;
   height: 380px;
@@ -116,11 +116,11 @@ export default {
 }
 
 #Header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
-  color: var(--text-primary);
+  color: var(--text-hi);
   font-weight: 600;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--line-default);
 }
 #Container {
   position: absolute;
@@ -132,7 +132,7 @@ export default {
   background: url(https://res.cloudinary.com/djpcbbeqx/image/upload/v1664310108/talents/sprite.png) 0 -50px,
     url(https://res.cloudinary.com/djpcbbeqx/image/upload/v1664310108/talents/sprite.png) 50px -50px,
     url(https://res.cloudinary.com/djpcbbeqx/image/upload/v1664310108/talents/sprite.png) 0px 0px;
-  color: goldenrod;
+  color: var(--rank-gold);
   text-align: center;
   padding-top: 15px;
 }
@@ -169,7 +169,7 @@ export default {
   top: 12px;
   width: 260x;
   height: 26px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-sm);
 }
 .talentItem .Name {

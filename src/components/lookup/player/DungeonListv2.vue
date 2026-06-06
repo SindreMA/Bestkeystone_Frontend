@@ -492,12 +492,12 @@ onBeforeMount(() => {
   height: 20px;
 }
 .historyContainer {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
 table {
-  color: var(--text-primary) !important;
+  color: var(--text-hi) !important;
   border-collapse: collapse;
   width: 100%;
 }
@@ -505,19 +505,19 @@ table {
   background: var(--bg-hover) !important;
 }
 .historyContainer .hideHover:hover {
-  background: var(--bg-elevated) !important;
+  background: var(--bg-raised) !important;
 }
 .hideHover:hover tr:nth-child():hover {
-  background: var(--bg-elevated) !important;
+  background: var(--bg-raised) !important;
 }
 .q-table th {
   opacity: 1;
-  color: var(--text-secondary);
+  color: var(--text-mid);
 }
 .starIcon {
   transform: scale(0.6);
   width: 7px;
-  color: goldenrod;
+  color: var(--rank-gold);
 }
 .chestContainer {
   overflow: visible;
@@ -526,7 +526,7 @@ table {
   top: -2px;
 }
 .boxBorder {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
   background: var(--bg-surface);
@@ -540,10 +540,10 @@ table {
 .SelectedMarker {
   font-size: 20px;
   height: 38px;
-  color: #ef4444;
+  color: var(--neg);
 }
 .dungeoonDetails {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
 }
 .viewItem {
   min-width: 800px;
@@ -551,21 +551,21 @@ table {
   max-width: 1000px;
 }
 .Header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
-  color: var(--text-primary);
+  color: var(--text-hi);
   font-weight: 600;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--line-default);
 }
 .btnBackground {
   background-position: center;
   background-size: cover;
   border-radius: var(--radius-full);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   transition: all var(--transition-normal);
 }
 .btnBackground:hover {
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
   transform: scale(1.1);
 }
 </style>

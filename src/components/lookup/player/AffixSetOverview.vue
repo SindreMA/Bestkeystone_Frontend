@@ -1,44 +1,33 @@
 <template>
-  <div id="Box">
-    <div id="Header" class="HeaderSize4">
-      Affix combonations statistics
+  <div class="kc-statlist kc-statlist--stats" style="--statcols: minmax(0, 1fr) 46px 58px 62px 42px 50px;">
+    <div class="kc-statlist__head">
+      <span>Affix combinations</span>
+      <span class="kc-statlist__count">{{ runData.length }} combos</span>
     </div>
-    <div id="Container">
-      <q-table :rows-per-page-options="[]" card-class="HeaderFont" table-class="HeaderFont"
-        table-header-class="HeaderFont" dark dense :rows="runData" :columns="columns"
-        :pagination.sync="paginationControl" row-key="affixCombo">
-        <template v-slot:body="props">
-          <q-tr :props="props" class="text-center">
-            <q-td key="affix">
-              <div class="flex justify-around">
-                <div class="flex affixItem" v-for="(affix, index) in props.row.affix?.affixes" :key="index">
-                  <Affix :affixid="affix?.id" :border="true" size="13px" class="tableIcon" />
-                  <div> {{ affix?.name }}</div>
-                </div>
-              </div>
-
-            </q-td>
-            <q-td key="highest_lvl">
-              {{ props.row.highest_lvl }}
-            </q-td>
-            <q-td key="highest_score">
-              {{ props.row.highest_score }}
-            </q-td>
-            <q-td key="total_time">
-              {{ `${moment.duration(props.row.total_time).format("hh:mm:ss")}` }}
-            </q-td>
-            <q-td key="runs">
-              {{ props.row.runs }}
-            </q-td>
-            <q-td key="intime_rate">
-              {{ props.row.ontime_rate }}%
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+    <div class="kc-statlist__cols">
+      <span class="kc-eyebrow">Affix set</span>
+      <span class="kc-eyebrow r">Key</span>
+      <span class="kc-eyebrow r">Score</span>
+      <span class="kc-eyebrow r">Time</span>
+      <span class="kc-eyebrow r">Runs</span>
+      <span class="kc-eyebrow r">Win</span>
+    </div>
+    <div class="kc-statlist__scroll">
+      <div v-for="row in sortedRows" :key="row.affix?.affix" class="kc-statlist__row">
+        <span class="kc-statlist__entity">
+          <span class="kc-set__icons">
+            <Affix v-for="(a, i) in row.affix?.affixes" :key="i" :affixid="a?.id" :size="18" :border="true" />
+          </span>
+          <span class="kc-statlist__name">{{ row.affix?.affix }}</span>
+        </span>
+        <span class="kc-statlist__num kc-statlist__num--hi">+{{ row.highest_lvl }}</span>
+        <span class="kc-statlist__num">{{ row.highest_score }}</span>
+        <span class="kc-statlist__num">{{ fmtTime(row.total_time) }}</span>
+        <span class="kc-statlist__num">{{ row.runs }}</span>
+        <span class="kc-statlist__win" :class="winClass(row.ontime_rate)">{{ row.ontime_rate }}%</span>
+      </div>
     </div>
   </div>
-
 </template>
 
 <script lang="ts" setup>
@@ -58,48 +47,10 @@ const props = defineProps({
 const { runs, from, to } = toRefs(props)
 
 const runData = ref([])
-const paginationControl = ref({ rowsPerPage: 20, page: 1, sortBy: "affix" })
-const columns = ref<Array<any>>([
-  {
-    name: "affix", label: "Affix", field: row => row.affix?.affix, sortable: true,
-    align: 'center',
-  },
-  {
-    name: "highest_lvl",
-    label: "Highest level",
-    field: "highest_lvl",
-    sortable: true,
-    align: 'center',
-  },
-  {
-    name: "highest_score",
-    label: "Highest score",
-    field: "highest_score",
-    sortable: true,
-    align: 'center',
-  },
-  {
-    name: "total_time",
-    label: "Total time",
-    field: "total_time",
-    sortable: true,
-    format: val => `${moment.duration(val).format("hh:mm:ss")}`,
-    align: 'center',
 
-  },
-  {
-    name: "runs", label: "Runs", field: "runs", sortable: true,
-    align: 'center',
-  },
-  {
-    name: "ontime_rate",
-    label: "Success rate",
-    field: "ontime_rate",
-    sortable: true,
-    format: val => `${val}%`,
-    align: 'center',
-  }
-])
+const winClass = (r) => (r >= 80 ? 'kc-statlist__win--good' : r >= 55 ? 'kc-statlist__win--mid' : 'kc-statlist__win--bad')
+const fmtTime = (ms) => moment.duration(ms).format("hh:mm:ss")
+const sortedRows = computed(() => [...runData.value].sort((a, b) => b.runs - a.runs))
 
 const GetAffixdetails = (id) => {
   for (let i = 0; i < GetAffixes.value.length; i++) {
@@ -194,36 +145,6 @@ onBeforeMount(() => {
 
 </script>
 <style scoped>
-#Box {
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-surface);
-}
-
-#Header {
-  background: var(--bg-elevated);
-  padding: 12px 16px;
-  color: var(--text-primary);
-  font-weight: 600;
-  border-bottom: 1px solid var(--border-default);
-}
-
-#Container {
-  padding: 8px;
-}
-
-.tableIcon {
-  width: 22px;
-  height: 22px;
-  margin-right: 2px;
-}
-.affixItem {
-  gap: 10px;
-  width: 120px;
-  align-items: center;
-}
+.kc-statlist__scroll { max-height: 360px; }
+.kc-set__icons { display: flex; gap: 3px; flex: none; }
 </style>
-
-

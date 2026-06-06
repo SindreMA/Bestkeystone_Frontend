@@ -24,7 +24,7 @@ export default {
     return {
       chartOptions: {
         chart: {
-          foreColor: "#a1a1a1",
+          foreColor: "#9AA7B8",
           stacked: true,
           toolbar: {
             show: true

@@ -18,7 +18,8 @@ module.exports = configure(function (/* ctx */) {
       'axios',
     ],
     css: [
-      'app.sass'
+      'app.sass',
+      'keystone-tokens.css'
     ],
     extras: [
       'roboto-font', // optional, you are not bound to it

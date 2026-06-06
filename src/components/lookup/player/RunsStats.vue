@@ -119,8 +119,8 @@ export default {
     height: 1px;
 }
 #RunstatsWindow {
-    background-color: #292929;
-    border: #323232 solid 1px;
+    background-color: var(--bg-raised);
+    border: var(--line-default) solid 1px;
     padding: 5px;
     width: 235px;
 }
@@ -130,12 +130,12 @@ export default {
 }
 
 .LevelInfoBox_Stats {
-    background-color: #292929;
+    background-color: var(--bg-raised);
 }
 .LevelInfoBox{
     font-size: 12px;
     text-align: center;
-    background-color: #323232;
+    background-color: var(--line-default);
     width: 45px;
     height: 45px;
     border-radius: 50px;

@@ -1,6 +1,6 @@
 <template>
       <div class="projectCard  shadow-18 col-grow ">
-        <div>
+        <div style="flex: 1;">
           <div class="HeaderSize4">{{project.title}}</div>
           <div>{{project.description}}</div>
         </div>
@@ -22,20 +22,24 @@ export default {
 
 <style scoped>
 .projectCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-xl);
-  width: 500px;
-  margin: 15px 15px;
+  width: 100%;
+  max-width: 500px;
   min-height: 105px;
   padding: 16px;
   transition: all var(--transition-normal);
 }
 .projectCard:hover {
   transform: translateY(-4px) scale(1.02);
-  border-color: var(--border-accent);
+  border-color: var(--line-strong);
 }
 .imageSize {
+  flex: none;
   width: 65px;
   height: 65px;
   border-radius: var(--radius-md);
@@ -43,7 +47,7 @@ export default {
 .InstallButton {
   height: 30px;
   width: 200px;
-  background: var(--gradient-primary);
+  background: var(--brand-gradient);
   border-radius: var(--radius-full);
 }
 </style>

@@ -246,21 +246,21 @@ export default {
 #PicturePlate {
   width: 84px;
   height: 84px;
-  background-color: #252525;
-  border: solid goldenrod 1px;
+  background-color: var(--bg-inset);
+  border: solid var(--rank-gold) 1px;
 }
 #NameLocationPlate {
   width: 150px;
   border-radius: 15px 15px 15px 15px;
-  background-color: #252525;
+  background-color: var(--bg-inset);
   padding: 2px;
-  border: solid goldenrod 1px;
+  border: solid var(--rank-gold) 1px;
 }
 .InfoField {
   border-radius: 15px 15px 15px 15px;
-  background-color: #252525;
+  background-color: var(--bg-inset);
   padding: 2px 20px;
-  border: solid goldenrod 1px;
+  border: solid var(--rank-gold) 1px;
   height: 44px;
   min-width: 110px;
   margin: 0 20px;

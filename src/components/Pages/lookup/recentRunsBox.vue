@@ -89,7 +89,7 @@ const numChest = (run) => {
   width: 100%;
 }
 #Box {
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   height: 200px;
   width: 100%;
@@ -98,11 +98,11 @@ const numChest = (run) => {
 }
 
 #Header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
-  color: var(--text-primary);
+  color: var(--text-hi);
   font-weight: 600;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--line-default);
 }
 #Container {
   position: relative;
@@ -110,7 +110,7 @@ const numChest = (run) => {
   height: 100%;
 }
 .dark {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
 }
 .runRow {
   position: relative;
@@ -124,12 +124,12 @@ const numChest = (run) => {
 .placeLeft {
   position: absolute;
   left: 8px;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 .placeRight {
   position: absolute;
   right: 8px;
-  color: var(--text-secondary);
+  color: var(--text-mid);
 }
 .chestDiv {
     height: 20px;
@@ -146,7 +146,7 @@ const numChest = (run) => {
   transition: color var(--transition-fast);
 }
 .Pointer:hover {
-  color: var(--text-accent);
+  color: var(--accent);
 }
 </style>
 

@@ -15,7 +15,7 @@
             class="class-icon"
             spinner-size="12px"
           />
-          <classTextColor :_class="player._class">
+          <classTextColor :_class="player._class" class="player-name-wrap">
             <span class="player-name">{{ player.name }}</span>
           </classTextColor>
           <div class="player-stats">
@@ -79,7 +79,7 @@ const getHighestKey = (player) => {
 <style scoped>
 .info-box {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   overflow: hidden;
   flex: 1;
@@ -87,11 +87,11 @@ const getHighestKey = (player) => {
 }
 
 .info-header {
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
   padding: 12px 16px;
   font-weight: 600;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-default);
+  color: var(--text-hi);
+  border-bottom: 1px solid var(--line-default);
 }
 
 .info-content {
@@ -122,20 +122,20 @@ const getHighestKey = (player) => {
 .rank {
   width: 20px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-low);
   text-align: center;
 }
 
 .performer-row:nth-child(1) .rank {
-  color: #ffd700;
+  color: var(--rank-gold);
 }
 
 .performer-row:nth-child(2) .rank {
-  color: #c0c0c0;
+  color: var(--rank-silver);
 }
 
 .performer-row:nth-child(3) .rank {
-  color: #cd7f32;
+  color: var(--rank-bronze);
 }
 
 .class-icon {
@@ -144,8 +144,15 @@ const getHighestKey = (player) => {
   border-radius: var(--radius-sm);
 }
 
-.player-name {
+.player-name-wrap {
   flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-weight: 500;
 }
 
@@ -153,17 +160,21 @@ const getHighestKey = (player) => {
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-content: flex-end;
+  min-width: 88px;
 }
 
 .score {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 .highest-key {
   font-size: 0.85rem;
-  color: var(--accent-secondary);
-  background: var(--bg-elevated);
+  color: var(--signal-cyan);
+  background: var(--bg-raised);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
 }
@@ -171,6 +182,6 @@ const getHighestKey = (player) => {
 .empty-state {
   padding: 24px;
   text-align: center;
-  color: var(--text-muted);
+  color: var(--text-low);
 }
 </style>

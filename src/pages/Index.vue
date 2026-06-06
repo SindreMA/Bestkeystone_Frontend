@@ -275,7 +275,7 @@
 <style>
 /* Clean Homepage Styles */
 .home-page {
-  background: var(--bg-base);
+  background: var(--bg-canvas);
 }
 
 /* Hero Section */
@@ -298,20 +298,20 @@
 
 .title-sub {
   font-size: 1rem;
-  color: var(--text-muted);
+  color: var(--text-low);
   margin-bottom: 8px;
 }
 
 .title-main {
   font-size: 3.5rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-hi);
   margin-bottom: 8px;
 }
 
 .title-desc {
   font-size: 1.1rem;
-  color: var(--text-secondary);
+  color: var(--text-mid);
 }
 
 /* Hero Stats */
@@ -328,32 +328,32 @@
 }
 
 .hero-stat.highlight {
-  color: #f59e0b;
+  color: var(--warn);
 }
 
 .hero-stat .stat-value {
   display: block;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
 }
 
 .hero-stat.highlight .stat-value {
-  color: #f59e0b;
+  color: var(--warn);
 }
 
 .hero-stat .stat-label {
   display: block;
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--text-low);
   margin-top: 4px;
 }
 
 /* Affix Section */
 .affix-section {
   padding: 24px 20px;
-  border-top: 1px solid var(--border-default);
-  border-bottom: 1px solid var(--border-default);
+  border-top: 1px solid var(--line-default);
+  border-bottom: 1px solid var(--line-default);
 }
 
 .affix-section-inner {
@@ -365,7 +365,7 @@
 .affix-label {
   display: block;
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   margin-bottom: 12px;
 }
 
@@ -375,14 +375,14 @@
   flex-direction: column;
   align-items: center;
   padding: 80px 20px;
-  color: var(--text-muted);
+  color: var(--text-low);
 }
 
 .loading-spinner {
   width: 32px;
   height: 32px;
-  border: 2px solid var(--border-default);
-  border-top-color: var(--accent-primary);
+  border: 2px solid var(--line-default);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin-bottom: 16px;
@@ -407,7 +407,7 @@
 
 .top-dungeon-inner {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   padding: 32px;
   max-width: 600px;
@@ -416,7 +416,7 @@
 
 .top-label {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--text-low);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -424,7 +424,7 @@
 .top-name {
   font-size: 2rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
   margin: 12px 0 20px;
 }
 
@@ -433,22 +433,22 @@
   justify-content: center;
   gap: 32px;
   flex-wrap: wrap;
-  color: var(--text-secondary);
+  color: var(--text-mid);
   font-size: 0.9rem;
 }
 
 .top-stats strong {
-  color: #f59e0b;
+  color: var(--warn);
 }
 
 /* Section Titles */
 .section-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
   margin: 40px 0 20px;
   padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--line-default);
 }
 
 /* Rankings */
@@ -466,7 +466,7 @@
 
 .content-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-lg);
   padding: 24px;
 }
@@ -474,7 +474,7 @@
 .card-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
   margin: 0 0 16px 0;
 }
 
@@ -492,7 +492,7 @@
 .page-footer {
   margin-top: 60px;
   padding: 40px 20px;
-  border-top: 1px solid var(--border-default);
+  border-top: 1px solid var(--line-default);
   background: var(--bg-surface);
 }
 
@@ -505,12 +505,12 @@
 .footer-brand {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-hi);
   margin-bottom: 8px;
 }
 
 .footer-info p {
-  color: var(--text-muted);
+  color: var(--text-low);
   margin: 0 0 24px;
 }
 
@@ -521,7 +521,7 @@
   flex-wrap: wrap;
   margin-bottom: 24px;
   font-size: 0.85rem;
-  color: var(--text-secondary);
+  color: var(--text-mid);
 }
 
 .footer-timers {
@@ -538,7 +538,7 @@
 .timer-label {
   display: block;
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--text-low);
   margin-bottom: 4px;
 }
 
@@ -550,20 +550,20 @@
 }
 
 .footer-links a {
-  color: var(--text-secondary);
+  color: var(--text-mid);
   text-decoration: none;
   padding: 8px 16px;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--line-default);
   border-radius: var(--radius-md);
 }
 
 .footer-links a:hover {
-  border-color: var(--border-accent);
-  color: var(--text-primary);
+  border-color: var(--line-strong);
+  color: var(--text-hi);
 }
 
 .footer-links button {
-  background: #f59e0b;
+  background: var(--warn);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -578,7 +578,7 @@
 
 .footer-credit {
   font-size: 0.85rem;
-  color: var(--text-muted);
+  color: var(--text-low);
 }
 
 /* Responsive */
@@ -613,6 +613,6 @@
 }
 
 /* Legacy support */
-.HeaderFont { color: var(--text-secondary); }
+.HeaderFont { color: var(--text-mid); }
 .Centertext { text-align: center; }
 </style>

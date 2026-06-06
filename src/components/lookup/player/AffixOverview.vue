@@ -1,48 +1,39 @@
 <template>
-  <div id="Box">
-    <div id="Header" class="HeaderSize4">
-      Affix statistics
+  <div class="kc-statlist kc-statlist--stats" style="--statcols: minmax(0, 1fr) 46px 58px 62px 42px 50px;">
+    <div class="kc-statlist__head">
+      <span>Affix statistics</span>
+      <span class="kc-statlist__count">{{ runData.length }} affixes</span>
     </div>
-    <div id="Container">
-      <q-table :rows-per-page-options="[]" card-class="HeaderFont" table-class="HeaderFont"
-        table-header-class="HeaderFont" dark dense :rows="runData" :columns="columns"
-        :pagination.sync="paginationControl" row-key="affix">
-        <template v-slot:body="props">
-          <q-tr :props="props" class="text-center">
-            <q-td key="affix">
-              <div class="flex tableIconContainer">
-                <affix :affixid="props.row.affix?.id" size="13px" :border="true" class="tableIcon" />
-                <div> {{ props.row.affix?.name }}</div>
-              </div>
-
-            </q-td>
-            <q-td key="highest_lvl">
-              {{ props.row.highest_lvl }}
-            </q-td>
-            <q-td key="highest_score">
-              {{ props.row.highest_score }}
-            </q-td>
-            <q-td key="total_time">
-              {{ `${moment.duration(props.row.total_time).format("hh:mm:ss")}` }}
-            </q-td>
-            <q-td key="runs">
-              {{ props.row.runs }}
-            </q-td>
-            <q-td key="intime_rate">
-              {{ props.row.ontime_rate }}%
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+    <div class="kc-statlist__cols">
+      <span class="kc-eyebrow">Affix</span>
+      <span class="kc-eyebrow r">Key</span>
+      <span class="kc-eyebrow r">Score</span>
+      <span class="kc-eyebrow r">Time</span>
+      <span class="kc-eyebrow r">Runs</span>
+      <span class="kc-eyebrow r">Win</span>
+    </div>
+    <div class="kc-statlist__scroll">
+      <div v-for="row in sortedRows" :key="row.affix?.id" class="kc-statlist__row">
+        <span class="kc-statlist__entity">
+          <span class="kc-statlist__icon kc-statlist__icon--affix">
+            <affix :affixid="row.affix?.id" :size="20" :border="true" />
+          </span>
+          <span class="kc-statlist__name">{{ row.affix?.name }}</span>
+        </span>
+        <span class="kc-statlist__num kc-statlist__num--hi">+{{ row.highest_lvl }}</span>
+        <span class="kc-statlist__num">{{ row.highest_score }}</span>
+        <span class="kc-statlist__num">{{ fmtTime(row.total_time) }}</span>
+        <span class="kc-statlist__num">{{ row.runs }}</span>
+        <span class="kc-statlist__win" :class="winClass(row.ontime_rate)">{{ row.ontime_rate }}%</span>
+      </div>
     </div>
   </div>
-
 </template>
 
 <script lang="ts" setup>
-import SF, {moment} from '../../../SharedFunctions'
+import SF, { moment } from '../../../SharedFunctions'
 import { useStore } from 'src/store'
-import { computed, onBeforeMount, ref, toRef, toRefs, watch } from 'vue'
+import { computed, onBeforeMount, ref, toRefs, watch } from 'vue'
 import affix from '../../Icons/Affix/index.vue'
 
 const props = defineProps({
@@ -53,48 +44,12 @@ const props = defineProps({
   to: {}
 })
 const { runs, from, to } = toRefs(props)
-watch(runs, () => {
-  runData.value = GetRuns.value
-})
-
-onBeforeMount(() => {
-  runData.value = GetRuns.value
-})
-
 
 const runData = ref([])
-const paginationControl = ref({ rowsPerPage: 20, page: 1, sortBy: "affix" })
-const columns = ref<Array<any>>([
-  { name: "affix", label: "Affix", field: row => row.affix?.name, sortable: true, align: "center" },
-  {
-    name: "highest_lvl",
-    label: "Highest level",
-    field: "highest_lvl",
-    sortable: true, align: "center"
-  },
-  {
-    name: "highest_score",
-    label: "Highest score",
-    field: "highest_score",
-    sortable: true, align: "center"
-  },
-  {
-    name: "total_time",
-    label: "Total time",
-    field: "total_time", align: "center",
-    sortable: true,
-    format: val => `${moment.duration(val).format("hh:mm:ss")}`
 
-  },
-  { name: "runs", label: "Runs", field: "runs", sortable: true, align: "center" },
-  {
-    name: "ontime_rate",
-    label: "Success rate",
-    field: "ontime_rate",
-    sortable: true,
-    format: val => `${val}%`, align: "center"
-  }
-])
+const winClass = (r) => (r >= 80 ? 'kc-statlist__win--good' : r >= 55 ? 'kc-statlist__win--mid' : 'kc-statlist__win--bad')
+const fmtTime = (ms) => moment.duration(ms).format("hh:mm:ss")
+const sortedRows = computed(() => [...runData.value].sort((a, b) => b.runs - a.runs))
 
 const GetAffixdetails = (id) => {
   for (let i = 0; i < GetAffixes.value.length; i++) {
@@ -191,37 +146,24 @@ const GetRuns = computed(() => {
 
   return rls;
 })
+
+watch(runs, () => {
+  runData.value = GetRuns.value
+})
+
+onBeforeMount(() => {
+  runData.value = GetRuns.value
+})
 </script>
 
 <style scoped>
-.tableIcon {
-  width: 22px;
-  height: 22px;
-  margin-right: 2px;
-}
-
-#Box {
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--bg-surface);
-}
-
-#Header {
-  background: var(--bg-elevated);
-  padding: 12px 16px;
-  color: var(--text-primary);
-  font-weight: 600;
-  border-bottom: 1px solid var(--border-default);
-}
-
-#Container {
-  padding: 8px;
-}
-.tableIconContainer {
-  gap: 10px;
-  align-items: center;
+.kc-statlist__scroll { max-height: 360px; }
+/* affix component renders its own bordered icon; wrap it so it sits at ~24px like DungeonOverview's thumb */
+.kc-statlist__icon--affix {
+  border: none;
+  background: none;
+  display: grid;
+  place-items: center;
+  overflow: visible;
 }
 </style>
-
-
