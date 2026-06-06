@@ -93,7 +93,6 @@ const NAV = [
   ] },
   { key: 'tools', label: 'Tools', children: [
     { label: 'Title Cutoffs', path: '/tools/cutoffs' },
-    { label: 'What to Farm', path: '/tools/planner' },
     { label: 'Population', path: '/tools/population' },
   ] },
   { key: 'leaderboard', label: 'Leaderboard', children: [

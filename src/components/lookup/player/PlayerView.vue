@@ -94,6 +94,9 @@
               <div v-if="!byDungeon(runs).length" class="kc-player__empty">No runs for this season.</div>
             </KcCard>
 
+            <!-- what to farm next (global meta priority + this player's current best per dungeon) -->
+            <FarmNextCard :runs="data.run_data.runs" :periode="periode" />
+
             <template v-if="data.run_data.runs.length > 0">
               <AffixOverview :runs="data.run_data.runs" />
               <AffixSetOverview :runs="data.run_data.runs" />
@@ -122,6 +125,7 @@ import OtherMatches from "components/Pages/lookup/OtherMatches.vue";
 import PlayerFormatter from "../../data_formatters/Lookup/PlayerFormatter.vue";
 import TalentLine from "../../../components/lookup/player/v2/TalentLine.vue";
 import DungeonOverview from "components/lookup/player/DungeonOverview.vue";
+import FarmNextCard from "components/lookup/player/FarmNextCard.vue";
 import AffixOverview from "components/lookup/player/AffixOverview.vue";
 import AffixSetOverview from "components/lookup/player/AffixSetOverview.vue";
 import keystoneFriends from "components/Pages/lookup/keystoneFriends.vue";

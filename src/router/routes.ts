@@ -42,7 +42,6 @@ const routes: RouteRecordRaw[] = [
     component: layout,
     children: [
       { path: 'cutoffs', component: () => import('pages/tools/cutoffs.vue') },
-      { path: 'planner', component: () => import('pages/tools/planner.vue') },
       { path: 'population', component: () => import('pages/tools/population.vue') },
     ]
   },
