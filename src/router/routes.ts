@@ -24,6 +24,26 @@ const routes: RouteRecordRaw[] = [
     component: layout,
     children: [
       { path: 'keystone', component: () => import('pages/leaderboards/keystone.vue') },
+      { path: 'fastest', component: () => import('pages/leaderboards/fastest.vue') },
+    ]
+  },
+  {
+    path: '/meta',
+    component: layout,
+    children: [
+      { path: 'trends', component: () => import('pages/meta/trends.vue') },
+      { path: 'tier-lists', component: () => import('pages/meta/tierlists.vue') },
+      { path: 'diversity', component: () => import('pages/meta/diversity.vue') },
+      { path: 'faction-region', component: () => import('pages/meta/factionRegion.vue') },
+    ]
+  },
+  {
+    path: '/tools',
+    component: layout,
+    children: [
+      { path: 'cutoffs', component: () => import('pages/tools/cutoffs.vue') },
+      { path: 'planner', component: () => import('pages/tools/planner.vue') },
+      { path: 'population', component: () => import('pages/tools/population.vue') },
     ]
   },
   {

@@ -33,6 +33,59 @@
       <KcCard :level="1" header="Runs per week" class="kc-runs__block">
         <PerWeekChart :data="levelData" />
       </KcCard>
+
+      <!-- Activity heatmap · hour-of-day × day-of-week (mock data, design view_misc.jsx › RunsView) -->
+      <KcCard :level="1" class="kc-runs__block" :body-style="{ padding: '0' }">
+        <template #header>When the world pushes keys</template>
+        <template #headerRight>
+          <span class="kc-eyebrow kc-runs__heat-scope">{{ heatScopeLabel }}</span>
+        </template>
+
+        <div class="kc-runs__heat-controls">
+          <div class="kc-runs__heat-filter">
+            <span class="kc-eyebrow">Level band</span>
+            <div class="kc-seg">
+              <button
+                v-for="b in levelBandsList"
+                :key="b"
+                class="kc-seg__btn"
+                :class="{ 'is-sel': b === heatLevelBand }"
+                @click="heatLevelBand = b"
+              >{{ b }}</button>
+            </div>
+          </div>
+          <div class="kc-runs__heat-filter">
+            <span class="kc-eyebrow">Region</span>
+            <div class="kc-seg">
+              <button
+                v-for="r in heatRegionList"
+                :key="r.value"
+                class="kc-seg__btn"
+                :class="{ 'is-sel': r.value === heatRegion }"
+                @click="heatRegion = r.value"
+              >{{ r.label }}</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="kc-runs__heat-body">
+          <apexchart
+            v-if="heatReady"
+            width="100%"
+            height="340px"
+            type="heatmap"
+            :options="heatOptions"
+            :series="heatSeries"
+          />
+          <div v-else class="kc-runs__heat-skeleton">
+            <q-skeleton v-for="i in 7" :key="i" height="36px" />
+          </div>
+        </div>
+
+        <div class="kc-runs__heat-foot">
+          Brightest band is 18:00–23:00 local; the Tuesday reset drives the weekly spike. Weekend daytime fills in versus weekdays.
+        </div>
+      </KcCard>
     </div>
   </div>
 </template>
@@ -48,6 +101,7 @@ import axios from "axios";
 import sf from "../../SharedFunctions";
 import { computed, onBeforeMount, ref, watch } from "vue";
 import { useStore } from "src/store";
+import { levelBands as metaLevelBands } from "src/mocks/meta";
 
 
 const levelData = ref(null);
@@ -244,6 +298,108 @@ onBeforeMount(() => {
   GetData("world");
 });
 
+/* ──────────────────────────────────────────────────────────────────────────
+   Activity heatmap (hour-of-day × day-of-week)
+   Mock-only for now (design view_misc.jsx › RunsView). Buckets are generated
+   inline from a deterministic shape — evening peak, Tuesday-reset bump and a
+   weekend daytime fill — then scaled by the selected level band & region so
+   the filter chips visibly move the data. A later pass swaps this for an
+   endpoint; the {region, level} contract stays stable.
+   ────────────────────────────────────────────────────────────────────────── */
+const HEAT_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// Level bands from the mock meta module; "All" first so it reads as the default.
+const levelBandsList = ref<string[]>(metaLevelBands);
+const heatLevelBand = ref<string>(metaLevelBands[0] ?? "All");
+
+const heatRegionList = ref([
+  { label: "World", value: "world" },
+  { label: "USA", value: "us" },
+  { label: "Europa", value: "eu" },
+  { label: "Taiwan", value: "tw" },
+  { label: "Korea", value: "kr" },
+]);
+const heatRegion = ref("world");
+
+const heatScopeLabel = computed(() => {
+  const r = heatRegionList.value.find((x) => x.value === heatRegion.value);
+  const region = !r || r.value === "world" ? "all regions" : r.label;
+  return heatLevelBand.value === "All" ? region : `${region} · ${heatLevelBand.value}`;
+});
+
+// Deterministic pseudo-random so the mock is stable per (region, band, cell).
+function jitter(seed: number) {
+  const x = Math.sin(seed * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+}
+
+// Higher bands have fewer total runs; region offsets the daily peak hour.
+const bandScale: Record<string, number> = {
+  All: 1, "+7": 0.92, "+10": 0.74, "+12": 0.58, "+15": 0.4, "+18": 0.22, "+20": 0.11,
+};
+const regionPeakShift: Record<string, number> = { world: 0, us: 1, eu: 0, tw: -8, kr: -7 };
+
+const heatSeries = computed(() => {
+  const bandK = bandScale[heatLevelBand.value] ?? 1;
+  const shift = regionPeakShift[heatRegion.value] ?? 0;
+  const regSeed = (heatRegion.value.charCodeAt(0) || 0) + (heatLevelBand.value.length || 0);
+  return HEAT_DAYS.map((day, di) => ({
+    name: day,
+    data: Array.from({ length: 24 }, (_, hRaw) => {
+      const h = (hRaw + shift + 24) % 24;
+      const peak =
+        h >= 18 && h <= 23 ? 1 : h >= 12 && h <= 17 ? 0.6 : h >= 1 && h <= 7 ? 0.15 : 0.4;
+      const wknd = di >= 5 ? 1.25 : 1;
+      const reset = di === 1 && h >= 15 ? 1.5 : 1; // Tuesday reset bump
+      const noise = jitter(regSeed + di * 24 + hRaw) * 12;
+      return {
+        x: String(hRaw).padStart(2, "0"),
+        y: Math.round((peak * wknd * reset * 100 + noise) * bandK),
+      };
+    }),
+  }));
+});
+
+// Literal hex tokens — ApexCharts renders to canvas and can't read CSS vars.
+const heatOptions = computed(() => ({
+  ...kcChartBase,
+  chart: { ...kcChartBase.chart, id: "runsHeatmap", type: "heatmap" },
+  colors: ["#5B8DEF"],
+  stroke: { width: 1, colors: ["#0E141B"] },
+  plotOptions: {
+    heatmap: {
+      radius: 3,
+      enableShades: true,
+      shadeIntensity: 0.6,
+      colorScale: {
+        ranges: [
+          { from: 0, to: 40, color: "#222D3C", name: "low" },
+          { from: 41, to: 90, color: "#2E5BB0", name: "med" },
+          { from: 91, to: 140, color: "#5B8DEF", name: "high" },
+          { from: 141, to: 400, color: "#3DD6D0", name: "peak" },
+        ],
+      },
+    },
+  },
+  xaxis: {
+    ...axisLabel,
+    type: "category",
+    tickAmount: 12,
+    title: { text: "Hour of day", style: { color: "#5E6B7D", fontSize: "11px", fontWeight: 400 } },
+  },
+  yaxis: { ...axisLabel },
+  tooltip: { theme: "dark", y: { formatter: (v: number) => v + " runs/min" } },
+  legend: { ...kcChartBase.legend, position: "bottom" },
+}));
+
+// brief skeleton beat so the heatmap card matches the design's loading state
+const heatReady = ref(false);
+onBeforeMount(() => {
+  setTimeout(() => {
+    heatReady.value = true;
+  }, 350);
+});
+
 </script>
 
 <style scoped>
@@ -257,4 +413,33 @@ onBeforeMount(() => {
 .kc-runs__charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: var(--kc-sp-5); }
 .kc-runs__charts > * { min-width: 0; }
 .kc-runs__block { margin-top: var(--kc-sp-5); }
+
+/* activity heatmap */
+.kc-runs__heat-scope { margin: 0; color: var(--kc-text-mid); }
+.kc-runs__heat-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--kc-sp-5);
+  padding: var(--kc-sp-4) var(--kc-sp-5);
+  border-bottom: 1px solid var(--kc-line-hairline);
+}
+.kc-runs__heat-filter { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.kc-runs__heat-filter .kc-eyebrow { margin: 0; }
+.kc-runs__heat-filter .kc-seg { flex-wrap: wrap; }
+.kc-runs__heat-body { padding: var(--kc-sp-4) var(--kc-sp-3) 0; min-height: 340px; }
+.kc-runs__heat-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--kc-sp-2) var(--kc-sp-3);
+}
+.kc-runs__heat-foot {
+  padding: var(--kc-sp-3) var(--kc-sp-5);
+  font-size: 11.5px;
+  color: var(--kc-text-low);
+  border-top: 1px solid var(--kc-line-hairline);
+}
+@media (max-width: 600px) {
+  .kc-runs__heat-controls { flex-direction: column; gap: var(--kc-sp-4); }
+}
 </style>

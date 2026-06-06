@@ -394,3 +394,33 @@ Verified live: comps 5000→1127 for Pit of Saron; classes/specs fetch+render
 per-dungeon (identical to global until backend deploy); chip menu lists the 8
 active dungeons; zero console errors. Frontend build green; backend compiles
 0 errors. NOT committed (per standing rule).
+
+## Phase S — New-features implementation from Claude-Design handoff (2026-06-06)
+
+Implemented the Claude-Design React prototype (Meta + Tools feature set) into the real
+Quasar/Vue app + the additive backend, via two parallel workflows (frontend + backend).
+
+Frontend (mock-data backed, build GREEN, verified in browser):
+- Foundation: KcTierBadge.vue, src/mocks/meta.ts (ports the design data.js = API contract),
+  Level scope chip + SelectedLevelBand store, Meta▾ + Tools▾ nav groups + Fastest Times,
+  new /meta & /tools routes.
+- Views: meta/tierlists, meta/trends (multi-series area chart + gainers/losers),
+  meta/diversity (custom arc gauge), meta/factionRegion, tools/cutoffs (projection),
+  tools/planner, tools/population, leaderboards/fastest; enhanced statistics/dungeons
+  (Ranking⇄Tier-list toggle + Tyr-vs-Fort + cushion) and statistics/runs (activity heatmap).
+- Verified: tier-lists, trends (chart renders), diversity (gauge), dungeons both modes —
+  all render cleanly at 1440px, zero console errors. Spec icons use the design's
+  tinted-initial fallback (real KcSpecIcon needs backend numeric IDs; resolves on API wire-up).
+
+Backend (additive only, DB model build GREEN; API pending package republish):
+- KeystoneDBConnector: new entities SpecPeriodStat + DungeonLevelStat (+DbSets +mappings
+  +create-only migration AddMetaAggregateTables). Auto-publishes KeystoneConnector
+  1.0.<run_number> on push to main (private feed nuget.sindrema.com).
+- BestKeystone_API: GenerateMeta Hangfire job (current-period only via bounded GetRuns,
+  insert-only/keeps history) + MetaController (/tierlists,/trends,/diversity,/dungeon-tier)
+  + MetaResult DTOs + additive SqlHelper reads. Builds once the package is republished &
+  the .csproj ref bumped 1.0.2 -> 1.0.N.
+
+Dev-server note: after the bulk file addition the running `quasar dev` hit a stale
+vite import-analysis overlay (prod build was green); fixed by restarting the dev server +
+clearing node_modules/.vite. All work UNCOMMITTED per standing rule.

@@ -85,7 +85,21 @@ const NAV = [
     { label: 'Compositions', path: '/statistics/compositions' },
     { label: 'Runs / Activity', path: '/statistics/runs' },
   ] },
-  { key: 'leaderboard', label: 'Leaderboard', path: '/leaderboard/keystone' },
+  { key: 'meta', label: 'Meta', children: [
+    { label: 'Trends', path: '/meta/trends' },
+    { label: 'Tier Lists', path: '/meta/tier-lists' },
+    { label: 'Diversity', path: '/meta/diversity' },
+    { label: 'Faction & Region', path: '/meta/faction-region' },
+  ] },
+  { key: 'tools', label: 'Tools', children: [
+    { label: 'Title Cutoffs', path: '/tools/cutoffs' },
+    { label: 'What to Farm', path: '/tools/planner' },
+    { label: 'Population', path: '/tools/population' },
+  ] },
+  { key: 'leaderboard', label: 'Leaderboard', children: [
+    { label: 'Keystone', path: '/leaderboard/keystone' },
+    { label: 'Fastest Times', path: '/leaderboard/fastest' },
+  ] },
   { key: 'monitor', label: 'Live Monitor', path: '/monitor' },
   { key: 'info', label: 'Info', path: '/info' },
 ]
@@ -94,6 +108,8 @@ const activeKey = computed(() => {
   const p = route.path
   if (p === '/') return 'home'
   if (p.startsWith('/statistics')) return 'statistics'
+  if (p.startsWith('/meta')) return 'meta'
+  if (p.startsWith('/tools')) return 'tools'
   if (p.startsWith('/leaderboard')) return 'leaderboard'
   if (p.startsWith('/monitor')) return 'monitor'
   if (p.startsWith('/info')) return 'info'

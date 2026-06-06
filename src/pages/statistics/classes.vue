@@ -55,13 +55,21 @@ import RoleGlyph from 'components/keystone/RoleGlyph.vue'
 
 const { store, data, classById, classColorById } = useKc()
 
-/* per-dungeon scoping: when a dungeon is picked in the scope bar, read the
-   zone-filtered spec dataset (Spec_Dungeon_Data); otherwise the global one. */
-function freshDungeonEntry(zone: number) {
-  const ts = data.Reloaded_Timestamp ?? 0
-  const m = (data.Spec_Dungeon_Data || []).filter(
-    (e: any) => e.dungeon === zone && e.periode === data.SelectedPeriode && e.created > ts
+/* per-dungeon scoping: a dungeon picked in the scope bar swaps the global spec
+   dataset for the zone-filtered one (Spec_Dungeon_Data). Display uses the latest
+   cached entry (stale-while-revalidate) so a scope change doesn't flash a skeleton;
+   the refetch decision uses the Reloaded_Timestamp freshness check. */
+function dungeonEntries(zone: number) {
+  return (data.Spec_Dungeon_Data || []).filter(
+    (e: any) => e.dungeon === zone && e.periode === data.SelectedPeriode
   )
+}
+function hasFreshDungeon(zone: number) {
+  const ts = data.Reloaded_Timestamp ?? 0
+  return dungeonEntries(zone).some((e: any) => e.created > ts)
+}
+function latestDungeonEntry(zone: number) {
+  const m = dungeonEntries(zone)
   return m.length ? m[m.length - 1] : null
 }
 
@@ -71,7 +79,7 @@ function fetchData() {
   const zone = data.SelectedDungeon
   if (zone == null) {
     if (!data.Spec_Data || data.Spec_Data.periode !== data.SelectedPeriode) store.dispatch('fetchSpecData')
-  } else if (!freshDungeonEntry(zone)) {
+  } else if (!hasFreshDungeon(zone)) {
     store.dispatch('fetchSpecData', { id: zone })
   }
   fetchIntime()
@@ -89,7 +97,7 @@ watch([() => data.SelectedPeriode, () => data.SelectedDungeon, () => data.Reload
 const specStats = computed<any[]>(() => {
   const zone = data.SelectedDungeon
   if (zone == null) return (data.Spec_Data && data.Spec_Data.data) || []
-  return freshDungeonEntry(zone)?.data || []
+  return latestDungeonEntry(zone)?.data || []
 })
 const hasData = computed(() => specStats.value.length > 0)
 

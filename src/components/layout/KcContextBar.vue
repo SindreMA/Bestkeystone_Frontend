@@ -59,6 +59,20 @@
         </q-menu>
       </button>
 
+      <!-- Level band scope -->
+      <button v-if="cfg.level" class="kc-ctxchip">
+        <span class="kc-eyebrow kc-ctxchip__k">Level</span>
+        <span class="kc-ctxchip__v">{{ selectedLevelBand }}</span>
+        <svg class="kc-ctxchip__chev" v-bind="chev"><path d="M6 9l6 6 6-6" /></svg>
+        <q-menu anchor="bottom left" self="top left" :offset="[0, 6]" class="kc-menu">
+          <div class="kc-menu__dungeons">
+            <button v-for="b in levelBands" :key="b" class="kc-menu__dungeon" :class="{ 'is-sel': b === selectedLevelBand }" @click="setLevelBand(b)" v-close-popup>
+              <span class="kc-menu__dungeon-all">{{ b }}</span>
+            </button>
+          </div>
+        </q-menu>
+      </button>
+
       <!-- Score mode -->
       <button v-if="cfg.score" class="kc-ctxchip">
         <span class="kc-eyebrow kc-ctxchip__k">Score</span>
@@ -123,6 +137,7 @@ import { useRoute } from 'vue-router'
 import { useStore } from 'src/store'
 import Affix from 'components/Icons/Affix/index.vue'
 import KcDungeonThumb from 'components/keystone/KcDungeonThumb.vue'
+import { levelBands } from 'src/mocks/meta'
 
 const route = useRoute()
 const store = useStore()
@@ -138,7 +153,9 @@ const cfg = computed(() => {
   if (p.startsWith('/statistics/runs')) return { week: 1 }
   // the dungeons page IS the per-dungeon view, so no dungeon chip there
   if (p.startsWith('/statistics/dungeons')) return { week: 1, min: 1, score: 1, runs: 1, opts: 1 }
-  if (p.startsWith('/statistics')) return { week: 1, min: 1, score: 1, runs: 1, opts: 1, dungeon: 1 }
+  if (p.startsWith('/statistics')) return { week: 1, min: 1, score: 1, runs: 1, opts: 1, dungeon: 1, level: 1 }
+  // new meta & tools surfaces — scope by dungeon + level band
+  if (p.startsWith('/meta') || p.startsWith('/tools')) return { week: 1, dungeon: 1, level: 1 }
   return null // leaderboard (own filters), monitor (live), lookup, info
 })
 
@@ -177,6 +194,10 @@ const selectedDungeonLabel = computed(() => {
   return d?.short_name || d?.name || `#${selectedDungeon.value}`
 })
 const setDungeon = (id: number | null) => store.commit('ChangeSelectedDungeon', id)
+
+/* level band scope (meta & tools) — purely a display filter on mock data */
+const selectedLevelBand = computed<string>(() => data.SelectedLevelBand ?? 'All')
+const setLevelBand = (b: string) => store.commit('ChangeSelectedLevelBand', b)
 
 /* ensure the active-dungeon list exists whenever the dungeon chip is shown */
 watch(
