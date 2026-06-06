@@ -42,6 +42,8 @@ const columns: { h: string; links: FooterLink[] }[] = [
   ] },
   { h: 'Overall', links: [
     { label: 'Talents', to: '/statistics/overall/talents' },
+    { label: 'Player Names', to: '/statistics/overall/player/names' },
+    { label: 'Items', to: '/statistics/overall/items' },
   ] },
   { h: 'Explore', links: [
     { label: 'Leaderboard', to: '/leaderboard/keystone' },
