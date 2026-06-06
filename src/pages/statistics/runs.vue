@@ -35,9 +35,10 @@
       </KcCard>
 
       <!-- Activity heatmap · hour-of-day × day-of-week (design view_misc.jsx › RunsView).
-           No backend exists for this view yet, so we keep the card and its real
-           filter controls but show an honest empty state instead of fabricated
-           buckets. The {region, level} contract is ready for a later endpoint. -->
+           Wired to the real GET /Meta/activity endpoint. The aggregate job returns
+           a flat [{hour,day,runs}] matrix; when it hasn't run we get 200 with [] and
+           show an honest empty state — never fabricated buckets. The {region, level}
+           filter chips drive the query params. -->
       <KcCard :level="1" class="kc-runs__block" :body-style="{ padding: '0' }">
         <template #header>When the world pushes keys</template>
         <template #headerRight>
@@ -72,12 +73,26 @@
         </div>
 
         <div class="kc-runs__heat-body">
-          <div class="kc-runs__heat-empty">
+          <div v-if="heatLoading" class="kc-runs__heat-skeleton">
+            <q-skeleton v-for="i in 7" :key="i" height="36px" />
+          </div>
+          <apexchart
+            v-else-if="heatHasData"
+            width="100%"
+            height="340px"
+            type="heatmap"
+            :options="heatOptions"
+            :series="heatSeries"
+          />
+          <div v-else class="kc-runs__heat-empty">
             <div class="kc-runs__heat-empty-icon">∅</div>
-            <p class="kc-runs__heat-empty-title">Activity heatmap needs a backend — coming soon</p>
+            <p class="kc-runs__heat-empty-title">
+              {{ heatError ? 'Couldn’t load activity' : 'No activity data yet' }}
+            </p>
             <p class="kc-runs__heat-empty-msg">
-              Hour-of-day × day-of-week activity isn't served by an endpoint yet, so
-              we won't show placeholder numbers here.
+              {{ heatError
+                ? 'The activity endpoint didn’t respond. Try again shortly.'
+                : 'The hour-of-day × day-of-week aggregate hasn’t been generated for this scope yet. It’ll appear here once the job has run.' }}
             </p>
           </div>
         </div>
@@ -95,7 +110,7 @@ import FactionBar from "components/ItemViews/FactionBar.vue";
 import apexchart from 'vue3-apexcharts'
 import axios from "axios";
 import sf from "../../SharedFunctions";
-import { computed, onBeforeMount, ref, watch } from "vue";
+import { computed, onBeforeMount, onMounted, ref, watch } from "vue";
 import { useStore } from "src/store";
 import { levelBands as metaLevelBands } from "src/data/metaReference";
 
@@ -296,10 +311,13 @@ onBeforeMount(() => {
 
 /* ──────────────────────────────────────────────────────────────────────────
    Activity heatmap (hour-of-day × day-of-week)
-   No endpoint serves this yet (design view_misc.jsx › RunsView), so the card
-   keeps its real filter controls but renders an honest empty state instead of
-   fabricated buckets. The {region, level} selection contract stays stable for
-   when a backend lands; until then we never invent numbers.
+   Wired to the real GET ${apiUrl}/Meta/activity?periode=&region=&levelBand=
+   endpoint (design view_misc.jsx › RunsView). The aggregate job returns a flat
+   matrix [{ hour: 0..23, day: 0..6 (Sunday=0), runs }] which we pivot into the
+   apexcharts heatmap series (one row per weekday, 24 hour columns). The job may
+   not have run for a given scope — then the endpoint returns 200 with [] and we
+   show an honest empty state. We never invent numbers. The {region, level} chips
+   drive the query params.
    ────────────────────────────────────────────────────────────────────────── */
 
 // Real level bands (reference data); "All" first so it reads as the default.
@@ -320,6 +338,128 @@ const heatScopeLabel = computed(() => {
   const region = !r || r.value === "world" ? "all regions" : r.label;
   return heatLevelBand.value === "All" ? region : `${region} · ${heatLevelBand.value}`;
 });
+
+// Weekday rows. Backend day index follows System.DayOfWeek: Sunday = 0 … Saturday = 6.
+const HEAT_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+interface ActivityCell { hour: number; day: number; runs: number }
+
+// 'world' region → empty param (all regions). Other regions pass through lowercase.
+const regionParam = (r: string) => (r === "world" ? "" : r);
+// 'All' → 'all' (MetaBandAll), '+15' → '15', etc. — matches the MetaController contract.
+const bandParam = (b: string) => (b === "All" ? "all" : b.replace("+", ""));
+
+const heatLoading = ref(false);
+const heatError = ref(false);
+const heatCells = ref<ActivityCell[]>([]);
+
+const fetchActivity = () => {
+  const apiUrl = data.apiUrl;
+  const periode = data.SelectedPeriode;
+  // No scope yet → nothing to ask for; render empty, never fabricate.
+  if (!apiUrl || periode == null) {
+    heatCells.value = [];
+    return;
+  }
+  const region = regionParam(heatRegion.value);
+  const levelBand = bandParam(heatLevelBand.value);
+  const url = `${apiUrl}/Meta/activity?periode=${periode}&region=${region}&levelBand=${levelBand}`;
+
+  heatLoading.value = true;
+  heatError.value = false;
+  axios
+    .get(url)
+    .then((response) => {
+      // guard against a stale response arriving after the scope changed again
+      if (
+        periode !== data.SelectedPeriode ||
+        region !== regionParam(heatRegion.value) ||
+        levelBand !== bandParam(heatLevelBand.value)
+      )
+        return;
+      heatCells.value = Array.isArray(response.data) ? response.data : [];
+    })
+    .catch((error) => {
+      console.log(error);
+      heatCells.value = [];
+      heatError.value = true;
+    })
+    .finally(() => {
+      heatLoading.value = false;
+    });
+};
+
+const heatHasData = computed(() =>
+  heatCells.value.some((c) => Number(c?.runs) > 0)
+);
+
+// Pivot the flat [{hour,day,runs}] matrix into apexcharts heatmap rows: one
+// series per weekday (Sun→Sat, top to bottom would be reversed by apex, so we
+// reverse so Mon..Sun reads top-down like the design), 24 hour columns each.
+const heatSeries = computed(() => {
+  const byCell = new Map<string, number>();
+  for (const c of heatCells.value) {
+    if (c == null) continue;
+    byCell.set(`${c.day}:${c.hour}`, Number(c.runs) || 0);
+  }
+  return HEAT_DAYS.map((day, di) => ({
+    name: day,
+    data: Array.from({ length: 24 }, (_, h) => ({
+      x: String(h).padStart(2, "0"),
+      y: byCell.get(`${di}:${h}`) ?? 0,
+    })),
+  })).reverse();
+});
+
+// Color scale derived from the live max so shading adapts to whatever the
+// endpoint returns (avoids hard-coded buckets that wouldn't fit real volume).
+const heatMax = computed(() =>
+  heatCells.value.reduce((m, c) => Math.max(m, Number(c?.runs) || 0), 0)
+);
+
+// Literal hex tokens — ApexCharts renders to canvas and can't read CSS vars.
+const heatOptions = computed(() => {
+  const max = Math.max(heatMax.value, 1);
+  return {
+    ...kcChartBase,
+    chart: { ...kcChartBase.chart, id: "runsHeatmap", type: "heatmap" },
+    colors: ["#5B8DEF"],
+    stroke: { width: 1, colors: ["#0E141B"] },
+    plotOptions: {
+      heatmap: {
+        radius: 3,
+        enableShades: true,
+        shadeIntensity: 0.6,
+        colorScale: {
+          ranges: [
+            { from: 0, to: 0, color: "#161D26", name: "none" },
+            { from: 1, to: Math.round(max * 0.3), color: "#222D3C", name: "low" },
+            { from: Math.round(max * 0.3) + 1, to: Math.round(max * 0.6), color: "#2E5BB0", name: "med" },
+            { from: Math.round(max * 0.6) + 1, to: Math.round(max * 0.85), color: "#5B8DEF", name: "high" },
+            { from: Math.round(max * 0.85) + 1, to: max, color: "#3DD6D0", name: "peak" },
+          ],
+        },
+      },
+    },
+    xaxis: {
+      ...axisLabel,
+      type: "category",
+      tickAmount: 12,
+      title: { text: "Hour of day", style: { color: "#5E6B7D", fontSize: "11px", fontWeight: 400 } },
+    },
+    yaxis: { ...axisLabel },
+    tooltip: { theme: "dark", y: { formatter: (v: number) => v + " runs" } },
+    legend: { ...kcChartBase.legend, position: "bottom" },
+  };
+});
+
+// Refetch when scope changes: page periode (global) or the heatmap's own chips.
+watch(
+  () => [data.SelectedPeriode, heatRegion.value, heatLevelBand.value],
+  fetchActivity
+);
+
+onMounted(fetchActivity);
 
 </script>
 
@@ -348,6 +488,14 @@ const heatScopeLabel = computed(() => {
 .kc-runs__heat-filter .kc-eyebrow { margin: 0; }
 .kc-runs__heat-filter .kc-seg { flex-wrap: wrap; }
 .kc-runs__heat-body { padding: var(--kc-sp-4) var(--kc-sp-3) 0; min-height: 340px; display: flex; align-items: center; justify-content: center; }
+.kc-runs__heat-body > .vue-apexcharts { width: 100%; }
+.kc-runs__heat-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: var(--kc-sp-2) var(--kc-sp-3);
+}
 .kc-runs__heat-empty { text-align: center; color: var(--kc-text-mid); font-size: 13px; padding: 48px 20px; }
 .kc-runs__heat-empty-icon { font-size: 28px; opacity: 0.5; margin-bottom: 12px; }
 .kc-runs__heat-empty-title { margin: 0 0 6px; font-size: 15px; font-weight: 600; color: var(--kc-text-hi); }
