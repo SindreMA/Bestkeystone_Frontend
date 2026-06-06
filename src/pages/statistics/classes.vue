@@ -104,13 +104,14 @@ function classSuccess(classId: number): number | null {
 <style scoped>
 .kc-classes { padding: var(--kc-sp-6) 0; }
 .kc-container { width: 100%; max-width: var(--kc-content-wide); margin: 0 auto; padding: 0 24px; }
+@media (max-width: 600px) { .kc-container { padding-left: 0; padding-right: 0; } }
 
 .kc-classes__role { margin-bottom: var(--kc-sp-6); }
 .kc-classes__role-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: var(--kc-text-mid); }
 
 .kc-classrow {
   display: grid;
-  grid-template-columns: auto minmax(150px, 1.2fr) 1fr auto auto 44px;
+  grid-template-columns: auto minmax(150px, 1.2fr) 1fr 56px minmax(72px, auto) 44px;
   align-items: center;
   gap: 16px;
   padding: 0 16px;

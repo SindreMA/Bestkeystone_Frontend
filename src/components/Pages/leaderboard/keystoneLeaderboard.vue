@@ -14,7 +14,7 @@
 
     <div v-else-if="leaderboardData.length" class="kc-lb__card">
       <div class="kc-lb__head">
-        <span class="kc-eyebrow" style="width:30px;">#</span>
+        <span class="kc-eyebrow kc-lb__rank-h">#</span>
         <span class="kc-eyebrow">Dungeon</span>
         <span class="kc-eyebrow">Key</span>
         <span class="kc-eyebrow">Time</span>
@@ -67,6 +67,7 @@ import  affixSelector from '../../Selectors/affixSelector.vue'
 import  regionSelector from '../../Selectors/regionSelector.vue'
 import keystoneView from '../../ItemViews/keystoneView.vue'
 import CloudinaryFormat from '../../data_formatters/CloudinaryFormat.vue'
+import Affix from '../../Icons/Affix/index.vue'
 import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useQuasar } from "quasar";
@@ -95,7 +96,11 @@ let affix2 = ref(null)
 let affix3 = ref(null)
 let affix4 = ref(null)
 let region = ref(null)
-let activeColumns = ref<any>(visableColumns)
+// plain writable ref. (Was ref(visableColumns), which aliased the readonly
+// computed and made the `activeColumns.value = …` assignment below throw a
+// "computed value is readonly" warning. Empty init avoids evaluating the
+// computed before `Columns` is declared.)
+let activeColumns = ref<any>([])
 let faction = ref(null)
 
 let paginationControl = ref({
@@ -375,21 +380,30 @@ onMounted(()=> {
 .kc-lb__filters { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: var(--kc-sp-5); align-items: stretch; }
 .kc-lb__filter { display: flex; flex-direction: column; gap: 4px; flex: 1 1 170px; min-width: 150px; }
 .kc-lb__filter .kc-eyebrow { color: var(--kc-text-low); }
-/* make every filter selector fill its cell at a uniform width */
+/* make every filter selector fill its cell at a uniform width.
+   selectors use different root ids (#mainDiv for region/dungeon, #mainDivSel
+   for the affix selector), so reset all of them. */
 .kc-lb__filter :deep(.q-field) { width: 100%; min-width: 0; }
-.kc-lb__filter :deep(#mainDiv) { width: 100%; min-width: 0; }
+.kc-lb__filter :deep(#mainDiv),
+.kc-lb__filter :deep(#mainDivSel) { width: 100%; min-width: 0; }
 
 .kc-lb__loading { display: flex; flex-direction: column; gap: 1px; }
 
 .kc-lb__card { background: var(--kc-bg-surface); border: 1px solid var(--kc-line-default); border-radius: var(--kc-r-lg); overflow: hidden; }
 .kc-lb__head, .kc-lb__row {
   display: grid;
-  grid-template-columns: auto minmax(150px, 1.4fr) auto 72px auto 1fr auto;
+  /* fixed tracks for the #, Key and Affixes columns so the header grid and the
+     row grid resolve identically (auto tracks size to each grid's own content,
+     which made the Key/Group headers drift off their data columns). */
+  grid-template-columns: 30px minmax(0, 1.4fr) 72px 72px 92px 1fr 56px;
   align-items: center;
   gap: 14px;
   padding: 0 16px;
 }
 .kc-lb__head { height: 38px; background: var(--kc-bg-raised); border-bottom: 1px solid var(--kc-line-hairline); }
+/* center the # header and the rank chip within the 30px leading track so they sit over each other */
+.kc-lb__rank-h { text-align: center; }
+.kc-lb__head > :first-child, .kc-lb__row > :first-child { justify-self: center; }
 .kc-lb__head .kc-eyebrow { color: var(--kc-text-low); }
 .kc-lb__r { text-align: right; justify-self: end; }
 .kc-lb__row {
@@ -423,8 +437,14 @@ onMounted(()=> {
 
 @media (max-width: 815px) {
   .kc-lb__head { display: none; }
-  .kc-lb__row { grid-template-columns: auto 1.4fr auto auto; gap: 10px; }
+  .kc-lb__row { grid-template-columns: auto minmax(0, 1.4fr) auto auto auto; gap: 10px; }
   .kc-lb__time, .kc-lb__affixes { display: none; }
+}
+
+@media (max-width: 480px) {
+  .kc-lb__row { padding: 0 10px; gap: 8px; }
+  .kc-lb__players { gap: 2px; }
+  .kc-lb__players :deep(.kc-specicon) { width: 16px !important; height: 16px !important; }
 }
 </style>
 

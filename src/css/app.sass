@@ -178,6 +178,204 @@ body
 .text-accent
   color: var(--accent)
 
+// Typographic helpers — GLOBAL versions of the .kc-root-scoped helpers in
+// keystone-tokens.css, so shell chrome rendered OUTSIDE .kc-root (top nav,
+// context bar, footer, legacy banner) gets the same treatment instead of
+// silently falling back to Roboto. Inside .kc-root the more-specific
+// `.kc-root .kc-eyebrow` rules win with identical values, so no visual drift.
+.kc-eyebrow
+  font-family: var(--font-display)
+  font-size: 11px
+  line-height: 14px
+  font-weight: 600
+  text-transform: uppercase
+  letter-spacing: 0.06em
+  color: var(--text-low)
+
+.kc-disp
+  font-family: var(--font-display)
+  font-variant-numeric: tabular-nums
+  letter-spacing: -0.01em
+
+.kc-tnum
+  font-variant-numeric: tabular-nums
+  font-feature-settings: 'tnum' 1
+
+.kc-mono
+  font-family: var(--font-mono)
+  font-variant-numeric: tabular-nums
+
+// ============================================
+// Quasar QTable — Keystone Console theme
+// Applies app-wide so the remaining default Quasar data tables (Overall stats,
+// player deeper-analytics, guild) match the bespoke redesigned boards. Colour
+// and type only — no width/layout changes.
+// ============================================
+.q-table__card, .q-table__container
+  background: transparent
+  color: var(--text-mid)
+  box-shadow: none
+
+.q-table thead th
+  font-family: var(--font-display)
+  font-size: 11px
+  text-transform: uppercase
+  letter-spacing: 0.06em
+  font-weight: 600
+  color: var(--text-low)
+  border-bottom: 1px solid var(--line-default)
+
+.q-table tbody td
+  font-size: 13px
+  color: var(--text-mid)
+
+.q-table th, .q-table td
+  border-color: var(--line-hairline)
+
+.q-table tbody tr:hover > td
+  background: var(--bg-hover)
+
+.q-table__top, .q-table__bottom
+  color: var(--text-low)
+  border-color: var(--line-default)
+
+.q-table__bottom
+  border-top: 1px solid var(--line-default)
+
+.q-table__bottom .q-btn
+  color: var(--text-mid)
+
+// ============================================
+// kc-statlist — bespoke replacement for the player deeper-analytics QTables.
+// Each component sets --statcols (grid-template-columns) on the root.
+// ============================================
+.kc-statlist
+  background: var(--bg-surface)
+  border: 1px solid var(--line-default)
+  border-radius: var(--radius-lg)
+  overflow: hidden
+  display: flex
+  flex-direction: column
+
+.kc-statlist__head
+  display: flex
+  align-items: center
+  justify-content: space-between
+  gap: 10px
+  background: var(--bg-raised)
+  padding: 11px 16px
+  color: var(--text-hi)
+  font-weight: 600
+  font-size: 14px
+  border-bottom: 1px solid var(--line-default)
+
+.kc-statlist__count
+  font-size: 11px
+  font-weight: 600
+  letter-spacing: 0.04em
+  text-transform: uppercase
+  color: var(--text-low)
+
+.kc-statlist__cols, .kc-statlist__row
+  display: grid
+  grid-template-columns: var(--statcols, 1fr)
+  align-items: center
+  gap: 10px
+  padding: 0 14px
+
+.kc-statlist__cols
+  height: 32px
+  border-bottom: 1px solid var(--line-hairline)
+
+.kc-statlist__cols .kc-eyebrow.r
+  text-align: right
+
+.kc-statlist__scroll
+  overflow-y: auto
+
+.kc-statlist__row
+  min-height: 40px
+  border-bottom: 1px solid var(--line-hairline)
+  transition: background var(--transition-fast)
+
+.kc-statlist__row:last-child
+  border-bottom: none
+
+.kc-statlist__row:hover
+  background: var(--bg-hover)
+
+.kc-statlist__entity
+  display: flex
+  align-items: center
+  gap: 8px
+  min-width: 0
+  color: var(--text-hi)
+  font-size: 13px
+
+.kc-statlist__name
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
+
+.kc-statlist__icon
+  width: 24px
+  height: 24px
+  border-radius: var(--radius-sm)
+  border: 1px solid var(--line-default)
+  flex: none
+  object-fit: cover
+  display: block
+
+.kc-statlist__num
+  text-align: right
+  font-variant-numeric: tabular-nums
+  font-size: 13px
+  color: var(--text-mid)
+
+.kc-statlist__num--hi
+  color: var(--text-hi)
+  font-weight: 600
+
+.kc-statlist__win
+  text-align: right
+  font-variant-numeric: tabular-nums
+  font-size: 12px
+  font-weight: 700
+
+.kc-statlist__win--good
+  color: var(--pos)
+
+.kc-statlist__win--mid
+  color: var(--warn)
+
+.kc-statlist__win--bad
+  color: var(--neg)
+
+.kc-statlist__empty
+  padding: 22px 16px
+  text-align: center
+  color: var(--text-low)
+  font-size: 13px
+
+// On phones the 6-column stat lists collapse the name to nothing — drop the
+// secondary columns so the entity name + the essentials (key/runs/win) stay.
+@media (max-width: 600px)
+  .kc-statlist__cols, .kc-statlist__row
+    gap: 8px
+    padding: 0 10px
+  // stat tables: entity | key | (score) | (time) | runs | win  ->  entity | key | runs | win
+  .kc-statlist--stats .kc-statlist__cols, .kc-statlist--stats .kc-statlist__row
+    grid-template-columns: minmax(0, 1fr) 38px 38px 44px
+  .kc-statlist--stats .kc-statlist__cols > :nth-child(3), .kc-statlist--stats .kc-statlist__cols > :nth-child(4)
+    display: none
+  .kc-statlist--stats .kc-statlist__row > :nth-child(3), .kc-statlist--stats .kc-statlist__row > :nth-child(4)
+    display: none
+  // friends: role | name | runs | (team) | score  ->  role | name | runs | score
+  .kc-statlist--friends .kc-statlist__cols, .kc-statlist--friends .kc-statlist__row
+    grid-template-columns: 22px minmax(0, 1fr) 40px 52px
+  .kc-statlist--friends .kc-statlist__cols > :nth-child(4), .kc-statlist--friends .kc-statlist__row > :nth-child(4)
+    display: none
+
 // Borders
 .border-accent
   border: 1px solid var(--line-strong)

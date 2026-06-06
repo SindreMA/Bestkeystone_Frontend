@@ -31,7 +31,7 @@
                   spinner-size="15px"
                   spinner-color="white"
                   class="tableIcon"
-                  :src="getClass(scope.opt?.class).icon_url"
+                  :src="getClass(scope.opt?.class)?.icon_url"
                 />
               </q-item-section>
               <q-item-section>

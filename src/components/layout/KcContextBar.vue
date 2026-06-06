@@ -72,7 +72,7 @@
 
       <!-- Options (weeks + limit-to-lowest) -->
       <button v-if="cfg.opts" class="kc-ctxchip">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--kc-text-low)" aria-hidden="true"><path d="M3 5h18l-7 8v5l-4 2v-7z" /></svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--text-low)" aria-hidden="true"><path d="M3 5h18l-7 8v5l-4 2v-7z" /></svg>
         <span class="kc-ctxchip__v">Options</span>
         <svg class="kc-ctxchip__chev" v-bind="chev"><path d="M6 9l6 6 6-6" /></svg>
         <q-menu anchor="bottom left" self="top left" :offset="[0, 6]" class="kc-menu">
@@ -250,4 +250,10 @@ function toggleLimit(e: Event) {
   font: 500 12px/1 var(--font-ui); background: transparent; color: var(--text-mid);
 }
 .kc-seg__btn.is-sel { background: var(--bg-active); color: var(--text-hi); box-shadow: inset 0 0 0 1px var(--line-strong); font-weight: 600; }
+
+@media (max-width: 600px) {
+  .kc-ctxbar__inner { padding: 0 12px; gap: 6px; }
+  .kc-ctxchip { height: 34px; padding: 0 12px; }
+  .kc-menu__score, .kc-menu__pad, .kc-menu__weeks { min-width: 0; width: min(300px, calc(100vw - 24px)); }
+}
 </style>

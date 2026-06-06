@@ -22,8 +22,8 @@
           </span>
           <span class="kc-comprow__bar"><span class="kc-comprow__fill" :style="{ width: `${(c.runs / maxRuns) * 100}%` }" /></span>
           <span class="kc-comprow__avg">
-            <span class="kc-eyebrow">avg</span>
             <span class="kc-disp kc-tnum kc-comprow__avg-num">{{ avgOf(c) }}</span>
+            <span class="kc-eyebrow">avg</span>
           </span>
           <KcScorePill :score="c.score" :column-max="maxScore" :tier="tierFor(page * perPage + i, rows.length)" :sample="c.runs" />
           <KcSuccessRing :pct="c.success_rate != null ? Math.round(c.success_rate * 10) / 10 : null" :size="34" :caption="false" />
@@ -143,8 +143,20 @@ function parseSetup(setup: string): number[][] {
 .kc-seg__btn { height: 28px; padding: 0 12px; border-radius: var(--kc-r-sm); border: none; cursor: pointer; font: 500 12px/1 var(--kc-font-ui); background: transparent; color: var(--kc-text-mid); white-space: nowrap; }
 .kc-seg__btn.is-sel { background: var(--kc-bg-active); color: var(--kc-text-hi); box-shadow: inset 0 0 0 1px var(--kc-line-strong); font-weight: 600; }
 
-@media (max-width: 720px) {
+@media (max-width: 820px) {
   .kc-comprow { grid-template-columns: auto 1.6fr auto 40px; gap: 10px; }
   .kc-comprow__bar, .kc-comprow__avg { display: none; }
+}
+
+@media (max-width: 600px) {
+  .kc-container { padding-left: 0; padding-right: 0; }
+}
+
+@media (max-width: 480px) {
+  .kc-comprow { grid-template-columns: auto minmax(0, 1fr) auto 34px; gap: 8px; padding: 8px 10px; }
+  .kc-comprow__badges { overflow: hidden; }
+  .kc-comprow__group { gap: 2px; }
+  .kc-comprow__badges :deep(.kc-specicon) { width: 20px !important; height: 20px !important; }
+  .kc-comprow :deep(.kc-scorepill) { min-width: 48px; }
 }
 </style>

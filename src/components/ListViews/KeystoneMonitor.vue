@@ -139,6 +139,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .kc-monitor { padding: var(--kc-sp-6) 0; }
 .kc-container { width: 100%; max-width: var(--kc-content-wide); margin: 0 auto; padding: 0 24px; }
+@media (max-width: 600px) { .kc-container { padding: 0 12px; } }
 
 .kc-mon__toggle {
   height: 28px; padding: 0 14px; border-radius: var(--kc-r-md); cursor: pointer;

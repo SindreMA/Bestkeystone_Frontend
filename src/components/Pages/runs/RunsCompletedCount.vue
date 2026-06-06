@@ -3,7 +3,7 @@
     <div class="Footer">Runs completed in selected week</div>
     <q-separator dark />
     <div class="Topper relative">
-      <h2 v-if="!fetching">{{ formattedCount }}</h2>
+      <h2 v-if="!fetching" class="kc-tnum">{{ formattedCount }}</h2>
       <q-spinner-bars
         v-else
         class="absolute-center"
@@ -20,7 +20,7 @@
 import numeral from "numeral";
 import axios from "axios";
 import AffixSelector from "components/ListViews/AffixSelector.vue";
-import { computed, onBeforeMount, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "src/store";
 let count = ref(100000);
 let fetching = ref(false);
@@ -28,7 +28,11 @@ let fetching = ref(false);
 const store = useStore();
 const data = store.state.data;
 
-const getCount = (id) => {
+const getCount = (periode) => {
+  // SelectedPeriode may be a bare id or a { id } object — normalise, and skip
+  // fetching until we actually have a week (a null id returned 0 → "Runs completed: 0").
+  const id = periode && typeof periode === "object" ? periode.id : periode;
+  if (id == null) return;
   count.value = 0;
   fetching.value = true;
   var apiUrl = data.apiUrl;
@@ -47,13 +51,9 @@ const getCount = (id) => {
 const GetSelectedPeriode = computed(() => data.SelectedPeriode);
 const formattedCount = computed(() => numeral(count.value).format("0,0"));
 
-watch(GetSelectedPeriode, (val) => {
-  getCount(GetSelectedPeriode.value);
-});
-
-onBeforeMount(() => {
-  getCount(GetSelectedPeriode.value);
-});
+// immediate so the first available periode triggers a fetch even if it was set
+// before this component mounted.
+watch(GetSelectedPeriode, (val) => getCount(val), { immediate: true });
 </script>
 
 <style scoped>
@@ -62,5 +62,8 @@ h2 {
 }
 .Topper {
   height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

@@ -15,7 +15,7 @@
           hide-bottom-space
           borderless
           :filled="filled"
-          style="min-width: 200px;"
+          style="width: min(100%, 200px)"
           :options-cover="false"
           popup-content-class="periode-dropdown"
         />

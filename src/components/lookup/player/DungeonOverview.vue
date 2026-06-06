@@ -1,58 +1,42 @@
 <template>
-
-  <div id="Box">
-    <div id="Header" class="HeaderSize4">
-      Dungeon statistics
+  <div class="kc-statlist kc-statlist--stats" style="--statcols: minmax(0, 1fr) 46px 58px 62px 42px 50px;">
+    <div class="kc-statlist__head">
+      <span>Dungeon statistics</span>
+      <span class="kc-statlist__count">{{ runData.length - 1 }} dungeons</span>
     </div>
-    <div id="Container">
-      <q-table :rows-per-page-options="[]" card-class="HeaderFont" table-class="HeaderFont"
-        table-header-class="HeaderFont" dark dense :rows="runData" :columns="columns"
-        :pagination.sync="paginationControl" row-key="dungeon">
-        <template v-slot:body="props">
-          <q-tr :props="props" class="text-center">
-            <q-td key="dungeon">
-              <div class="flex dungeonItem">
-                <CloudinaryFormat v-if="props.row.dungeon != 'All'"
-                  :url="getDungeon(props.row.item.zone?.id)?.imageurl ?? `backgrounds/dungeons/${props.row.item.zone.slug}.png`" v-slot="{ link }">
-                  <q-img class="tableIcon" :src="link" />
-                </CloudinaryFormat>
-                <i v-else class="material-icons">menu</i>
-                <div v-if="props.row.dungeon != 'All'"> {{ props.row.item.zone.name }}</div>
-                <div v-else>All</div>
-              </div>
-
-            </q-td>
-            <q-td key="highest_lvl">
-              {{ props.row.highest_lvl }}
-            </q-td>
-            <q-td key="highest_score">
-              {{ props.row.highest_score }}
-            </q-td>
-            <q-td key="avg_time">
-              {{ `${moment.duration(props.row.avg_time).format("hh:mm:ss")}` }}
-            </q-td>
-            <q-td key="total_time">
-              {{ `${moment.duration(props.row.total_time).format("hh:mm:ss")}` }}
-            </q-td>
-            <q-td key="runs">
-              {{ props.row.runs }}
-            </q-td>
-            <q-td key="intime_rate">
-              {{ props.row.ontime_rate }}%
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+    <div class="kc-statlist__cols">
+      <span class="kc-eyebrow">Dungeon</span>
+      <span class="kc-eyebrow r">Key</span>
+      <span class="kc-eyebrow r">Score</span>
+      <span class="kc-eyebrow r">Avg</span>
+      <span class="kc-eyebrow r">Runs</span>
+      <span class="kc-eyebrow r">Win</span>
+    </div>
+    <div class="kc-statlist__scroll">
+      <div v-for="row in sortedRows" :key="row.dungeon" class="kc-statlist__row" :class="{ 'kc-statlist__row--all': row.dungeon === 'All' }">
+        <span class="kc-statlist__entity">
+          <CloudinaryFormat v-if="row.dungeon != 'All'"
+            :url="getDungeon(row.item.zone?.id)?.imageurl ?? `backgrounds/dungeons/${row.item.zone.slug}.png`" v-slot="{ link }">
+            <img class="kc-statlist__icon" :src="link" />
+          </CloudinaryFormat>
+          <span v-else class="kc-statlist__icon kc-statlist__icon--all"><i class="material-icons">apps</i></span>
+          <span class="kc-statlist__name">{{ row.dungeon === 'All' ? 'All dungeons' : row.item.zone.name }}</span>
+        </span>
+        <span class="kc-statlist__num kc-statlist__num--hi">+{{ row.highest_lvl }}</span>
+        <span class="kc-statlist__num">{{ row.highest_score }}</span>
+        <span class="kc-statlist__num">{{ fmtTime(row.avg_time) }}</span>
+        <span class="kc-statlist__num">{{ row.runs }}</span>
+        <span class="kc-statlist__win" :class="winClass(row.ontime_rate)">{{ row.ontime_rate }}%</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import SF, {moment} from '../../../SharedFunctions'
+import SF, { moment } from '../../../SharedFunctions'
 import CloudinaryFormat from "../../data_formatters/CloudinaryFormat.vue";
 import { computed, onBeforeMount, ref, toRefs, watch } from "vue";
 import { useStore } from "src/store";
-
 
 const props = defineProps({
   runs: {
@@ -69,55 +53,15 @@ const dungeons = computed(() => data.Dungeons)
 const getDungeon = (id) => dungeons.value.find(d => d.keystone_id == id)
 
 const runData = ref([])
-const paginationControl = ref({ rowsPerPage: 20, page: 1, sortBy: "dungeon" })
-const columns = ref<Array<any>>([
-  {
-    name: "dungeon", label: "Dungeon", field: x => {
 
-
-      if (x.dungeon == "All") {
-        return "All"
-      } else {
-        return x.item.zone.name
-      }
-    }, sortable: true
-  },
-  {
-    name: "highest_lvl",
-    label: "Highest level",
-    field: "highest_lvl",
-    sortable: true
-  },
-  {
-    name: "highest_score",
-    label: "Highest score",
-    field: "highest_score",
-    sortable: true
-  },
-  {
-    name: "avg_time",
-    label: "Average time",
-    field: "avg_time",
-    sortable: true,
-    format: val => `${moment.duration(val).format("hh:mm:ss")}`
-  },
-  {
-    name: "total_time",
-    label: "Total time",
-    field: "total_time",
-    sortable: true,
-    format: val => `${moment.duration(val).format("hh:mm:ss")}`
-
-  },
-  { name: "runs", label: "Runs", field: "runs", sortable: true },
-  {
-    name: "ontime_rate",
-    label: "Success rate",
-    field: "ontime_rate",
-    sortable: true,
-    format: val => `${val}%`
-  }
-])
+const winClass = (r) => (r >= 80 ? 'kc-statlist__win--good' : r >= 55 ? 'kc-statlist__win--mid' : 'kc-statlist__win--bad')
+const fmtTime = (ms) => moment.duration(ms).format("mm:ss", { trim: false })
+// "All" pinned first as a summary, the rest by run count
+const sortedRows = computed(() => [...runData.value].sort((a, b) => {
+  if (a.dungeon === 'All') return -1
+  if (b.dungeon === 'All') return 1
+  return b.runs - a.runs
+}))
 
 const GetRuns = computed(() => {
   var ls = [...runs.value]
@@ -132,7 +76,6 @@ const GetRuns = computed(() => {
       const element = dungeonRuns[p];
       var totalscore = 0;
       var totallvl = 0;
-
       var runsOntime = 0;
 
       var item = {
@@ -150,8 +93,7 @@ const GetRuns = computed(() => {
 
       for (const run of element) {
         item.runs++;
-        if (item.highest_lvl < run.keystone_level)
-          item.highest_lvl = run.keystone_level;
+        if (item.highest_lvl < run.keystone_level) item.highest_lvl = run.keystone_level;
         if (item.highest_score < run.score) item.highest_score = Math.floor(run.score);
         totalscore += run.score;
         totallvl += run.keystone_level;
@@ -159,12 +101,9 @@ const GetRuns = computed(() => {
         if (run.time.ontime) runsOntime++;
       }
 
-      item.avg_time = item.total_time / item.runs//moment.duration(Math.floor(item.total_time / item.runs)).format("hh:mm:ss")
-
-      item.total_time = item.total_time//moment.duration(item.total_time).format("hh:mm:ss");
+      item.avg_time = item.total_time / item.runs
       item.avg_lvl = Math.floor(totallvl / item.runs);
       item.avg_score = Math.floor(totalscore / item.runs);
-
       item.ontime_rate = Math.floor((runsOntime / item.runs) * 100);
       rls.push(item);
     }
@@ -173,47 +112,19 @@ const GetRuns = computed(() => {
   return rls;
 })
 
-
-watch(runs, () => {
-  runData.value = GetRuns.value
-})
-
-onBeforeMount(() => {
-  runData.value = GetRuns.value
-})
+watch(runs, () => { runData.value = GetRuns.value })
+onBeforeMount(() => { runData.value = GetRuns.value })
 </script>
+
 <style scoped>
-#Box {
-  border: 1px solid var(--line-default);
-  border-radius: var(--radius-lg);
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-surface);
+.kc-statlist__scroll { max-height: 360px; }
+.kc-statlist__icon--all {
+  display: grid;
+  place-items: center;
+  background: var(--bg-inset);
+  color: var(--text-mid);
 }
-
-#Header {
-  background: var(--bg-raised);
-  padding: 12px 16px;
-  color: var(--text-hi);
-  font-weight: 600;
-  border-bottom: 1px solid var(--line-default);
-}
-
-#Container {
-  padding: 8px;
-}
-
-.tableIcon {
-  width: 22px;
-  height: 22px;
-  margin-right: 2px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--line-default);
-}
-.dungeonItem {
-  gap: 10px;
-  align-items: center;
-}
+.kc-statlist__icon--all .material-icons { font-size: 15px; }
+.kc-statlist__row--all { background: var(--bg-raised); }
+.kc-statlist__row--all:hover { background: var(--bg-hover); }
 </style>
-
-

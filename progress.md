@@ -198,3 +198,158 @@ _Last updated: after Phase E (page de-duplication + consistent headers)._
 - ⬜ Optional: collapse `--kc-*` Home tokens onto the global unprefixed tokens
 - ⬜ Optional (pre-existing, out of scope): fix `GetClasses` getter
   (`state.GetClasses`→`state.Classes`) and `SaveDungeon*Data` nested `.push`
+
+## Phase K — Full app QA + polish pass (2026-06-05)
+
+Drove the browser (chrome-devtools) through **every** routed page at 1440px +
+ran a 52-agent static audit (188 confirmed findings) + a 10-agent parallel
+fix-workflow. All fixes verified live; `quasar build` green (×2).
+
+### Foundational / shared (inline)
+- ✅ `app.sass`: global `.kc-eyebrow/.kc-disp/.kc-tnum/.kc-mono` (shell chrome —
+  footer/context-bar/toolbar — render outside `.kc-root`, so these utilities
+  were silently inert → footer eyebrows were plain Roboto). Now global.
+- ✅ `app.sass`: app-wide **QTable theme** (eyebrow headers, hairline rows, token
+  colours, themed pager) → all remaining default Quasar tables (Overall stats,
+  player deeper-analytics, guild) now match the bespoke boards.
+- ✅ `quasar.variables.sass`: `$accent` #B96BE0→#5B8DEF (killed `.text-accent`
+  collision; empty-state messages now brand-blue).
+- ✅ `KcSpecIcon.vue`: `@error` fallback → broken spec-icon CDN assets degrade to
+  the class-colored square instead of an empty box.
+
+### Per-page (workflow + manual)
+- ✅ **classic**: merged duplicate `watch:` keys (region/realm/name refetch
+  restored), `data:[]` (was `null[0]` crash), scoped style (killed global `h2`
+  leak), warn-token progress bar, guarded fetch (no 400/uncaught).
+- ✅ **runs**: charts fully themed (no toolbars, dark grid, accent colours, smooth);
+  `HH:MM`→`HH:mm` (was month-not-minutes); accent sliders; removed empty `()`;
+  removed dead `tspan *` (themed PerWeekChart + LevelStats + ChestsChart too).
+- ✅ **leaderboard**: imported missing `<Affix>` (Affixes column was blank);
+  fixed `ref(visableColumns)` → "computed readonly" warning (now `ref([])`);
+  uniform filter widths (`#mainDivSel` too).
+- ✅ **talents**: real description (was literal "hover me"), null-safe spec/class
+  lookups, `align-content`→`items-center`.
+- ✅ **info**: empty "Useful Discords"/"Other projects" headings hidden when no
+  data; Score-Checker sliders accent-themed.
+- ✅ **guild**: `--color-accent`→`--accent` (bars were dead), member-list null
+  guards + `key="weekly"` column fix, medal-token rank colours.
+- ✅ **specs**: refetch Spec_Data on period change (was stale).
+- ✅ items/playernames/OtherMatches/KcBestWeek/KcKeystoneChip/KcContextBar/
+  MainSearch/CompositionsLists: uncaught-rejection catches, null guards, token
+  fixes.
+
+### Result
+- **0 console errors/warnings** on every in-nav page. Remaining logs are the
+  documented [known non-issues] (dev-only Faction CORS; dead-API 404 on the two
+  orphan Overall routes). 26 files changed; nothing committed (per git pref).
+
+## Phase L — Alignment / visual-polish pass (2026-06-05)
+
+Re-swept every page with a geometry probe (icon↔text centers, header↔row grid
+tracks, value right-edges) + a 38-agent alignment audit (54 confirmed). Fixed via
+a 13-agent parallel workflow + manual. `quasar build` green. All verified live.
+
+Key alignment fixes:
+- **Leaderboard** (found via probe): header & rows were SEPARATE grids with `auto`
+  tracks, so KEY/GROUP/AFFIXES headers floated off their columns (header sized to
+  the word, rows to the chip). Pinned explicit tracks + centered the `#`.
+- **Home top-performers**: rank-0 icon 28px vs rank-1 22px on independent rows →
+  6px stair-step; wrapped icons in a shared 28px track → names/bars/values align.
+- **Runs**: RunsCompletedCount centered (was top-left, jumped from spinner) + now
+  shows real data (getCount got a non-numeric weekId → fixed normalize + immediate
+  watch; was showing 0 while the API had 304k); FactionBar icon/text centered +
+  valid border + centered pill text.
+- **Dungeons**: first grid track `auto`→`30px` + centered `#`.
+- **Info**: Discord/Projects cards were float/block (icon top-pinned, thumbnail
+  stacked below text) → flex rows; titles now --text-hi bold.
+- **Guild**: name column fills + scores/bracket-counts right-align + tabular figs;
+  bracket labels nowrap so bars share a left edge.
+- **Run-detail trio**, **classes/compositions** number columns (fixed tracks,
+  number-first, tabular), **LevelStats** slider labels over handles, **KcHero**
+  ring caption, **KcRunRow / KcLiveTracking** rail-aligned left edges,
+  **KcChestPips** gap, **KcPageHeader** center, **TalentRow** tabular Users.
+
+## Phase M — Specific alignment bugs + full mobile pass (2026-06-05)
+
+User-reported desktop bugs (fixed + verified):
+- **Context-bar week chip**: affix icons sat 3–4px below the text because the
+  Quasar `q-img` was `inline-block` on a text baseline → forced `display:block`
+  in affix.vue (fixes affix alignment everywhere). delta 4→1px.
+- **Home "Live run tracking" vs "Top performers"**: top-aligned but the left card
+  (468px) was 240px shorter than the right column (Top performers + Dungeon
+  trends stacked). Restructured into an equal-height top row (Live | Top
+  performers, `align-items:stretch`) with **Dungeon trends now full-width below**.
+  Cards now bottom-align (delta 0).
+- Bonus: RunsCompletedCount flaky `0` — getCount got a non-numeric weekId; now
+  normalized + immediate watch (shows real 304k).
+
+Mobile / responsive (28-agent audit → 65 confirmed → 11-agent fix workflow):
+- Tested every page at a real 390px device viewport (CDP emulation).
+- **Shell**: `.MainPadd` had no base gutter <600px → added 12px; per-page
+  `.kc-container` side padding zeroed on phones (uniform gutter).
+- **Compositions**: score overlapped the 5th spec icon → shrink icons to 20px +
+  shrinkable badges track + scorepill min-width at ≤480px. Fixed.
+- **Leaderboard**: `minmax(150px,…)` floor caused overflow → `minmax(0,…)`;
+  815px block now 5 explicit tracks so the score stays on one line.
+- scoreChecker `col-6`→`col-12 col-sm-6`; KcRunRow group shrinks; KcBestWeek
+  range stacks; context-bar chips bigger tap targets + fitted menus; KcHero/
+  KcLiveTracking/keystoneView/player q-tables/talents all get phone breakpoints.
+- All `@media (max-width:600px)` (desktop-safe). Build green; desktop verified
+  unchanged (home cards still bottom-align, console clean).
+
+## Phase N — Player lookup: deeper-analytics redesign (2026-06-05)
+
+User: "remake the lookup Chest statistics looks bad, also the table view needs a
+different view" + "fill space, now it wraps weirdly".
+
+- **Chest statistics** (ChestsChart.vue): dropped the garish ApexCharts bar chart
+  for a bespoke distribution — tier-toned diamond pips (3=gold…0=outlined) +
+  proportional bars + %/count per tier + "N% in time · N total runs" footer.
+- **The 4 stat tables → a bespoke ".kc-statlist" view** (new shared style in
+  app.sass; no more Quasar q-tables): Dungeon / Affix / Affix-combination
+  statistics + Keystone friends now render as eyebrow-header + hairline rows with
+  entity icon+name, +key, score, time, runs, and a colour-coded Win%. Keystone
+  friends keeps its lazy per-page detail fetch behind a clean Prev/Next pager.
+- **Layout**: .kc-player__deep reordered so similar-height cards pair up
+  (Friends|Dungeon, Affix|Affix-set) and **Chest statistics spans full width** →
+  no more lone card with dead space.
+- **Mobile**: 6-col stat lists collapsed the name to nothing at 390px → added a
+  phone rule (.kc-statlist--stats / --friends) that drops the secondary
+  Score/Time/Team columns so the entity name + Key/Runs/Win stay readable.
+- Build green; desktop + 390px verified; 0 q-tables left in the section; console clean.
+
+## Phase O — Player lookup: balance the top section (2026-06-05)
+
+User: "way more items on the left than on right ... so much empty space".
+The top grid was a fixed 1fr/1.2fr split: left = Talents+Gear+Stats (881px), right
+= Recent runs + By dungeon (246px, both "No runs this season") → a 635px dead gap.
+A static 2-col split can't balance this (it just flips for active players), so
+switched .kc-player__grid to a balanced CSS-columns masonry (column-fill:balance,
+break-inside:avoid). The 5 cards now pack into 2 even columns (Talents+Gear |
+Stats+Recent+By-dungeon ≈ 649 vs 478) regardless of how much season activity the
+player has. Mobile collapses to one column. Build green.
+
+## Phase P — Player lookup: Update-at-top + single packed masonry (2026-06-05)
+
+User: "make update at top and make the boxes auto scale to size to fit the area
+so we dont have blank spaces".
+- Moved the Update box from the page bottom to the top (full-width strip right
+  under the identity header; now always shown, not gated on having runs).
+- Merged the two separate grids (build cards + deeper-analytics cards) into ONE
+  balanced CSS-columns masonry (.kc-player__masonry, column-fill:balance). Ordered
+  the analytics so the two short Affix lists sit next to the build cards, which
+  lets the greedy column-fill balance: the two columns now end within ~89px of
+  each other (was a 635px dead gap → 357px after the first masonry attempt).
+  Chest statistics is a normal masonry card now (no longer forced full-width).
+- Mobile collapses to a single column. Build green; console clean.
+
+## Phase Q — Fix mobile nav drawer rendering light (2026-06-05)
+
+The mobile hamburger drawer rendered with a white/light background. Cause: Quasar
+applies the `class="kc-drawer"` to the inner `.q-drawer__content`, but the white
+default background lives on the parent `aside.q-drawer` (which carries no scope
+attribute), so the old scoped selector `.kc-drawer :deep(.q-drawer)` matched
+nothing. Fixed with global rules: dark the `.kc-drawer` content (it's `fit`, so it
+covers the aside) + `:global(.q-drawer:has(.kc-drawer))` for the aside itself, plus
+the drawer text colour. Drawer now renders on the dark Keystone Console palette.
+Build green.

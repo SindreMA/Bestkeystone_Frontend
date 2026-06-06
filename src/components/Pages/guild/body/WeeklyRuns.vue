@@ -13,7 +13,7 @@
       <template v-slot:top>
         <div class="HeaderFont HeaderSize4 row">Weekly Runs</div>
         <div style="width: 100%">
-          <div class="flex justify-center">
+          <div class="flex justify-center filter-row">
             <q-option-group v-model="showType" inline :options="showTypeOptions" color="grey" />
             <q-range
               v-model="levelFilter"
@@ -243,5 +243,18 @@ a {
 .crownIcon {
   width: 15px;
   height: 15px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+@media (max-width: 599px) {
+  .filter-row .q-range {
+    width: 100%;
+  }
 }
 </style>

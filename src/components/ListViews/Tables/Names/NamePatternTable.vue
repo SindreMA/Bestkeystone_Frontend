@@ -59,7 +59,7 @@ const columns : Array<QTableColumn> = [
 ]
 
 const paginator : QTableProps['pagination'] = {
-  sortBy: 'usersCount',
+  sortBy: 'count',
   descending: true,
   rowsPerPage: 20,
 }

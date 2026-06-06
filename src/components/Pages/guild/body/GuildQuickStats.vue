@@ -79,7 +79,7 @@ const totalWeeklyRuns = computed(() => {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
   gap: 16px;
 }
 
@@ -90,6 +90,7 @@ const totalWeeklyRuns = computed(() => {
   border-radius: var(--radius-md);
   transition: border-color var(--transition-fast);
   border: 1px solid transparent;
+  min-width: 0;
 }
 
 .stat-item:hover {

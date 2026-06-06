@@ -109,6 +109,7 @@ watch(dungeon, () => emit("update:modelValue", dungeon.value));
 }
 
 #mainDiv {
-  min-width: 300px;
+  width: min(100%, 300px);
+  min-width: 0;
 }
 </style>

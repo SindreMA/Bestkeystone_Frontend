@@ -262,10 +262,10 @@ import sf from '../../SharedFunctions'
   #CompoItemScore {
     width: 110px;
     height: 30px;
-    color: rgb(161, 161, 161);
+    color: var(--text-mid);
     border-radius: 50px;
     background-color: var(--bg-inset);
-    border: rgb(161, 161, 161) 0.5px solid;
+    border: var(--line-default) 0.5px solid;
     position: relative;
     left: 80px;
     top: 8px;
@@ -276,10 +276,10 @@ import sf from '../../SharedFunctions'
     top: 4px;
     width: 110px;
     height: 30px;
-    color: rgb(161, 161, 161);
+    color: var(--text-mid);
     border-radius: 50px;
     background-color: var(--bg-inset);
-    border: rgb(161, 161, 161) 0.5px solid;
+    border: var(--line-default) 0.5px solid;
     margin: 0 5px;
   }
 

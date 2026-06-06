@@ -22,7 +22,7 @@ defineProps({
 <style scoped>
 .kc-pagehead {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;

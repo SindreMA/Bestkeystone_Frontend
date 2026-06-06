@@ -2,14 +2,14 @@
     
     <div class="DiscordCard shadow-18 col-grow">
         <a :href="discord.url" class="HeaderFont">
-        <div>
-            <div  class="float-left">
+        <div style="display:flex; align-items:center; gap:10px">
+            <div>
                 <CloudinaryFormat :url="discord.logoUrl.replaceAll('/statics/','/')" v-slot="{ link }" size="80">
                     <q-img :src="link" class="logoImg"/>
                 </CloudinaryFormat>
             </div>
             <div class=" text-left">
-                <div > {{title}} </div>
+                <div class="DiscordTitle"> {{title}} </div>
                 <div class="Description">{{discord.description}}</div>
             </div>
         </div>
@@ -56,11 +56,10 @@ export default {
 <style>
 .DiscordCard {
     max-width: 550px;
-    min-width: 300px;
+    min-width: min(300px, 100%);
     padding: 12px;
     border-radius: var(--radius-xl);
     min-height: 50px;
-    margin: 8px;
     background: var(--bg-surface);
     border: 1px solid var(--line-default);
     transition: all var(--transition-normal);
@@ -72,10 +71,17 @@ export default {
 }
 .logoImg {
     border-radius: 100%;
-    margin: 1px 7px;
+    margin: 0;
+    flex: none;
     width: 47px;
     height: 47px;
     border: 2px solid var(--line-default);
+}
+.DiscordTitle {
+    color: var(--text-hi);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.3;
 }
 .Description {
     font-size: 12px;

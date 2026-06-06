@@ -20,7 +20,7 @@ const pulse = computed(() => level.value >= 20)
 const shadow = computed(() => {
   const l = level.value
   if (l >= 20) return '0 0 0 1px var(--kc-key-hot), 0 0 10px -1px rgba(242,92,84,0.6)'
-  if (l >= 15) return '0 0 0 1px #B96BE0, 0 0 8px -2px rgba(185,107,224,0.5)'
+  if (l >= 15) return '0 0 0 1px var(--q-epic), 0 0 8px -2px rgba(185,107,224,0.5)'
   if (l >= 10) return '0 0 0 1px var(--kc-accent), 0 0 7px -2px rgba(91,141,239,0.5)'
   return '0 0 0 1px var(--kc-line-strong)'
 })

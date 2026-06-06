@@ -194,8 +194,16 @@ watch(width, updateUnderline)
 .kc-menu__region:hover { background: var(--bg-hover); }
 .kc-menu__region-code { margin-left: auto; font-size: 11px; color: var(--text-low); }
 
-/* drawer */
-.kc-drawer :deep(.q-drawer) { background: var(--bg-surface) !important; }
+/* drawer — Quasar puts the `kc-drawer` class on .q-drawer__content (fit), while
+   the white default background sits on the parent aside.q-drawer (which has no
+   scope attribute). Style globally: dark the content (covers the aside) + the
+   aside itself, and the drawer text. */
+:global(.q-drawer:has(.kc-drawer)) { background: var(--bg-surface) !important; }
+:global(.kc-drawer) {
+  background: var(--bg-surface) !important;
+  color: var(--text-hi) !important;
+  border-right: 1px solid var(--line-default);
+}
 .kc-drawer__head {
   height: 56px; display: flex; align-items: center; gap: 10px; padding: 0 18px;
   border-bottom: 1px solid var(--line-hairline);

@@ -32,6 +32,6 @@ const pipStyle = (i: number) => {
 </script>
 
 <style scoped>
-.kc-chestpips { display: inline-flex; gap: 3px; }
+.kc-chestpips { display: inline-flex; gap: 5px; }
 .kc-chestpips__pip { border-radius: 2px; transform: rotate(45deg); flex: none; }
 </style>

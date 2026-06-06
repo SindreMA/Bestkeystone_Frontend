@@ -139,7 +139,7 @@ fetchDetails() {
   padding: 16px;
 }
 .boxRow1 {
-  min-width: 200px;
+  min-width: min(100%, 200px);
   min-height: 29px;
   margin: 0 5px;
   color: var(--text-mid);

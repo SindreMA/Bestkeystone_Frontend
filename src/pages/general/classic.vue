@@ -19,7 +19,7 @@
     <div v-if="data[0]">
       <div>Latest result</div>
       <strong>
-        <h2>{{data[0].queue}}</h2>
+        <h2 class="classic-queue">{{data[0].queue}}</h2>
       </strong>
       <div>{{data[0].status}}</div>
       <br />
@@ -33,8 +33,7 @@
         rounded
         style="height: 20px;flex: 1 1 auto;"
         :value="refreshTime"
-        color="orange"
-        class="q-mt-sm col-10"
+        class="q-mt-sm col-10 classic-progress"
       />
       <q-checkbox v-model="refresh" style="flex: 0 0 auto;" class="col-2" />
     </div>
@@ -58,7 +57,7 @@ export default {
       region: "",
       realm: "",
       name: "",
-      data: null,
+      data: [],
       refresh: true,
       refreshTime: 100,
       columns: [
@@ -142,6 +141,12 @@ export default {
     },
     fetchData() {
       var vm = this;
+      // nothing to query yet (empty realm/name returns 400) — keep the refresh
+      // loop alive but skip the request entirely.
+      if (!vm.realm || !vm.name) {
+        vm.Timer(100);
+        return;
+      }
       axios
         .get(
           `https://api2.bestkeystone.com/api/ClassicQueue/get?realm=${
@@ -151,25 +156,28 @@ export default {
           }&timestamp=${new Date().getTime()}`
         )
         .then(x => {
-          vm.data = x.data;
+          vm.data = Array.isArray(x.data) ? x.data : [];
         })
-        .then(x => {
+        .catch(e => {
+          // empty realm/name on first load returns 400 — keep data empty and
+          // let the refresh timer retry, but don't leak an uncaught rejection.
+          console.log(e);
+        })
+        .then(() => {
           vm.Timer(100);
         });
     }
-  },
-  watch: {
-      refresh () {
-          //this.Timer(this.refreshTime)
-      }
   },
   created() {
     this.fetchData();
   }
 };
 </script>
-<style>
-h2 {
+<style scoped>
+.classic-queue {
   margin: 5px;
+}
+.classic-progress {
+  color: var(--warn);
 }
 </style>

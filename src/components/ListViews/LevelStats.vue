@@ -8,41 +8,47 @@
         <div>
           <div v-if="!runs">
             <div>Selected weeks</div>
-            <div class="flex justify-around">
-              <div>From: {{ weekRange.min }} ({{ setNameMin }})</div>
-              <div>To: {{ weekRange.max }} ({{ setNameMax }})</div>
-            </div>
-            <div class="flex justify-center">
-              <q-range
-                drag-range
-                snap
-                markers
-                v-model="weekRange"
-                :min="wRangeOptions.min"
-                style="max-width: 970px"
-                :max="wRangeOptions.max"
-                :step="1"
-              />
+            <div style="max-width: 970px; width: 100%; margin: 0 auto;">
+              <div class="flex justify-between kc-ls-rangelabels">
+                <div>From: {{ weekRange.min }} <span v-if="setNameMin">({{ setNameMin }})</span></div>
+                <div>To: {{ weekRange.max }} <span v-if="setNameMax">({{ setNameMax }})</span></div>
+              </div>
+              <div class="flex justify-center">
+                <q-range
+                  color="primary"
+                  drag-range
+                  snap
+                  markers
+                  v-model="weekRange"
+                  :min="wRangeOptions.min"
+                  style="max-width: 970px"
+                  :max="wRangeOptions.max"
+                  :step="1"
+                />
+              </div>
             </div>
           </div>
         </div>
         <div>
           <div v-if="!runs">Selected levels</div>
-          <div class="flex justify-around">
-            <div>From level {{ levelRange.min }}</div>
-            <div>To level {{ levelRange.max }}</div>
-          </div>
-          <div class="flex justify-center">
-            <q-range
-              drag-range
-              snap
-              markers
-              v-model:model-value="levelRange"
-              :min="lRangeOptions.min"
-              :max="lRangeOptions.max"
-              :step="1"
-              style="max-width: 970px"
-            />
+          <div style="max-width: 970px; width: 100%; margin: 0 auto;">
+            <div class="flex justify-between kc-ls-rangelabels">
+              <div>From level {{ levelRange.min }}</div>
+              <div>To level {{ levelRange.max }}</div>
+            </div>
+            <div class="flex justify-center">
+              <q-range
+                color="primary"
+                drag-range
+                snap
+                markers
+                v-model:model-value="levelRange"
+                :min="lRangeOptions.min"
+                :max="lRangeOptions.max"
+                :step="1"
+                style="max-width: 970px"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -115,9 +121,14 @@ const emits = defineEmits(['fetch'])
 
 
 const s_chartOptions = ref({
-        chart: {
-          foreColor: "#9AA7B8"
-        },
+        chart: { foreColor: "#9AA7B8", background: "transparent", toolbar: { show: false }, zoom: { enabled: false } },
+        theme: { mode: "dark" },
+        colors: ["#5B8DEF", "#3DD6D0", "#D29922", "#F25C54", "#9C6ADE"],
+        stroke: { curve: "smooth", width: 2 },
+        dataLabels: { enabled: false },
+        grid: { borderColor: "rgba(255,255,255,0.06)", strokeDashArray: 3 },
+        tooltip: { theme: "dark" },
+        legend: { labels: { colors: "#9AA7B8" } },
         yaxis: {
           type: "numeric",
           labels: {
@@ -142,9 +153,14 @@ const s_chartOptions = ref({
         }
       })
 const r_chartOptions = ref({
-        chart: {
-          foreColor: "#9AA7B8"
-        },
+        chart: { foreColor: "#9AA7B8", background: "transparent", toolbar: { show: false }, zoom: { enabled: false } },
+        theme: { mode: "dark" },
+        colors: ["#5B8DEF", "#3DD6D0", "#D29922", "#F25C54", "#9C6ADE"],
+        stroke: { curve: "smooth", width: 2 },
+        dataLabels: { enabled: false },
+        grid: { borderColor: "rgba(255,255,255,0.06)", strokeDashArray: 3 },
+        tooltip: { theme: "dark" },
+        legend: { labels: { colors: "#9AA7B8" } },
         yaxis: {
           title: {
             text: "Amount of runs"
@@ -499,5 +515,8 @@ onBeforeMount(() => {
   padding: 5px;
 }
 #Container {
+}
+@media (max-width: 600px) {
+  .kc-ls-rangelabels { font-size: 12px; }
 }
 </style>

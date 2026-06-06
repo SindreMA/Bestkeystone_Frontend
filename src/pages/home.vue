@@ -6,11 +6,9 @@
         <KcHero />
         <div class="kc-home-row2">
           <KcLiveTracking />
-          <div class="kc-home-side">
-            <KcTopPerformers />
-            <KcDungeonTrends />
-          </div>
+          <KcTopPerformers />
         </div>
+        <KcDungeonTrends />
       </div>
     </div>
   </div>
@@ -48,18 +46,15 @@ import KcDungeonTrends from 'components/keystone/KcDungeonTrends.vue'
 
 .kc-home-row2 {
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: var(--kc-sp-5);
-  align-items: start;
+  align-items: stretch;
 }
-@media (max-width: 900px) {
-  .kc-home-row2 { grid-template-columns: 1fr; }
-}
+/* both top-row cards fill the row height so they bottom-align with each other */
+.kc-home-row2 > * { min-width: 0; height: 100%; }
 
-.kc-home-side {
-  display: flex;
-  flex-direction: column;
-  gap: var(--kc-sp-5);
-  min-width: 0;
+@media (max-width: 600px) {
+  .kc-container { padding-left: 0; padding-right: 0; }
+  .kc-home-page { padding-top: var(--kc-sp-4); padding-bottom: var(--kc-sp-4); }
 }
 </style>

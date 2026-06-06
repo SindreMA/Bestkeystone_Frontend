@@ -74,6 +74,20 @@ const data = store.state.data;
 
 const GetSettings = computed(() => data.settings);
 
+// Keystone Console chart theme. ApexCharts renders to canvas and can't read CSS
+// vars, so literal hex tokens are used (accent #5B8DEF, live #3DD6D0, warn …).
+const kcChartBase = {
+  chart: { background: 'transparent', toolbar: { show: false }, zoom: { enabled: false } },
+  theme: { mode: 'dark' },
+  colors: ['#5B8DEF', '#3DD6D0', '#D29922', '#F25C54', '#9C6ADE'],
+  stroke: { curve: 'smooth', width: 2 },
+  dataLabels: { enabled: false },
+  grid: { borderColor: 'rgba(255,255,255,0.06)', strokeDashArray: 3 },
+  tooltip: { theme: 'dark' },
+  legend: { labels: { colors: '#9AA7B8' } },
+};
+const axisLabel = { labels: { style: { colors: '#9AA7B8' } } };
+
 const getHourDataValues = () => {
   var ls = [];
   RunsLast24Hour.value.forEach((element) => {
@@ -109,29 +123,15 @@ const getHourTimestamps = () => {
     sf._sortBy(first.data, "time")
       .slice(Math.max(first.data.length - HoursToShow.value, 1))
       .forEach((element) => {
-        ls.push(sf.GetMoment(element.time).format("HH:MM"));
+        ls.push(sf.GetMoment(element.time).format("HH:mm"));
       });
   }
 
   const chartOptions = {
-        chart: {
-          id: "perHourChart",
-        },
-        yaxis: {
-          labels: {
-            style: {
-              colors: ls.map(x=> "#9AA7B8"),
-            },
-          },
-        },
-        xaxis: {
-          labels: {
-            style: {
-              colors: ls.map(x=> "#9AA7B8"),
-            },
-          },
-          categories: ls,
-        },
+        ...kcChartBase,
+        chart: { ...kcChartBase.chart, id: "perHourChart" },
+        yaxis: { ...axisLabel },
+        xaxis: { ...axisLabel, categories: ls },
       }
   return chartOptions;
 };
@@ -172,24 +172,10 @@ const getDayTimestamps = () => {
   }
 
   const chartOptions = {
-        chart: {
-          id: "perDayChart",
-        },
-        yaxis: {
-          labels: {
-            style: {
-              colors: ls.map(x=> "#9AA7B8"),
-            },
-          },
-        },
-        xaxis: {
-          labels: {
-            style: {
-              colors: ls.map(x=> "#9AA7B8"),
-            },
-          },
-          categories: ls,
-        },
+        ...kcChartBase,
+        chart: { ...kcChartBase.chart, id: "perDayChart" },
+        yaxis: { ...axisLabel },
+        xaxis: { ...axisLabel, categories: ls },
       }
   return chartOptions;
 };
@@ -263,13 +249,12 @@ onBeforeMount(() => {
 <style scoped>
 .kc-runs { padding: var(--kc-sp-6) 0; }
 .kc-container { width: 100%; max-width: var(--kc-content-wide); margin: 0 auto; padding: 0 24px; }
-.kc-runs__top { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--kc-sp-5); margin-bottom: var(--kc-sp-5); }
+@media (max-width: 600px) { .kc-container { padding-left: 0; padding-right: 0; } }
+.kc-runs__top { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--kc-sp-5); margin-bottom: var(--kc-sp-5); }
+.kc-runs__top > * { min-width: 0; }
 .kc-runs__count { text-align: center; }
 .kc-runs__regions { display: flex; align-items: center; gap: 14px; margin-bottom: var(--kc-sp-5); flex-wrap: wrap; }
-.kc-runs__charts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--kc-sp-5); }
+.kc-runs__charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: var(--kc-sp-5); }
+.kc-runs__charts > * { min-width: 0; }
 .kc-runs__block { margin-top: var(--kc-sp-5); }
-@media (max-width: 920px) {
-  .kc-runs__top, .kc-runs__charts { grid-template-columns: 1fr; }
-}
-tspan * { color: #9AA7B8 !important; }
 </style>

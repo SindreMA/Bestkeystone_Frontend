@@ -6,12 +6,14 @@
       <div class="kc-info__body">
         <Tools />
 
-        <section class="kc-info__section">
-          <h3 class="kc-info__h">Useful Discords</h3>
-          <DiscordLinksFetcher v-slot="{ data }" class="kc-info__row">
-            <DiscordLink :discord="discord" v-for="(discord, index) in data" :key="index" />
-          </DiscordLinksFetcher>
-        </section>
+        <DiscordLinksFetcher v-slot="{ data }">
+          <section class="kc-info__section" v-if="data && data.length">
+            <h3 class="kc-info__h">Useful Discords</h3>
+            <div class="kc-info__row">
+              <DiscordLink :discord="discord" v-for="(discord, index) in data" :key="index" />
+            </div>
+          </section>
+        </DiscordLinksFetcher>
 
         <section class="kc-info__section">
           <h3 class="kc-info__h">Other useful WoW sites</h3>
@@ -20,12 +22,14 @@
           </div>
         </section>
 
-        <section class="kc-info__section">
-          <h3 class="kc-info__h">Other projects</h3>
-          <CreatorsProjectsFetcher v-slot="{ data }" class="kc-info__row">
-            <CreatorsProjects :project="pro" v-for="(pro, i) in data" :key="i" />
-          </CreatorsProjectsFetcher>
-        </section>
+        <CreatorsProjectsFetcher v-slot="{ data }">
+          <section class="kc-info__section" v-if="data && data.length">
+            <h3 class="kc-info__h">Other projects</h3>
+            <div class="kc-info__row">
+              <CreatorsProjects :project="pro" v-for="(pro, i) in data" :key="i" />
+            </div>
+          </section>
+        </CreatorsProjectsFetcher>
 
         <section class="kc-info__section">
           <h3 class="kc-info__h">So how does it work?</h3>

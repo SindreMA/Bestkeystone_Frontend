@@ -15,7 +15,7 @@ import { ref, watch } from 'vue';
 const store = useStore();
 const data = store.state.data
 
-var search = ref<string>("lock")
+var search = ref<string>("")
 var length = ref<number>()
 var useWords = ref<boolean>(true)
 
@@ -29,7 +29,7 @@ watch([search, length, useWords],() => {
 const fetchData = async () => {
   axios.get(`${data.apiUrl}/Player/names?search=${search.value}&length=${length.value}&useWords=${useWords.value}`).then((response) => {
     rows.value = response.data
-  });
+  }).catch((e) => console.log(e));
 }
 fetchData()
 </script>

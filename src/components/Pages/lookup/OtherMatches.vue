@@ -1,6 +1,6 @@
 <template>
 
-  <div v-if="matches.length > 0" class="MatchContainer">
+  <div v-if="matches?.length" class="MatchContainer">
     <div>There are multiple matches for this character path</div>
 
     <div v-for="(item, index) in matches" :key="index" class="matchItem flex wrap">
@@ -25,7 +25,7 @@ import {computed, toRefs} from 'vue';
 const props = defineProps({
   matches: {
     type: Array<MatchResult>,
-    required: true
+    default: () => []
   }
 });
 

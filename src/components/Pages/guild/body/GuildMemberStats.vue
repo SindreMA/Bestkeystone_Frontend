@@ -269,6 +269,8 @@ const averageKeystoneLevel = computed(() => {
   font-weight: 600;
   color: var(--text-hi);
   min-width: 24px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 .class-name {
@@ -305,7 +307,10 @@ const averageKeystoneLevel = computed(() => {
 .bracket-label {
   font-size: 0.85rem;
   color: var(--text-mid);
-  min-width: 80px;
+  min-width: 92px;
+  flex: none;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .bracket-bar {
@@ -318,7 +323,7 @@ const averageKeystoneLevel = computed(() => {
 
 .bracket-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-hover));
+  background: linear-gradient(90deg, var(--accent), var(--accent-hover));
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -328,11 +333,12 @@ const averageKeystoneLevel = computed(() => {
   color: var(--text-hi);
   min-width: 30px;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
   gap: 12px;
 }
 
@@ -343,6 +349,7 @@ const averageKeystoneLevel = computed(() => {
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   transition: border-color var(--transition-fast);
+  min-width: 0;
 }
 
 .overview-item:hover {

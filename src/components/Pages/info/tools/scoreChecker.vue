@@ -2,7 +2,7 @@
   <div v-if="GetDungeons" class="HeaderFont ScoreChecker">
     <div class="text-red text-h5">This uses the old score system</div>
     <div class="row">
-      <div class="col-6">
+      <div class="col-12 col-sm-6">
         <q-select
           class="maxSelection"
           label="Dungeon"
@@ -12,7 +12,7 @@
           :options="dungeons"
         />
       </div>
-      <div class="col-6">
+      <div class="col-12 col-sm-6">
         <div class="maxSelection">
           <div>Keystone level</div>
           <div>{{ level }}</div>
@@ -21,7 +21,7 @@
             :min="2"
             :max="35"
             :step="1"
-            color="orange"
+            color="primary"
             snap
           />
         </div>
@@ -36,7 +36,7 @@
         :min="Math.round((dungeonDetails?.time ?? 0) * 0.4)"
         :max="Math.round((dungeonDetails?.time ?? 0) * 2.0)"
         :step="1000"
-        color="orange"
+        color="primary"
         snap
       />
     </div>
@@ -150,7 +150,8 @@ const dungeons = computed(() => {
 <style scoped>
 .maxSelection {
   max-width: 400px;
-  margin: auto;
+  margin-left: 0;
+  margin-right: auto;
 }
 .ScoreChecker {
   padding: 1%;

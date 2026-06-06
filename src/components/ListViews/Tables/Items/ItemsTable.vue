@@ -60,7 +60,7 @@ var rows = ref<Array<object>>([])
 
 axios.get(`${data.apiUrl}/items`).then((response) => {
   rows.value = response.data
-});
+}).catch((e) => console.log(e));
 
 
 const props = defineProps({

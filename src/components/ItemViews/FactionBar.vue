@@ -134,18 +134,28 @@ export default {
 .infoContainer {
   margin: 0 10px;
   overflow: visible;
+  align-items: center;
 }
 
 .textHolder {
   font-size: 13px;
-  border: 20% grey solid;
+  border: 1px solid var(--kc-line-default);
   width: 40px;
   height: 20px;
-  margin: 2.5px 5px 0 5px;
+  margin: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .stats {
   display: flex;
+  flex-wrap: wrap;
+}
+
+.stats > div {
+  min-width: 0;
 }
 
 .horde.q-linear-progress {

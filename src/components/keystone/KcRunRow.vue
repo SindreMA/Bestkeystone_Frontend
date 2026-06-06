@@ -78,13 +78,18 @@ const score = computed(() => Math.round((run.value?.score ?? 0) * 10) / 10)
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 16px;
+  padding: 8px 16px 8px 13px;
   border-bottom: 1px solid var(--kc-line-hairline);
 }
 .kc-runrow--flash { animation: kc-flashin var(--kc-motion-slow) ease-out; }
 .kc-runrow--clickable { cursor: pointer; transition: background var(--kc-motion-fast) ease; }
 .kc-runrow--clickable:hover { background: var(--kc-bg-hover); }
-.kc-runrow__group { display: flex; gap: 3px; }
+.kc-runrow__group { display: flex; gap: 3px; min-width: 0; flex: 0 1 auto; overflow: hidden; }
 .kc-runrow__right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.kc-runrow__score { font-size: 15px; font-weight: 700; color: var(--kc-text-hi); }
+.kc-runrow__score { font-size: 15px; font-weight: 700; color: var(--kc-text-hi); min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+@media (max-width: 600px) {
+  .kc-runrow { gap: 8px; padding: 8px 12px; }
+  .kc-runrow__group { gap: 2px; }
+  .kc-runrow__score { min-width: 42px; font-size: 14px; }
+}
 </style>

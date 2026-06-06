@@ -70,8 +70,10 @@ let debounce: ReturnType<typeof setTimeout> | null = null
 function fetchPeriodes() {
   if (!data.apiUrl) return
   axios.get(`${data.apiUrl}/Periode?weeks=50`).then((r) => {
-    allPeriodes.value = SF._sortBy(r.data, 'id')
-    const last = allPeriodes.value[allPeriodes.value.length - 1].id
+    const sorted = SF._sortBy(r.data || [], 'id')
+    allPeriodes.value = sorted
+    if (!sorted.length) return
+    const last = sorted[sorted.length - 1].id
     range.value = { min: last - 10, max: last }
     fetchData()
   }).catch((e) => console.log(e))
@@ -123,22 +125,27 @@ const fmtDate = (p: any) => (p?.start_timestamp ? SF.GetMoment(p.start_timestamp
 .kc-bw__range-num { font-size: 20px; font-weight: 700; color: var(--kc-accent); }
 .kc-bw__affixes { display: inline-flex; gap: 3px; align-items: center; }
 .kc-bw__slider { margin: 4px 8px 20px; }
+@media (max-width: 620px) {
+  .kc-bw__range { grid-template-columns: 1fr; gap: 12px; }
+  .kc-bw__range-end--right { align-items: flex-start; text-align: left; }
+  .kc-seg__btn { height: 34px; padding: 0 14px; }
+}
 
-.kc-bw__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--kc-sp-4); }
-@media (max-width: 980px) { .kc-bw__grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 620px) { .kc-bw__grid { grid-template-columns: 1fr; } }
-.kc-bw__cell { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--kc-bg-inset); border: 1px solid var(--kc-line-hairline); border-radius: var(--kc-r-md); }
+/* auto-fit so columns flex to the width and never overflow at intermediate sizes
+   (min(100%, …) lets a single column shrink below the card width on narrow screens) */
+.kc-bw__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: var(--kc-sp-4); }
+.kc-bw__cell { display: flex; align-items: center; gap: 12px; padding: 12px; min-width: 0; background: var(--kc-bg-inset); border: 1px solid var(--kc-line-hairline); border-radius: var(--kc-r-md); }
 .kc-bw__cell-main { flex: 1; min-width: 0; }
 .kc-bw__cell-name { font-size: 13px; font-weight: 600; color: var(--kc-text-hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kc-bw__cell-week { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+.kc-bw__cell-week { display: flex; align-items: center; gap: 6px; margin-top: 3px; min-width: 0; }
+.kc-bw__affixes { flex: none; }
 .kc-bw__cell-wk { font-size: 11px; color: var(--kc-text-low); }
 .kc-bw__cell-val { font-size: 18px; font-weight: 700; color: var(--kc-accent); flex: none; }
 
 .kc-bw__overall { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: var(--kc-sp-5); padding-top: var(--kc-sp-4); border-top: 1px solid var(--kc-line-hairline); flex-wrap: wrap; }
 .kc-bw__overall-val { font-size: 22px; font-weight: 700; color: var(--kc-text-hi); }
 
-.kc-bw__loading { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--kc-sp-4); }
-@media (max-width: 620px) { .kc-bw__loading { grid-template-columns: 1fr; } }
+.kc-bw__loading { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: var(--kc-sp-4); }
 
 .kc-seg { display: inline-flex; background: var(--kc-bg-inset); border-radius: var(--kc-r-md); border: 1px solid var(--kc-line-default); padding: 2px; gap: 2px; }
 .kc-seg__btn { height: 26px; padding: 0 10px; border-radius: var(--kc-r-sm); border: none; cursor: pointer; font: 500 11px/1 var(--kc-font-ui); background: transparent; color: var(--kc-text-mid); }

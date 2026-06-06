@@ -7,13 +7,13 @@
     }"
     :title="title"
   >
-    <img v-if="iconUrl" class="kc-specicon__img" :src="iconUrl" :alt="title" loading="lazy" />
+    <img v-if="iconUrl && !failed" class="kc-specicon__img" :src="iconUrl" :alt="title" loading="lazy" @error="failed = true" />
     <span v-else class="kc-specicon__fallback" :style="{ background: color }" />
   </span>
 </template>
 
 <script lang="ts" setup>
-import { computed, toRefs } from 'vue'
+import { computed, ref, toRefs, watch } from 'vue'
 import { useKc, roleLabel } from './useKc'
 
 const props = defineProps({
@@ -28,6 +28,11 @@ const { specById, classColorForSpec, cloud } = useKc()
 const spec = computed<any>(() => specById(specId.value))
 const color = computed(() => classColorForSpec(specId.value))
 const iconUrl = computed(() => cloud(spec.value?.icon_url, Math.round(size.value * 2)))
+
+// Some spec icon assets 404 on the CDN (e.g. rare specs). Fall back to the
+// class-colored square instead of rendering a broken/empty image box.
+const failed = ref(false)
+watch(iconUrl, () => { failed.value = false })
 const title = computed(() => {
   const s = spec.value
   if (!s) return ''

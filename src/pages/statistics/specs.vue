@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useKc, roleLabel } from 'components/keystone/useKc'
 import KcPageHeader from 'components/layout/KcPageHeader.vue'
 import KcCard from 'components/keystone/KcCard.vue'
@@ -53,7 +53,12 @@ import RoleGlyph from 'components/keystone/RoleGlyph.vue'
 
 const { store, data, specById, classById, classColorForSpec } = useKc()
 
-onMounted(() => { if (!data.Spec_Data && data.SelectedPeriode) store.dispatch('fetchSpecData') })
+function ensureData() {
+  if (!data.SelectedPeriode) return
+  if (!data.Spec_Data || data.Spec_Data.periode !== data.SelectedPeriode) store.dispatch('fetchSpecData')
+}
+onMounted(ensureData)
+watch(() => data.SelectedPeriode, ensureData)
 
 const stats = computed<any[]>(() => (data.Spec_Data && data.Spec_Data.data) || [])
 const hasData = computed(() => stats.value.length > 0)
@@ -83,6 +88,7 @@ const tierFor = (i: number, n: number) => (i === 0 ? 's' : i < n * 0.15 ? 'a' : 
 <style scoped>
 .kc-specs { padding: var(--kc-sp-6) 0; }
 .kc-container { width: 100%; max-width: var(--kc-content-wide); margin: 0 auto; padding: 0 24px; }
+@media (max-width: 600px) { .kc-container { padding-left: 0; padding-right: 0; } }
 
 .kc-specs__role { margin-bottom: var(--kc-sp-6); }
 .kc-specs__role-label { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; color: var(--kc-text-mid); }

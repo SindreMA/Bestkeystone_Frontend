@@ -46,6 +46,12 @@ const { data, tooltip, detailed, size, border } = toRefs(props)
     border: rgb(161, 161, 161) solid 1px;
     border-radius: 25%;
 }
+/* q-img defaults to inline-block + vertical-align:middle, which drops the icon a
+   few px onto the text baseline inside tight rows (e.g. the context-bar week chip),
+   so it no longer vertically centers. Force block so it fills its sized box. */
+:deep(.q-img) {
+    display: block;
+}
 .imgage {
   overflow: hidden;
 }

@@ -41,9 +41,11 @@
           </div>
         </div>
 
-        <div class="kc-player__grid">
-          <!-- left: build -->
-          <div class="kc-player__col">
+        <!-- account / update strip — moved to the top -->
+        <div class="kc-player__update"><updateBox @update="setDetails" :character="data.run_data" :compact="compact" :details="details" /></div>
+
+        <!-- every content card in one balanced masonry so the columns fill evenly (no blank space) -->
+        <div class="kc-player__masonry">
             <KcCard v-if="details" :level="1" header="Talents"><TalentLine :spec="details.active_spec" :talents="details.talents" /></KcCard>
 
             <KcCard v-if="details && details.equipment" :level="1" header="Gear">
@@ -74,10 +76,6 @@
                 </div>
               </div>
             </KcCard>
-          </div>
-
-          <!-- right: activity -->
-          <div class="kc-player__col">
             <KcCard :level="1" header="Recent runs" :body-style="{ padding: '0' }">
               <template v-if="recentRuns(runs).length">
                 <KcRunRow v-for="(r, i) in recentRuns(runs)" :key="r.id ?? i" :run="r" />
@@ -95,21 +93,16 @@
               </div>
               <div v-if="!byDungeon(runs).length" class="kc-player__empty">No runs for this season.</div>
             </KcCard>
-          </div>
-        </div>
 
-        <!-- deeper analytics (each component carries its own card) -->
-        <template v-if="data.run_data.runs.length > 0">
-          <div class="kc-player__deep">
-            <keystoneFriends :region="region ?? data.run_data.region" :runs="data.run_data.runs" :mainPlayerId="data.run_data.player_id" />
-            <AffixOverview :runs="data.run_data.runs" />
-            <AffixSetOverview :runs="data.run_data.runs" />
-            <DungeonOverview :runs="data.run_data.runs" />
-            <ChestChart :runs="data.run_data.runs" />
-            <renameBox v-if="data.run_data.renames && data.run_data.renames.length" :renames="data.run_data.renames" />
-          </div>
-          <div class="kc-player__update"><updateBox @update="setDetails" :character="data.run_data" :compact="compact" :details="details" /></div>
-        </template>
+            <template v-if="data.run_data.runs.length > 0">
+              <AffixOverview :runs="data.run_data.runs" />
+              <AffixSetOverview :runs="data.run_data.runs" />
+              <keystoneFriends :region="region ?? data.run_data.region" :runs="data.run_data.runs" :mainPlayerId="data.run_data.player_id" />
+              <DungeonOverview :runs="data.run_data.runs" />
+              <ChestChart :runs="data.run_data.runs" />
+              <renameBox v-if="data.run_data.renames && data.run_data.renames.length" :renames="data.run_data.renames" />
+            </template>
+        </div>
       </PlayerFormatter>
     </div>
   </div>
@@ -236,21 +229,21 @@ const dungeonName = (zone: number) => dungeonByKeystoneId(zone)?.name || dungeon
 .kc-ph__link img { width: 18px; height: 18px; border-radius: 50%; }
 .kc-ph__stats { display: flex; gap: 28px; flex-wrap: wrap; }
 .kc-ph__stat { min-width: 56px; }
-.kc-ph__stat-val { font-size: 24px; font-weight: 700; color: var(--kc-text-hi); margin-top: 4px; }
+.kc-ph__stat-val { font-size: 24px; font-weight: 700; color: var(--kc-text-hi); margin-top: 4px; max-width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* grid */
-.kc-player__grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: var(--kc-sp-5); align-items: start; margin-top: var(--kc-sp-5); }
-@media (max-width: 920px) { .kc-player__grid { grid-template-columns: 1fr; } }
-.kc-player__col { display: flex; flex-direction: column; gap: var(--kc-sp-5); min-width: 0; }
+/* masonry: pack the build + activity cards into 2 balanced columns so a short
+   side (e.g. no season runs) doesn't leave a tall empty gap */
+.kc-player__masonry { columns: 2; column-gap: var(--kc-sp-5); column-fill: balance; margin-top: var(--kc-sp-5); }
+.kc-player__masonry > * { break-inside: avoid; margin-bottom: var(--kc-sp-5); }
+@media (max-width: 920px) { .kc-player__masonry { columns: 1; } }
 .kc-player__empty { padding: 20px; text-align: center; color: var(--kc-text-mid); font-size: 13px; }
 
-.kc-player__dgnrow { display: grid; grid-template-columns: auto 1fr auto auto auto; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--kc-line-hairline); }
+.kc-player__dgnrow { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto auto; align-items: center; gap: 12px; padding: 8px 16px; border-bottom: 1px solid var(--kc-line-hairline); }
 .kc-player__dgnname { font-size: 13px; font-weight: 600; color: var(--kc-text-hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kc-player__dgnruns { font-size: 12px; color: var(--kc-text-mid); }
-.kc-player__dgnbest { font-size: 14px; font-weight: 700; color: var(--kc-text-hi); }
+.kc-player__dgnruns { font-size: 12px; color: var(--kc-text-mid); text-align: right; }
+.kc-player__dgnbest { font-size: 14px; font-weight: 700; color: var(--kc-text-hi); text-align: right; }
 
-.kc-player__deep { display: grid; grid-template-columns: 1fr 1fr; gap: var(--kc-sp-5); margin-top: var(--kc-sp-5); align-items: start; }
-@media (max-width: 920px) { .kc-player__deep { grid-template-columns: 1fr; } }
 .kc-player__update { margin-top: var(--kc-sp-5); }
 
 /* gear */
@@ -262,12 +255,20 @@ const dungeonName = (zone: number) => dungeonByKeystoneId(zone)?.name || dungeon
 .kc-gear__cell:hover .kc-gear__icon { border-color: var(--kc-line-strong); transform: scale(1.08); }
 
 /* stats */
-.kc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
-.kc-stats__row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--kc-line-hairline); }
+.kc-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; }
+.kc-stats__row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--kc-line-hairline); min-width: 0; }
 .kc-stats__k { font-size: 12px; color: var(--kc-text-mid); }
 .kc-stats__v { font-size: 12px; color: var(--kc-text-hi); }
 
 /* card primitive (reused inline for the header) */
 .kc-card { background: var(--kc-bg-surface); border: 1px solid var(--kc-line-default); border-radius: var(--kc-r-lg); box-shadow: var(--kc-shadow-sm); }
 .kc-card--l2 { background: var(--kc-bg-raised); border-color: var(--kc-line-strong); box-shadow: var(--kc-shadow-md); }
+
+/* phone tuning */
+@media (max-width: 600px) { .kc-container { padding-left: 0; padding-right: 0; } }
+@media (max-width: 520px) { .kc-stats { grid-template-columns: 1fr; } }
+@media (max-width: 480px) {
+  .kc-player__dgnrow { gap: 8px; padding: 8px 12px; }
+  .kc-player__dgnruns { display: none; }
+}
 </style>

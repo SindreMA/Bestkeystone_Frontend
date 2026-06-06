@@ -5,7 +5,7 @@
 
       <KcCard v-if="ranked.length" :level="1" :body-style="{ padding: '0' }">
         <div class="kc-dgn__head">
-          <span class="kc-eyebrow" style="width: 30px;">#</span>
+          <span class="kc-eyebrow" style="text-align:center;">#</span>
           <span class="kc-eyebrow">Dungeon</span>
           <span class="kc-eyebrow" style="text-align:right;">Runs</span>
           <span class="kc-eyebrow" style="text-align:right;">{{ scoreLabel }}</span>
@@ -110,14 +110,17 @@ function successFor(keystoneId: number): number | null {
 <style scoped>
 .kc-dungeons { padding: var(--kc-sp-6) 0; }
 .kc-container { width: 100%; max-width: var(--kc-content-wide); margin: 0 auto; padding: 0 24px; }
+@media (max-width: 600px) { .kc-container { padding-left: 0; padding-right: 0; } }
 
 .kc-dgn__head, .kc-dgn__row {
   display: grid;
-  grid-template-columns: auto minmax(180px, 1.7fr) 1fr 1fr 90px;
+  grid-template-columns: 30px minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 90px;
   align-items: center;
   gap: 16px;
   padding: 0 16px;
 }
+.kc-dgn__head > *, .kc-dgn__row > * { min-width: 0; }
+.kc-dgn__head > :first-child, .kc-dgn__row > :first-child { justify-self: center; }
 .kc-dgn__head { height: 38px; background: var(--kc-bg-raised); border-bottom: 1px solid var(--kc-line-hairline); }
 .kc-dgn__head .kc-eyebrow { color: var(--kc-text-low); }
 .kc-dgn__row {

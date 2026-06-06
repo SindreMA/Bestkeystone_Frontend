@@ -354,6 +354,9 @@ watch(SelectedAffixSet, (newValue, oldValue) => {
   align-items: center;
   height: 100%;
 }
+.MainPadd {
+  padding: 0 12px;
+}
 @media screen and (min-width: 600px) {
   .MiddleAndSize {
     max-width: 1300px;

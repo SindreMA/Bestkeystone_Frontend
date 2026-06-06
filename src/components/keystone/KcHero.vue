@@ -214,13 +214,15 @@ const goDungeons = () => router.push('/statistics/dungeons')
 
 .kc-hero__name-row { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
 .kc-hero__short { color: var(--kc-text-mid); }
-.kc-hero__name { font-size: 40px; line-height: 44px; font-weight: 700; }
+.kc-hero__name { font-size: clamp(24px, 5vw, 40px); line-height: 1.1; font-weight: 700; overflow-wrap: anywhere; }
 
 .kc-hero__desc { font-size: 14px; color: var(--kc-text-mid); margin-bottom: 18px; max-width: 420px; }
 
 .kc-hero__stats { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.kc-hero__stats :deep(.kc-ring) { position: relative; }
+.kc-hero__stats :deep(.kc-ring__caption) { position: absolute; top: 100%; left: 0; right: 0; margin-top: 2px; }
 .kc-hero__stat-label { margin-bottom: 4px; }
-.kc-hero__stat-num { font-size: 30px; font-weight: 700; }
+.kc-hero__stat-num { font-size: clamp(22px, 3.5vw, 30px); font-weight: 700; }
 
 .kc-hero__cta { margin-top: 18px; }
 
@@ -246,4 +248,8 @@ const goDungeons = () => router.push('/statistics/dungeons')
 }
 .kc-btn--primary { background: var(--kc-accent); color: var(--kc-text-inverse); }
 .kc-btn--primary:hover { background: var(--kc-accent-hover); }
+
+@media (max-width: 600px) {
+  .kc-hero-inner { padding: var(--kc-sp-4); }
+}
 </style>

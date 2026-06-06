@@ -11,7 +11,7 @@
         </div>
         <div class="kc-perf__list">
           <div v-for="(s, i) in grp.specs" :key="s.spec" class="kc-perf__row">
-            <KcSpecIcon :spec-id="s.spec" :size="i === 0 ? 28 : 22" />
+            <span class="kc-perf__icon"><KcSpecIcon :spec-id="s.spec" :size="i === 0 ? 28 : 22" /></span>
             <span class="kc-perf__name-wrap">
               <span class="kc-perf__name" :style="{ color: classColorForSpec(s.spec) }">{{ specLabel(s.spec) }}</span>
               <span v-if="i === 1" class="kc-perf__runnerup">runner-up</span>
@@ -80,10 +80,11 @@ const specLabel = (specId: number) => {
 .kc-perf__role-label { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .kc-perf__list { display: flex; flex-direction: column; gap: 8px; }
 .kc-perf__row { display: flex; align-items: center; gap: 10px; }
-.kc-perf__name-wrap { flex: none; width: 132px; min-width: 0; }
+.kc-perf__icon { flex: none; width: 28px; display: grid; place-items: center; }
+.kc-perf__name-wrap { flex: 1 1 auto; min-width: 0; }
 .kc-perf__name { display: block; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .kc-perf__runnerup { font-size: 10px; color: var(--kc-text-low); }
-.kc-perf__bar { flex: 1; height: 6px; background: var(--kc-bg-inset); border-radius: 3px; overflow: hidden; }
+.kc-perf__bar { flex: 1 1 60px; min-width: 40px; height: 6px; background: var(--kc-bg-inset); border-radius: 3px; overflow: hidden; }
 .kc-perf__bar-fill { display: block; height: 100%; border-radius: 3px; }
 .kc-perf__val { font-size: 13px; font-weight: 700; width: 52px; text-align: right; }
 .kc-perf__loading { display: flex; flex-direction: column; gap: 12px; }
