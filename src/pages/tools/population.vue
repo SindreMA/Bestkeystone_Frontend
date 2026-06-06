@@ -32,7 +32,7 @@
             <span class="fun-row__bar">
               <span
                 class="fun-bar"
-                :style="{ width: `${(row.count / max) * 100}%`, background: barColor(i) }"
+                :style="{ width: `${Math.min(100, (row.count / max) * 100)}%`, background: barColor(i) }"
               />
               <span v-if="isYourBand(row.lvl)" class="fun-row__marker">you</span>
             </span>
@@ -92,12 +92,11 @@ interface FunnelRow {
 const store = useStore()
 const data = store.state.data
 
+// The population aggregate currently only emits a World (Region == null) roll-up,
+// so per-region scopes would return []. Expose only World until the backend job
+// writes per-region LevelPopulations rows — never offer a scope that has no data.
 const REGIONS = [
   { label: 'World', value: '' },
-  { label: 'EU', value: 'eu' },
-  { label: 'US', value: 'us' },
-  { label: 'KR', value: 'kr' },
-  { label: 'TW', value: 'tw' },
 ] as const
 
 const region = ref<string>('')
@@ -108,7 +107,10 @@ const rows = ref<FunnelRow[]>([])
 const fmtNum = (n: number | null | undefined) =>
   n == null ? '—' : Number(n).toLocaleString('en-US')
 
-const max = computed(() => rows.value[0]?.count || 1)
+// The endpoint orders by level ascending and the per-level counts are not
+// guaranteed monotonic, so the funnel baseline must be the true max count,
+// not rows[0]. Bar widths are clamped to 100% against it.
+const max = computed(() => Math.max(1, ...rows.value.map((r) => r.count)))
 
 /* funnel bar fades from accent → cyan as levels climb (per design color-mix) */
 const barColor = (i: number) =>

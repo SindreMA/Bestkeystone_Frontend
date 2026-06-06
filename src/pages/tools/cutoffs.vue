@@ -21,6 +21,19 @@
         </template>
       </KcPageHeader>
 
+      <!-- Score-system disclaimer. These cutoffs are computed from BestKeystone's
+           OWN score column, not Blizzard's native M+ rating, so they do not match
+           the exact in-game title cutoff. A native-rating column is planned; until
+           then this is an honest relative-ladder estimate, not the official number. -->
+      <div class="cut-notice" role="note">
+        <span class="cut-notice__icon">ⓘ</span>
+        <span class="cut-notice__text">
+          These thresholds use <strong>BestKeystone's own score</strong>, not Blizzard's native
+          M+ rating — so they won't match the exact in-game title cutoff. Read them as a relative
+          position on the ladder. A native-rating column is planned for a precise cutoff.
+        </span>
+      </div>
+
       <!-- live data -->
       <template v-if="hasData">
         <div class="cut-grid">
@@ -177,14 +190,22 @@ function fetchCutoffs() {
   loading.value = true
   error.value = false
   const periode = data.SelectedPeriode == null ? '' : String(data.SelectedPeriode)
-  const url = `${data.apiUrl}/Meta/cutoffs?season=&periode=${periode}`
+  // Send the selected region so the percentiles table + projection re-scope to
+  // it (the backend defaults to EU otherwise). The endpoint's region-key casing
+  // is inconsistent (lowercase on the no-region path), so normalise keys to
+  // uppercase to match the REGIONS lookup below — never read a missing key as 0.
+  const url = `${data.apiUrl}/Meta/cutoffs?season=&periode=${periode}&region=${region.value}`
+  const upKeys = (o: any): Record<string, number> =>
+    o && typeof o === 'object'
+      ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k.toUpperCase(), v as number]))
+      : {}
   axios
     .get(url)
     .then((r) => {
       const d = r.data || {}
       source.value = {
-        regions: d.regions && typeof d.regions === 'object' ? d.regions : {},
-        delta: d.delta && typeof d.delta === 'object' ? d.delta : {},
+        regions: upKeys(d.regions),
+        delta: upKeys(d.delta),
         percentiles: Array.isArray(d.percentiles) ? d.percentiles : [],
         projection: Array.isArray(d.projection) ? d.projection : [],
       }
@@ -200,12 +221,16 @@ function fetchCutoffs() {
 onMounted(fetchCutoffs)
 watch(() => data.SelectedPeriode, fetchCutoffs)
 watch(() => data.SelectedLevelBand, fetchCutoffs)
+// the region segmented control scopes the percentiles + projection server-side
+watch(region, fetchCutoffs)
 // scope-bar changes (sample size etc.) bump Reloaded_Timestamp
 watch(() => data.Reloaded_Timestamp, fetchCutoffs)
 
 const fmtNum = (n: number | null | undefined) => (n == null ? '—' : numeral(n).format('0,0'))
 
-const score = computed(() => source.value?.regions?.[region.value] ?? 0)
+// null (not 0) when a region has no published cutoff, so the hero renders an
+// honest '—' instead of a fabricated 0.
+const score = computed<number | null>(() => source.value?.regions?.[region.value] ?? null)
 const delta = computed(() => source.value?.delta?.[region.value] ?? 0)
 const percentiles = computed(() => source.value?.percentiles ?? [])
 
@@ -326,6 +351,23 @@ const projOptions = computed(() => ({
 .kc-cutoffs { padding: var(--kc-sp-6) 0; }
 .kc-container { width: 100%; max-width: var(--kc-content-wide); margin: 0 auto; padding: 0 24px; }
 @media (max-width: 600px) { .kc-container { padding-left: 12px; padding-right: 12px; } }
+
+/* score-system disclaimer banner */
+.cut-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 var(--kc-sp-5);
+  padding: 11px 14px;
+  border-radius: var(--kc-r-md);
+  background: color-mix(in oklab, var(--kc-warn, #D29922) 12%, var(--kc-bg-inset));
+  border: 1px solid color-mix(in oklab, var(--kc-warn, #D29922) 40%, transparent);
+  color: var(--kc-text-mid);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.cut-notice__icon { color: var(--kc-warn, #D29922); font-size: 14px; line-height: 1.4; flex: none; }
+.cut-notice__text strong { color: var(--kc-text-hi); font-weight: 600; }
 
 /* ---- top grid: hero (narrow) + percentile table (wide) ---- */
 .cut-grid {

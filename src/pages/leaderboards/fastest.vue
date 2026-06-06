@@ -28,15 +28,15 @@
           @click="zoneFilter = null"
         >All</button>
         <button
-          v-for="d in dungeons"
+          v-for="d in dungeonChips"
           :key="d.zone"
           class="kc-fchip"
           :class="{ 'is-sel': zoneFilter === d.zone }"
-          :style="{ '--fchip-tint': d.tint }"
+          :title="d.name"
           @click="zoneFilter = zoneFilter === d.zone ? null : d.zone"
         >
           <span class="kc-fchip__dot" />
-          {{ d.abbr }}
+          {{ d.short }}
         </button>
 
         <span class="kc-fastest__filters-spacer" />
@@ -93,10 +93,9 @@
             <span class="fast-row__dgn">
               <span
                 class="kc-dthumb-mini kc-disp"
-                :style="{ '--dthumb': dungeonByZone[r.zone]?.tint || 'var(--kc-accent)' }"
-                :title="dungeonByZone[r.zone]?.name"
-              >{{ dungeonByZone[r.zone]?.abbr || r.zone }}</span>
-              <span class="fast-row__name">{{ dungeonByZone[r.zone]?.name || r.zone }}</span>
+                :title="r.name || dungeonByKeystoneId(r.zone)?.name"
+              >{{ r.short_name || dungeonByKeystoneId(r.zone)?.short_name || r.zone }}</span>
+              <span class="fast-row__name">{{ r.name || dungeonByKeystoneId(r.zone)?.name || r.zone }}</span>
             </span>
 
             <KcKeystoneChip :level="r.lvl" size="sm" />
@@ -141,7 +140,7 @@ import KcCard from 'components/keystone/KcCard.vue'
 import KcRankChip from 'components/keystone/KcRankChip.vue'
 import KcKeystoneChip from 'components/keystone/KcKeystoneChip.vue'
 import KcSpecIcon from 'components/keystone/KcSpecIcon.vue'
-import { dungeons, dungeonByZone, type FastestRow } from 'src/data/metaReference'
+import { type FastestRow } from 'src/data/metaReference'
 
 /* ── data source: real /Meta/fastest endpoint ────────────────────────────────
    GET ${apiUrl}/Meta/fastest?periode=<SelectedPeriode>&zone=<zone>&level=<lvl>&region=<region>
@@ -158,7 +157,7 @@ import { dungeons, dungeonByZone, type FastestRow } from 'src/data/metaReference
    (src/data/metaReference). Composition spec icons resolve their numeric spec
    ids through the live Vuex store via KcSpecIcon (class colour + CDN icon), so
    there is no page-local class-colour table anymore. */
-const { store, data } = useKc()
+const { data, dungeonByKeystoneId } = useKc()
 
 /* ---- filters (now server-side via query params) ---- */
 const REGIONS = [
@@ -175,8 +174,12 @@ const LEVELS = [
   { label: '+20', v: 20 },
 ]
 const region = ref<string>('')
-const zoneFilter = ref<string | null>(null)
+const zoneFilter = ref<number | null>(null)
 const lvlFilter = ref<number | null>(null)
+// dungeon filter chips, derived from the real (unfiltered) leaderboard so they
+// use the numeric zone ids the API expects and the dungeon names it returns —
+// never a hardcoded abbreviation table.
+const dungeonChips = ref<{ zone: number; name: string; short: string }[]>([])
 
 /* ---- data ---- */
 const loading = ref(false)
@@ -192,24 +195,42 @@ async function fetchFastest() {
   }
   loading.value = true
   error.value = false
-  const zone = zoneFilter.value ?? ''
-  const level = lvlFilter.value ?? ''
+  const zone = zoneFilter.value
+  const level = lvlFilter.value
   const reg = region.value
   try {
-    const r = await axios.get(
-      `${apiUrl}/Meta/fastest?periode=${periode}&zone=${encodeURIComponent(zone)}` +
-        `&level=${encodeURIComponent(String(level))}&region=${encodeURIComponent(reg)}`,
-    )
+    // zone is an integer keystone id; omit optional params when unset rather
+    // than sending key= (which couples us to empty-string→null coercion).
+    const params = new URLSearchParams({ periode: String(periode) })
+    if (zone != null) params.set('zone', String(zone))
+    if (level != null) params.set('level', String(level))
+    if (reg) params.set('region', reg)
+    const r = await axios.get(`${apiUrl}/Meta/fastest?${params.toString()}`)
     // guard against a stale response arriving after the scope changed again
     if (
       periode !== data.SelectedPeriode ||
-      zone !== (zoneFilter.value ?? '') ||
-      level !== (lvlFilter.value ?? '') ||
+      zone !== zoneFilter.value ||
+      level !== lvlFilter.value ||
       reg !== region.value
     ) {
       return
     }
     rows.value = Array.isArray(r.data) ? (r.data as FastestRow[]) : []
+    // derive the dungeon chip list from the full (unfiltered) leaderboard once,
+    // using the numeric zone ids + names the API returns.
+    if (zone == null && rows.value.length) {
+      const seen = new Map<number, { zone: number; name: string; short: string }>()
+      for (const row of rows.value) {
+        if (!seen.has(row.zone)) {
+          seen.set(row.zone, {
+            zone: row.zone,
+            name: row.name || dungeonByKeystoneId(row.zone)?.name || String(row.zone),
+            short: row.short_name || dungeonByKeystoneId(row.zone)?.short_name || String(row.zone),
+          })
+        }
+      }
+      dungeonChips.value = [...seen.values()].sort((a, b) => a.name.localeCompare(b.name))
+    }
   } catch (e) {
     console.log(e)
     rows.value = []

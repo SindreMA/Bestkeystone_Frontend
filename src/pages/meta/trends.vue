@@ -164,16 +164,25 @@ const movers = ref<Mover[]>([])
 const loading = ref(false)
 const error = ref(false)
 
+// How many periode-ids to look back for the trend window. The endpoint only
+// returns periods that actually have snapshot rows, and snapshots are written
+// for the current season's dungeons only, so a generous lower bound simply
+// yields "every in-season week up to the selected one" — sending the selected
+// periode as BOTH bounds (the old behaviour) collapsed the chart to one week.
+const TREND_LOOKBACK = 30
+
 function fetchTrends() {
-  // SelectedPeriode is a single periode id (or null). The endpoint takes a
-  // from/to window; with no explicit range we send the selected periode as
-  // both bounds, and leave them empty when nothing is selected yet.
+  // SelectedPeriode is a single periode id (or null). The trend chart needs a
+  // multi-week WINDOW, so we ask from (selected - lookback) .. selected rather
+  // than a single week. periode ids can have gaps, but the endpoint clips the
+  // range to whatever periods have data, so an over-wide lower bound is safe.
   const periode = data.SelectedPeriode
   if (!data.apiUrl) return
   loading.value = true
   error.value = false
-  const p = periode == null ? '' : String(periode)
-  const url = `${data.apiUrl}/Meta/trends?fromPeriode=${p}&toPeriode=${p}`
+  const to = periode == null ? '' : String(periode)
+  const from = periode == null ? '' : String(periode - TREND_LOOKBACK)
+  const url = `${data.apiUrl}/Meta/trends?fromPeriode=${from}&toPeriode=${to}`
   axios
     .get(url)
     .then((r) => {

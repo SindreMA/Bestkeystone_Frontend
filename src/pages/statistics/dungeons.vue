@@ -93,10 +93,10 @@
             >
               <span class="kc-dgn__tier"><KcTierBadge :tier="r.tier" lg /></span>
               <span class="kc-dgn__name">
-                <KcDungeonThumb :dungeon="dungeonByZone[r.zone]" :size="34" />
+                <KcDungeonThumb :keystone-id="r.zone" :size="34" />
                 <span class="kc-dgn__name-text">
-                  <span class="kc-dgn__name-main">{{ dungeonByZone[r.zone]?.name || r.zone }}</span>
-                  <span class="kc-eyebrow kc-dgn__name-short">{{ dungeonByZone[r.zone]?.abbr }}</span>
+                  <span class="kc-dgn__name-main">{{ r.name || dungeonByKeystoneId(r.zone)?.name || r.zone }}</span>
+                  <span class="kc-eyebrow kc-dgn__name-short">{{ r.short_name || dungeonByKeystoneId(r.zone)?.short_name }}</span>
                 </span>
               </span>
               <span class="kc-dgn__band">
@@ -151,8 +151,8 @@
                 class="kc-affix__row"
               >
                 <span class="kc-dgn__name">
-                  <KcDungeonThumb :dungeon="dungeonByZone[r.zone]" :size="28" />
-                  <span class="kc-dgn__name-main kc-affix__name">{{ dungeonByZone[r.zone]?.name || r.zone }}</span>
+                  <KcDungeonThumb :keystone-id="r.zone" :size="28" />
+                  <span class="kc-dgn__name-main kc-affix__name">{{ r.name || dungeonByKeystoneId(r.zone)?.name || r.zone }}</span>
                 </span>
                 <span class="kc-affix__col">
                   <span class="kc-tnum kc-affix__pct">{{ Math.round(r.tyr.timed * 100) }}%</span>
@@ -190,8 +190,8 @@
                 class="kc-cush__row"
               >
                 <span class="kc-dgn__name">
-                  <KcDungeonThumb :dungeon="dungeonByZone[r.zone]" :size="28" />
-                  <span class="kc-dgn__name-main kc-affix__name">{{ dungeonByZone[r.zone]?.name || r.zone }}</span>
+                  <KcDungeonThumb :keystone-id="r.zone" :size="28" />
+                  <span class="kc-dgn__name-main kc-affix__name">{{ r.name || dungeonByKeystoneId(r.zone)?.name || r.zone }}</span>
                 </span>
                 <span class="kc-cush__stack">
                   <span
@@ -234,10 +234,10 @@ import KcDungeonThumb from 'components/keystone/KcDungeonThumb.vue'
 import KcBestWeek from 'components/keystone/KcBestWeek.vue'
 import KcTierBadge from 'components/keystone/KcTierBadge.vue'
 import KcDeltaChip from 'components/keystone/KcDeltaChip.vue'
-// Reference labels only (real dungeon/zone metadata + level-band constants).
-// NO fabricated stats — those used to come from src/mocks/meta and are gone.
+// Level-band constants + response row types. Dungeon names/icons come from the
+// API rows (name/short_name) + the live store (dungeonByKeystoneId), never from
+// a static abbreviation map.
 import {
-  dungeonByZone,
   levelBands,
   type DungeonTierRow,
   type AffixCompareRow,
@@ -255,6 +255,11 @@ const mode = ref<'rank' | 'tier'>('rank')
 
 const level = ref<string>('+15')
 const levelLabel = computed(() => (level.value === 'All' ? '+15' : level.value))
+// The dungeon-tier / cushion endpoints take an INTEGER level. The chip values
+// are strings like '+15' (and 'All', which these per-level endpoints have no
+// aggregate for — treat it as +15 to match levelLabel rather than sending a
+// non-numeric value that binds to 0 and returns nothing).
+const levelParam = computed(() => (level.value === 'All' ? 15 : parseInt(level.value.replace('+', ''), 10) || 15))
 
 /* ---------------- tier-list mode (real /Meta/dungeon-tier endpoint) ----------------
    GET ${apiUrl}/Meta/dungeon-tier?periode=<SelectedPeriode>&level=<level>
@@ -273,7 +278,7 @@ function fetchTier() {
   tierLoading.value = true
   tierError.value = false
   axios
-    .get(`${apiUrl}/Meta/dungeon-tier?periode=${periode}&level=${encodeURIComponent(level.value)}`)
+    .get(`${apiUrl}/Meta/dungeon-tier?periode=${periode}&level=${levelParam.value}`)
     .then((r) => {
       tierRows.value = (r.data?.rows || []) as DungeonTierRow[]
     })
@@ -348,7 +353,7 @@ function fetchCushion() {
   cushionLoading.value = true
   cushionError.value = false
   axios
-    .get(`${apiUrl}/Meta/cushion?periode=${periode}&level=${encodeURIComponent(level.value)}`)
+    .get(`${apiUrl}/Meta/cushion?periode=${periode}&level=${levelParam.value}`)
     .then((r) => {
       cushion.value = (r.data || []) as CushionRow[]
     })

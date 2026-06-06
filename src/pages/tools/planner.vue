@@ -34,9 +34,9 @@
       <KcCard v-if="hasData" :level="1" header="Best marginal gains" :body-style="{ padding: '0' }">
         <div class="kc-statlist">
           <div v-for="r in rows" :key="r.zone" class="kc-plan__row">
-            <KcDungeonThumb :dungeon="dungeonFor(r.zone)" :size="44" :style="thumbStyle(r.zone)" />
+            <KcDungeonThumb :keystone-id="r.zone" :size="44" />
             <div class="kc-plan__id min0">
-              <div class="kc-plan__name">{{ dungeonFor(r.zone).name }}</div>
+              <div class="kc-plan__name">{{ r.name || dungeonByKeystoneId(r.zone)?.name || r.zone }}</div>
               <div class="kc-plan__sub kc-mono">
                 <span>best</span>
                 <KcKeystoneChip :level="lvl(r.cur)" size="sm" />
@@ -89,7 +89,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 import { useKc } from 'components/keystone/useKc'
-import { dungeonByZone, type PlannerRow } from 'src/data/metaReference'
+import { type PlannerRow } from 'src/data/metaReference'
 import KcPageHeader from 'components/layout/KcPageHeader.vue'
 import KcCard from 'components/keystone/KcCard.vue'
 import KcDungeonThumb from 'components/keystone/KcDungeonThumb.vue'
@@ -104,7 +104,7 @@ import KcSuccessRing from 'components/keystone/KcSuccessRing.vue'
    The endpoint returns 200 with [] until the aggregate job has run — we
    surface a clean empty state and show no numbers at all in that case.
    ------------------------------------------------------------------ */
-const { data } = useKc()
+const { data, dungeonByKeystoneId } = useKc()
 
 type SortKey = 'score' | 'attain'
 
@@ -149,16 +149,6 @@ watch(() => data.SelectedPeriode, fetchPlanner)
 watch(() => data.SelectedLevelBand, fetchPlanner)
 // scope-bar changes (sample size etc.) bump Reloaded_Timestamp
 watch(() => data.Reloaded_Timestamp, fetchPlanner)
-
-/* dungeon record shaped for KcDungeonThumb (uses name / short_name for the fallback glyph) */
-function dungeonFor(zone: string) {
-  const d = dungeonByZone[zone]
-  return { name: d?.name || zone, short_name: d?.abbr || zone, imageurl: null }
-}
-/* tint the placeholder tile via the component's --dthumb hook */
-function thumbStyle(zone: string) {
-  return { '--dthumb': dungeonByZone[zone]?.tint || 'var(--kc-accent)' } as Record<string, string>
-}
 
 /* backend stores cur/next as "+14"; KcKeystoneChip wants a numeric level */
 const lvl = (s: string) => parseInt(String(s).replace('+', ''), 10) || 0

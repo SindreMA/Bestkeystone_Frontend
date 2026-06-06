@@ -58,7 +58,10 @@ export interface RoleGroup {
 }
 
 export interface DungeonTierRow {
-  zone: string
+  zone: number
+  name?: string
+  short_name?: string
+  slug?: string
   tier: Tier
   timed: number
   avgMs: number
@@ -82,13 +85,19 @@ export interface Diversity {
 }
 
 export interface AffixCompareRow {
-  zone: string
+  zone: number
+  name?: string
+  short_name?: string
+  slug?: string
   tyr: { timed: number; ms: number }
   fort: { timed: number; ms: number }
 }
 
 export interface CushionRow {
-  zone: string
+  zone: number
+  name?: string
+  short_name?: string
+  slug?: string
   c3: number
   c2: number
   c1: number
@@ -109,7 +118,10 @@ export interface FunnelRow {
 }
 
 export interface PlannerRow {
-  zone: string
+  zone: number
+  name?: string
+  short_name?: string
+  slug?: string
   cur: string
   next: string
   gain: number
@@ -118,7 +130,10 @@ export interface PlannerRow {
 
 export interface FastestRow {
   rank: number
-  zone: string
+  zone: number
+  name?: string
+  short_name?: string
+  slug?: string
   lvl: number
   ms: number
   comp: string[]
