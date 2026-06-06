@@ -353,3 +353,44 @@ nothing. Fixed with global rules: dark the `.kc-drawer` content (it's `fit`, so 
 covers the aside) + `:global(.q-drawer:has(.kc-drawer))` for the aside itself, plus
 the drawer text colour. Drawer now renders on the dark Keystone Console palette.
 Build green.
+
+## Phase R — Per-dungeon scope chip for Classes/Specs/Compositions (2026-06-06)
+
+Restores the old dungeons-page "expand a row → Best Comp/Class/Spec for that
+dungeon" capability, but as a Dungeon chip in the global scope bar (KcContextBar),
+applied to /statistics/classes, /specs and /compositions (NOT the dungeons page —
+that IS the per-dungeon view). Default "All dungeons".
+
+Investigation first (the important part): black-box probing of bestkeystone.com/api
+showed /Composition?dungeon=X genuinely filters, but /Spec/leaderboard?zone=X
+returned byte-identical global totals for every param variant. Tracing the C#
+backend (BestKeystone_API) found why: SpecController → Get_Specs_Leaderboard →
+GetRuns (SqlHelper.cs:1239) plumbs `int? zone` through every signature but GetRuns
+NEVER references the parameter in its body — it always queried all tracked
+SeasonDungeonInstances for the season. Half-wired feature.
+
+Backend (read-only, no DB writes/migration): added one filter to GetRuns —
+`&& (!zone.HasValue || x.InstanceId == zone)` on the SeasonDungeonInstances.Where.
+InstanceId == KeystoneRun.Zone == the dungeon keystone_id the frontend sends.
+Now Get_Specs_Leaderboard(zone) returns only that dungeon's runs; Classes (rolled
+up from specs on the FE) inherit it. Needs a backend DEPLOY to light up for
+classes/specs; comps already work in prod.
+
+Frontend:
+- store/data.ts: new SelectedDungeon state + ChangeSelectedDungeon mutation;
+  ChangeSelectedPeriode now resets SelectedDungeon (a scope from the old season
+  may not exist in the new one).
+- KcContextBar.vue: Dungeon chip (thumb + short_name, "All" default) between Min
+  and Score; menu lists only the dungeons active in the selected periode
+  (Dungeons_Data.data mapped to Dungeons metadata); immediate watch ensures
+  fetchDungeonData runs so the list exists on direct page loads.
+- classes.vue / specs.vue: freshDungeonEntry(zone) reads the zone-filtered
+  Spec_Dungeon_Data entry (matched on dungeon+periode, created > Reloaded_Timestamp
+  so a scope change forces a refetch); lazy fetchSpecData({id:zone}); watch on
+  [SelectedPeriode, SelectedDungeon, Reloaded_Timestamp].
+- compositions.vue: appends &dungeon=<SelectedDungeon>; watch(SelectedDungeon).
+
+Verified live: comps 5000→1127 for Pit of Saron; classes/specs fetch+render
+per-dungeon (identical to global until backend deploy); chip menu lists the 8
+active dungeons; zero console errors. Frontend build green; backend compiles
+0 errors. NOT committed (per standing rule).

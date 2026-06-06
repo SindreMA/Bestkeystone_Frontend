@@ -56,6 +56,8 @@ const state = {
 
         Spec_Dungeon_Data: [],
 
+        SelectedDungeon: null,
+
         AffixSchedule: null,
         AffixDetails: [],
 
@@ -109,6 +111,11 @@ const state = {
         },
         ChangeSelectedPeriode(state, data) {
             state.SelectedPeriode = data
+            // a dungeon scope from the previous season may not exist in the new one
+            state.SelectedDungeon = null
+        },
+        ChangeSelectedDungeon(state, data) {
+            state.SelectedDungeon = data
         },
         seenNotification(state, data) {
             var val = 1;

@@ -81,7 +81,9 @@ function fetchComps() {
   rows.value = []
   page.value = 0
   const runs = data.settings.max_runs
-  axios.get(`${data.apiUrl}/Composition?periode=${periode}&runs=${runs}&from=0&amount=5000&type=${type.value}`)
+  let url = `${data.apiUrl}/Composition?periode=${periode}&runs=${runs}&from=0&amount=5000&type=${type.value}`
+  if (data.SelectedDungeon != null) url += `&dungeon=${data.SelectedDungeon}`
+  axios.get(url)
     .then((r) => {
       const comps = (r.data?.comps || []).map((c: any) => ({ ...c })).sort((a: any, b: any) => b.score - a.score)
       rows.value = comps
@@ -93,6 +95,9 @@ function fetchComps() {
 onMounted(fetchComps)
 watch(type, fetchComps)
 watch(() => data.SelectedPeriode, fetchComps)
+watch(() => data.SelectedDungeon, fetchComps)
+// a scope-bar change (Sample size etc.) bumps Reloaded_Timestamp; max_runs feeds /Composition
+watch(() => data.Reloaded_Timestamp, fetchComps)
 
 const maxRuns = computed(() => Math.max(1, ...rows.value.map((c) => c.runs)))
 const maxScore = computed(() => Math.max(1, ...rows.value.map((c) => c.score)))

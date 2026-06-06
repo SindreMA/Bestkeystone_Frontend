@@ -40,6 +40,25 @@
         </q-menu>
       </button>
 
+      <!-- Dungeon scope -->
+      <button v-if="cfg.dungeon" class="kc-ctxchip">
+        <span class="kc-eyebrow kc-ctxchip__k">Dungeon</span>
+        <KcDungeonThumb v-if="selectedDungeon != null" :keystone-id="selectedDungeon" :size="16" />
+        <span class="kc-ctxchip__v">{{ selectedDungeonLabel }}</span>
+        <svg class="kc-ctxchip__chev" v-bind="chev"><path d="M6 9l6 6 6-6" /></svg>
+        <q-menu anchor="bottom left" self="top left" :offset="[0, 6]" class="kc-menu">
+          <div class="kc-menu__dungeons">
+            <button class="kc-menu__dungeon" :class="{ 'is-sel': selectedDungeon == null }" @click="setDungeon(null)" v-close-popup>
+              <span class="kc-menu__dungeon-all">All dungeons</span>
+            </button>
+            <button v-for="d in dungeonList" :key="d.keystone_id" class="kc-menu__dungeon" :class="{ 'is-sel': d.keystone_id === selectedDungeon }" @click="setDungeon(d.keystone_id)" v-close-popup>
+              <KcDungeonThumb :keystone-id="d.keystone_id" :size="22" />
+              <span class="kc-menu__dungeon-name">{{ d.name }}</span>
+            </button>
+          </div>
+        </q-menu>
+      </button>
+
       <!-- Score mode -->
       <button v-if="cfg.score" class="kc-ctxchip">
         <span class="kc-eyebrow kc-ctxchip__k">Score</span>
@@ -103,6 +122,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'src/store'
 import Affix from 'components/Icons/Affix/index.vue'
+import KcDungeonThumb from 'components/keystone/KcDungeonThumb.vue'
 
 const route = useRoute()
 const store = useStore()
@@ -116,7 +136,9 @@ const cfg = computed(() => {
   if (p === '/') return { week: 1, min: 1, score: 1 }
   if (p.startsWith('/statistics/overall')) return null
   if (p.startsWith('/statistics/runs')) return { week: 1 }
-  if (p.startsWith('/statistics')) return { week: 1, min: 1, score: 1, runs: 1, opts: 1 }
+  // the dungeons page IS the per-dungeon view, so no dungeon chip there
+  if (p.startsWith('/statistics/dungeons')) return { week: 1, min: 1, score: 1, runs: 1, opts: 1 }
+  if (p.startsWith('/statistics')) return { week: 1, min: 1, score: 1, runs: 1, opts: 1, dungeon: 1 }
   return null // leaderboard (own filters), monitor (live), lookup, info
 })
 
@@ -138,6 +160,35 @@ const currentAffixes = computed<number[]>(() => {
 const labelForIndex = (i: number) => (i === 0 ? 'This week' : i === 1 ? 'Last week' : `Week ${periodes.value[i]?.id ?? ''}`)
 const weekLabel = computed(() => labelForIndex(Math.max(0, selectedIdx.value)))
 const setWeek = (id: number) => store.commit('ChangeSelectedPeriode', id)
+
+/* dungeon scope — limited to the dungeons active in the selected periode */
+const selectedDungeon = computed<number | null>(() => (data.SelectedDungeon ?? null))
+const dungeonMeta = computed<any[]>(() => store.getters.GetDungeons || data.Dungeons || [])
+const dungeonList = computed<any[]>(() => {
+  const active = (data.Dungeons_Data && data.Dungeons_Data.data) || []
+  return active.map((d: any) => {
+    const meta = dungeonMeta.value.find((m: any) => m.keystone_id === d.id)
+    return { keystone_id: d.id, name: meta?.name || `Zone ${d.id}`, short_name: meta?.short_name || meta?.name || `#${d.id}` }
+  })
+})
+const selectedDungeonLabel = computed(() => {
+  if (selectedDungeon.value == null) return 'All'
+  const d = dungeonList.value.find((x: any) => x.keystone_id === selectedDungeon.value)
+  return d?.short_name || d?.name || `#${selectedDungeon.value}`
+})
+const setDungeon = (id: number | null) => store.commit('ChangeSelectedDungeon', id)
+
+/* ensure the active-dungeon list exists whenever the dungeon chip is shown */
+watch(
+  () => [route.path, data.SelectedPeriode],
+  () => {
+    if (cfg.value?.dungeon && data.SelectedPeriode &&
+        (!data.Dungeons_Data || data.Dungeons_Data.periode !== data.SelectedPeriode)) {
+      store.dispatch('fetchDungeonData')
+    }
+  },
+  { immediate: true }
+)
 
 /* min level */
 const minLevel = computed<number>(() => data.settings?.min_keystonelevel ?? 10)
@@ -233,6 +284,16 @@ function toggleLimit(e: Event) {
 .kc-menu__week:hover { background: var(--bg-hover); }
 .kc-menu__week-label { font-size: 13px; font-weight: 600; color: var(--text-hi); min-width: 88px; }
 .kc-menu__week .kc-ctxchip__affixes { margin-left: auto; }
+
+.kc-menu__dungeons { padding: 6px; max-height: 340px; overflow: auto; min-width: 230px; }
+.kc-menu__dungeon {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px;
+  border-radius: var(--r-sm); background: transparent; border: none; cursor: pointer; text-align: left;
+}
+.kc-menu__dungeon.is-sel { background: var(--accent-quiet); }
+.kc-menu__dungeon:hover { background: var(--bg-hover); }
+.kc-menu__dungeon-name { font-size: 13px; font-weight: 500; color: var(--text-hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kc-menu__dungeon-all { font-size: 13px; font-weight: 600; color: var(--text-hi); }
 
 .kc-menu__pad { padding: 14px; min-width: 240px; }
 .kc-menu__row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }

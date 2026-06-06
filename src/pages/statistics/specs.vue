@@ -53,14 +53,33 @@ import RoleGlyph from 'components/keystone/RoleGlyph.vue'
 
 const { store, data, specById, classById, classColorForSpec } = useKc()
 
+/* per-dungeon scoping: a dungeon picked in the scope bar swaps the global spec
+   dataset for the zone-filtered one (Spec_Dungeon_Data). */
+function freshDungeonEntry(zone: number) {
+  const ts = data.Reloaded_Timestamp ?? 0
+  const m = (data.Spec_Dungeon_Data || []).filter(
+    (e: any) => e.dungeon === zone && e.periode === data.SelectedPeriode && e.created > ts
+  )
+  return m.length ? m[m.length - 1] : null
+}
+
 function ensureData() {
   if (!data.SelectedPeriode) return
-  if (!data.Spec_Data || data.Spec_Data.periode !== data.SelectedPeriode) store.dispatch('fetchSpecData')
+  const zone = data.SelectedDungeon
+  if (zone == null) {
+    if (!data.Spec_Data || data.Spec_Data.periode !== data.SelectedPeriode) store.dispatch('fetchSpecData')
+  } else if (!freshDungeonEntry(zone)) {
+    store.dispatch('fetchSpecData', { id: zone })
+  }
 }
 onMounted(ensureData)
-watch(() => data.SelectedPeriode, ensureData)
+watch([() => data.SelectedPeriode, () => data.SelectedDungeon, () => data.Reloaded_Timestamp], ensureData)
 
-const stats = computed<any[]>(() => (data.Spec_Data && data.Spec_Data.data) || [])
+const stats = computed<any[]>(() => {
+  const zone = data.SelectedDungeon
+  if (zone == null) return (data.Spec_Data && data.Spec_Data.data) || []
+  return freshDungeonEntry(zone)?.data || []
+})
 const hasData = computed(() => stats.value.length > 0)
 
 const ROLE_ORDER = ['TANK', 'HEALER', 'DAMAGE']
