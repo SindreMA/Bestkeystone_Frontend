@@ -1,7 +1,7 @@
 <template>
   <div class="kc-topbar">
-    <!-- mobile burger -->
-    <button v-if="width <= 815" class="kc-burger" @click="drawer = true" aria-label="Menu">
+    <!-- mobile/tablet burger -->
+    <button v-if="width <= NAV_BREAKPOINT" class="kc-burger" @click="drawer = true" aria-label="Menu">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
     </button>
 
@@ -13,8 +13,8 @@
       <span class="kc-brand__word kc-disp" v-if="width > 380">BestKeystone</span>
     </router-link>
 
-    <!-- desktop nav -->
-    <nav v-if="width > 815" class="kc-nav" ref="navRef">
+    <!-- desktop nav (only when the full 7-item nav + search actually fit) -->
+    <nav v-if="width > NAV_BREAKPOINT" class="kc-nav" ref="navRef">
       <template v-for="n in NAV" :key="n.key">
         <a
           v-if="!n.children"
@@ -72,6 +72,9 @@ import { useQuasar } from 'quasar'
 
 const $q = useQuasar()
 const width = computed(() => $q.screen.width)
+// The full desktop nav (7 items + search) needs ~990px; below this we use the
+// burger drawer so tablets/narrow windows don't get horizontal scroll.
+const NAV_BREAKPOINT = 1024
 const drawer = ref(false)
 const $router = useRouter()
 const route = useRoute()
