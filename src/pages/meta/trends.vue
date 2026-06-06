@@ -56,6 +56,12 @@
           <q-skeleton height="320px" />
         </div>
 
+        <!-- error -->
+        <div v-else-if="error" class="kc-trends__empty">
+          <div class="kc-trends__empty-icon">⚠</div>
+          Couldn't load representation data right now.
+        </div>
+
         <!-- empty -->
         <div v-else-if="!series.length" class="kc-trends__empty">
           <div class="kc-trends__empty-icon">📉</div>
@@ -134,12 +140,63 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, h, onMounted, ref } from 'vue'
+import { computed, h, onMounted, ref, watch } from 'vue'
+import axios from 'axios'
 import apexchart from 'vue3-apexcharts'
+import { useKc } from 'components/keystone/useKc'
 import KcPageHeader from 'components/layout/KcPageHeader.vue'
 import KcCard from 'components/keystone/KcCard.vue'
 import KcDeltaChip from 'components/keystone/KcDeltaChip.vue'
-import { trendSpecs, movers, type TrendSpec, type Mover } from 'src/mocks/meta'
+import type { TrendSpec, Mover } from 'src/data/metaReference'
+
+/* ------------------------------------------------------------------
+   DATA SOURCE — real backend, never fabricated/mock numbers.
+   GET {apiUrl}/Meta/trends?fromPeriode=&toPeriode=
+   -> { trendSpecs: TrendSpec[], movers: Mover[] }  (shape matches the
+   former mock contract). The endpoint may 404 until the backend
+   deploys; in that case we surface a clean error/empty state and
+   show no numbers at all.
+   ------------------------------------------------------------------ */
+const { data } = useKc()
+
+const trendSpecs = ref<TrendSpec[]>([])
+const movers = ref<Mover[]>([])
+const loading = ref(false)
+const error = ref(false)
+
+function fetchTrends() {
+  // SelectedPeriode is a single periode id (or null). The endpoint takes a
+  // from/to window; with no explicit range we send the selected periode as
+  // both bounds, and leave them empty when nothing is selected yet.
+  const periode = data.SelectedPeriode
+  if (!data.apiUrl) return
+  loading.value = true
+  error.value = false
+  const p = periode == null ? '' : String(periode)
+  const url = `${data.apiUrl}/Meta/trends?fromPeriode=${p}&toPeriode=${p}`
+  axios
+    .get(url)
+    .then((r) => {
+      trendSpecs.value = Array.isArray(r.data?.trendSpecs) ? r.data.trendSpecs : []
+      movers.value = Array.isArray(r.data?.movers) ? r.data.movers : []
+      // drop any series toggles that no longer reference a live series
+      const ids = new Set(trendSpecs.value.map((s) => s.id))
+      hidden.value = new Set([...hidden.value].filter((id) => ids.has(id)))
+      loading.value = false
+    })
+    .catch((e) => {
+      console.log(e)
+      trendSpecs.value = []
+      movers.value = []
+      error.value = true
+      loading.value = false
+    })
+}
+onMounted(fetchTrends)
+watch(() => data.SelectedPeriode, fetchTrends)
+watch(() => data.SelectedLevelBand, fetchTrends)
+// scope-bar changes (sample size etc.) bump Reloaded_Timestamp
+watch(() => data.Reloaded_Timestamp, fetchTrends)
 
 /* ------------------------------------------------------------------
    The design references CSS vars like var(--class-evoker) that are not
@@ -185,26 +242,22 @@ const role = ref('DPS')
 const roleOpen = ref(false)
 const selectRole = (r: string) => { role.value = r; roleOpen.value = false }
 
-/* simple mount loading state for skeletons */
-const loading = ref(true)
-onMounted(() => { setTimeout(() => { loading.value = false }, 220) })
-
 /* ---- series toggling via legend ---- */
 const hidden = ref<Set<string>>(new Set())
 const toggleSeries = (id: string) => {
   const next = new Set(hidden.value)
   if (next.has(id)) next.delete(id)
-  else if (next.size < trendSpecs.length - 1) next.add(id) // keep ≥1 visible
+  else if (next.size < trendSpecs.value.length - 1) next.add(id) // keep ≥1 visible
   hidden.value = next
 }
 
-const visibleSpecs = computed<TrendSpec[]>(() => trendSpecs.filter((s) => !hidden.value.has(s.id)))
+const visibleSpecs = computed<TrendSpec[]>(() => trendSpecs.value.filter((s) => !hidden.value.has(s.id)))
 
 /* ---- Apex area/line config ---- */
-const categories = computed(() => (trendSpecs[0]?.points || []).map((p) => p.label))
+const categories = computed(() => (trendSpecs.value[0]?.points || []).map((p) => p.label))
 
 const series = computed(() =>
-  trendSpecs.map((s) => ({ name: s.name, data: s.points.map((p) => p.pct) })),
+  trendSpecs.value.map((s) => ({ name: s.name, data: s.points.map((p) => p.pct) })),
 )
 const visibleSeries = computed(() =>
   visibleSpecs.value.map((s) => ({ name: s.name, data: s.points.map((p) => p.pct) })),
@@ -258,10 +311,10 @@ const areaOptions = computed(() => {
 
 /* ---- movers (gainers / losers) ---- */
 const gainers = computed<Mover[]>(() =>
-  movers.filter((m) => m.delta > 0).sort((a, b) => b.delta - a.delta),
+  movers.value.filter((m) => m.delta > 0).sort((a, b) => b.delta - a.delta),
 )
 const losers = computed<Mover[]>(() =>
-  movers.filter((m) => m.delta < 0).sort((a, b) => a.delta - b.delta),
+  movers.value.filter((m) => m.delta < 0).sort((a, b) => a.delta - b.delta),
 )
 
 /* ==================================================================

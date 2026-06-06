@@ -17,7 +17,7 @@
               :aria-selected="lvl === level"
               class="kc-seg__btn"
               :class="{ 'is-sel': lvl === level }"
-              @click="level = lvl"
+              @click="setLevel(lvl)"
             >{{ lvl }}</button>
           </div>
         </template>
@@ -94,6 +94,12 @@
         </KcCard>
       </div>
 
+      <!-- error (endpoint unavailable) -->
+      <div v-else-if="error" class="kc-tl__empty">
+        <div class="kc-tl__empty-icon">⚠</div>
+        <div>Tier data is unavailable right now.</div>
+      </div>
+
       <!-- empty -->
       <div v-else class="kc-tl__empty">
         <div class="kc-tl__empty-icon">◌</div>
@@ -104,14 +110,16 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import axios from 'axios'
+import { useKc } from 'components/keystone/useKc'
 import KcPageHeader from 'components/layout/KcPageHeader.vue'
 import KcCard from 'components/keystone/KcCard.vue'
 import KcTierBadge from 'components/keystone/KcTierBadge.vue'
 import KcDeltaChip from 'components/keystone/KcDeltaChip.vue'
 import KcSuccessRing from 'components/keystone/KcSuccessRing.vue'
 import RoleGlyph from 'components/keystone/RoleGlyph.vue'
-import { roles as mockRoles, levelBands, type Role, type RoleGroup } from 'src/mocks/meta'
+import { levelBands, type Role, type RoleGroup } from 'src/data/metaReference'
 
 /* -- class colour map (canon + on-dark) ported from design class-colors.css.
       The live app has no --class-* tokens; keep these local to the page. -- */
@@ -143,24 +151,61 @@ const iconBorder = (cls: string) => `color-mix(in oklab, ${clsColor(cls)} 50%, t
 /* RoleGlyph in this project expects Tank | Healer | DPS. */
 const roleGlyph = (role: Role) => (role === 'dps' ? 'DPS' : role === 'tank' ? 'Tank' : 'Healer')
 
-/* -- scope: Level chip. Mock isn't level-filtered yet, so a change just
-      re-derives the mock (reactive). A later pass swaps in real endpoints. -- */
-const level = ref<string>('All')
+/* ── data source: real /Meta/tierlists endpoint ──────────────────────────────
+   Periode + key-level band are global scope picked in the context bar (Vuex).
+   The Level segmented control here drives the same SelectedLevelBand mutation,
+   so it stays in sync with the rest of the app. We NEVER fabricate stats: the
+   page shows loading → data | empty | error, and nothing in between. */
+const { store, data } = useKc()
+
+/* Level chip is bound to the global level-band scope. */
+const level = computed<string>(() => data.SelectedLevelBand ?? 'All')
+const setLevel = (b: string) => store.commit('ChangeSelectedLevelBand', b)
+
+/* band query param: 'All' -> 'all', '+15' -> '15', '+7' -> '7', etc. */
+const bandParam = (b: string) => (b === 'All' ? 'all' : b.replace('+', ''))
+
 const loading = ref(false)
+const error = ref(false)
+const roles = ref<RoleGroup[]>([])
+
+async function fetchTierlists() {
+  if (!data.apiUrl || !data.SelectedPeriode) {
+    roles.value = []
+    return
+  }
+  loading.value = true
+  error.value = false
+  const periode = data.SelectedPeriode
+  const band = bandParam(data.SelectedLevelBand ?? 'All')
+  try {
+    const r = await axios.get(`${data.apiUrl}/Meta/tierlists?periode=${periode}&levelBand=${band}`)
+    // guard against a stale response arriving after the scope changed again
+    if (periode !== data.SelectedPeriode || band !== bandParam(data.SelectedLevelBand ?? 'All')) return
+    const payload = (r.data && r.data.roles) || []
+    roles.value = Array.isArray(payload) ? payload : []
+  } catch (e) {
+    console.log(e)
+    roles.value = []
+    error.value = true
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(fetchTierlists)
+watch(() => [data.SelectedPeriode, data.SelectedLevelBand], fetchTierlists)
 
 interface ScopedRole extends RoleGroup {
   maxPct: number
 }
 
-const scopedRoles = computed<ScopedRole[]>(() => {
-  // depend on `level.value` so the page re-derives when the scope chip changes.
-  // The mock isn't level-filtered yet; a later pass swaps in real endpoints.
-  void level.value
-  return mockRoles.map((r) => ({
+const scopedRoles = computed<ScopedRole[]>(() =>
+  roles.value.map((r) => ({
     ...r,
     maxPct: Math.max(...r.specs.map((s) => s.pct), 1),
-  }))
-})
+  })),
+)
 
 const hasData = computed(() => scopedRoles.value.some((r) => r.specs.length > 0))
 

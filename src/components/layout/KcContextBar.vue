@@ -137,7 +137,7 @@ import { useRoute } from 'vue-router'
 import { useStore } from 'src/store'
 import Affix from 'components/Icons/Affix/index.vue'
 import KcDungeonThumb from 'components/keystone/KcDungeonThumb.vue'
-import { levelBands } from 'src/mocks/meta'
+import { levelBands } from 'src/data/metaReference'
 
 const route = useRoute()
 const store = useStore()

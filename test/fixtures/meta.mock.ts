@@ -1,180 +1,34 @@
 /* ============================================================
-   BESTKEYSTONE — mock meta data (build-before-backend)
-   Ported from /tmp/kc_design/private-redesign/project/data.js.
-   Plausible current-season (The War Within) content.
-   Replaces the window.KC globals with named ES exports.
-   Field names / shapes are the API contract — keep them stable;
-   a later pass swaps these mocks for real endpoints.
+   BESTKEYSTONE — fabricated mock stats (TEST FIXTURE ONLY)
+   Moved out of src/mocks/meta.ts. This file holds ONLY the
+   fabricated / made-up statistics that used to back the UI
+   before the real backend existed. It must NEVER be imported
+   from application code under src/ — it exists purely as a
+   fixture for tests.
+
+   Genuine reference data (dungeon/spec/class metadata, label
+   constants) and the shared TYPE interfaces now live in
+   src/data/metaReference and are imported below to avoid
+   duplication.
    ============================================================ */
 
-/* ---------------- types ---------------- */
-export type Role = 'tank' | 'healer' | 'dps'
-export type Tier = 'S' | 'A' | 'B' | 'C' | 'D'
-
-export interface Dungeon {
-  zone: string
-  name: string
-  abbr: string
-  tint: string
-}
-
-export interface Spec {
-  id: string
-  name: string
-  cls: string
-  role: Role
-  pct: number
-  timed: number
-  delta: number
-  tier: Tier
-}
-
-export interface TrendPoint {
-  week: number
-  label: string
-  pct: number
-}
-
-export interface TrendSpec {
-  id: string
-  name: string
-  cls: string
-  color: string
-  points: TrendPoint[]
-}
-
-export interface Mover {
-  id: string
-  name: string
-  cls: string
-  pct: number
-  delta: number
-}
-
-export interface RoleGroup {
-  role: Role
-  label: string
-  specs: Spec[]
-}
-
-export interface DungeonTierRow {
-  zone: string
-  tier: Tier
-  timed: number
-  avgMs: number
-  delta: number
-}
-
-export interface DungeonRankingRow {
-  zone: string
-  runs: number
-  share: number
-  avgKey: number
-  delta: number
-  spark: number[]
-}
-
-export interface Diversity {
-  overall: number
-  delta: number
-  byRole: Record<Role, number>
-  trend: number[]
-}
-
-export interface AffixCompareRow {
-  zone: string
-  tyr: { timed: number; ms: number }
-  fort: { timed: number; ms: number }
-}
-
-export interface CushionRow {
-  zone: string
-  c3: number
-  c2: number
-  c1: number
-  dep: number
-  medianMs: number
-}
-
-export interface Cutoffs {
-  regions: Record<string, number>
-  delta: Record<string, number>
-  percentiles: { label: string; score: number }[]
-  projection: { week: number; score: number; proj: boolean }[]
-}
-
-export interface FunnelRow {
-  lvl: number
-  count: number
-}
-
-export interface PlannerRow {
-  zone: string
-  cur: string
-  next: string
-  gain: number
-  attain: number
-}
-
-export interface FastestRow {
-  rank: number
-  zone: string
-  lvl: number
-  ms: number
-  comp: string[]
-  region: string
-  underPar: number
-}
-
-/* ---- dungeon pool (8) · tint = --dthumb, abbr = thumb label ---- */
-export const dungeons: Dungeon[] = [
-  { zone: 'BREW', name: 'Stormstout Brewery', abbr: 'SSB', tint: '#E0A33B' },
-  { zone: 'MISTS', name: 'Mists of Tirna Scithe', abbr: 'MISTS', tint: '#4FB860' },
-  { zone: 'NW', name: 'Necrotic Wake', abbr: 'NW', tint: '#5BD4F2' },
-  { zone: 'COT', name: 'City of Threads', abbr: 'COT', tint: '#B96BE0' },
-  { zone: 'ARAK', name: 'Grim Batol', abbr: 'GB', tint: '#C8313A' },
-  { zone: 'DAWN', name: 'The Dawnbreaker', abbr: 'DAWN', tint: '#5B8DEF' },
-  { zone: 'SV', name: 'Siege of Boralus', abbr: 'SoB', tint: '#3DD6D0' },
-  { zone: 'ML', name: 'Operation: Mechagon', abbr: 'OM', tint: '#FF9F1C' },
-]
-
-export const dungeonByZone: Record<string, Dungeon> = Object.fromEntries(
-  dungeons.map((d) => [d.zone, d]),
-)
-
-/* class key → asset slug for icons (assets/classes/<slug>.png) */
-export const CLASS_ICON: Record<string, string> = {
-  deathknight: 'deathknight',
-  demonhunter: 'demonhunter',
-  druid: 'druid',
-  evoker: 'evoker',
-  hunter: 'hunter',
-  mage: 'mage',
-  monk: 'monk',
-  paladin: 'paladin',
-  priest: 'priest',
-  rogue: 'rogue',
-  shaman: 'shaman',
-  warlock: 'warlock',
-  warrior: 'warrior',
-}
-
-/* evoker has no icon asset in the kit → fall back to a tinted placeholder handled in UI */
-export const HAS_ICON: Record<string, boolean> = {
-  evoker: false,
-  deathknight: true,
-  demonhunter: true,
-  druid: true,
-  hunter: true,
-  mage: true,
-  monk: true,
-  paladin: true,
-  priest: true,
-  rogue: true,
-  shaman: true,
-  warlock: true,
-  warrior: true,
-}
+import {
+  dungeons,
+  type Spec,
+  type TrendPoint,
+  type TrendSpec,
+  type Mover,
+  type RoleGroup,
+  type DungeonTierRow,
+  type DungeonRankingRow,
+  type Diversity,
+  type AffixCompareRow,
+  type CushionRow,
+  type Cutoffs,
+  type FunnelRow,
+  type PlannerRow,
+  type FastestRow,
+} from '../../src/data/metaReference'
 
 /* ---- specs: {id,name,cls,role,pct(within role),timed,delta,tier} ---- */
 const tanks: Spec[] = [
@@ -362,15 +216,9 @@ export const roles: RoleGroup[] = [
   { role: 'dps', label: 'DPS', specs: dps },
 ]
 
-export const levelBands: string[] = ['All', '+7', '+10', '+12', '+15', '+18', '+20']
-
-/* convenience default — mirrors the old window.KC object shape */
+/* convenience default — mirrors the old window.KC object shape (fabricated stats only) */
 const meta = {
   WEEKS,
-  dungeons,
-  dungeonByZone,
-  CLASS_ICON,
-  HAS_ICON,
   roles,
   specById,
   trendSpecs,
@@ -384,7 +232,6 @@ const meta = {
   funnel,
   planner,
   fastest,
-  levelBands,
 }
 
 export default meta

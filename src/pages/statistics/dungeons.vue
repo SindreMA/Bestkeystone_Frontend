@@ -60,7 +60,7 @@
         </div>
       </template>
 
-      <!-- ============ TIER LIST MODE (mock-driven) ============ -->
+      <!-- ============ TIER LIST MODE (real /Meta/dungeon-tier endpoint) ============ -->
       <template v-else>
         <KcCard :level="1" header="Time difficulty" :body-style="{ padding: '0' }">
           <template #headerRight>
@@ -75,7 +75,8 @@
             </div>
           </template>
 
-          <template v-if="tierRows.length">
+          <!-- loaded -->
+          <template v-if="!tierLoading && !tierError && tierRows.length">
             <div class="kc-dgn__head kc-dgn__head--tier">
               <span class="kc-eyebrow" style="text-align:center;">Tier</span>
               <span class="kc-eyebrow">Dungeon</span>
@@ -88,18 +89,18 @@
               v-for="r in tierRows"
               :key="r.zone"
               class="kc-dgn__row kc-dgn__row--tier"
-              :style="{ borderLeftColor: tierColor(r.tier.toLowerCase()) }"
+              :style="{ borderLeftColor: tierColor(String(r.tier).toLowerCase()) }"
             >
               <span class="kc-dgn__tier"><KcTierBadge :tier="r.tier" lg /></span>
               <span class="kc-dgn__name">
                 <KcDungeonThumb :dungeon="dungeonByZone[r.zone]" :size="34" />
                 <span class="kc-dgn__name-text">
-                  <span class="kc-dgn__name-main">{{ dungeonByZone[r.zone]?.name }}</span>
+                  <span class="kc-dgn__name-main">{{ dungeonByZone[r.zone]?.name || r.zone }}</span>
                   <span class="kc-eyebrow kc-dgn__name-short">{{ dungeonByZone[r.zone]?.abbr }}</span>
                 </span>
               </span>
               <span class="kc-dgn__band">
-                <span class="kc-dgn__band-fill" :style="{ width: `${r.timed * 100}%`, background: tierColor(r.tier.toLowerCase()) }" />
+                <span class="kc-dgn__band-fill" :style="{ width: `${r.timed * 100}%`, background: tierColor(String(r.tier).toLowerCase()) }" />
               </span>
               <span class="kc-dgn__success">
                 <KcSuccessRing :pct="Math.round(r.timed * 100)" :size="36" :caption="false" />
@@ -110,91 +111,54 @@
               </span>
               <span class="kc-dgn__delta"><KcDeltaChip :delta="r.delta" /></span>
             </div>
+
+            <div class="kc-dgn__foot">
+              Tier from the corpus timed-rate distribution at {{ levelLabel }} · Δ vs last week.
+              Drive “at +N” with the <strong>Level</strong> chips above.
+            </div>
           </template>
+
+          <!-- loading skeleton -->
+          <div v-else-if="tierLoading" class="kc-dungeons__loading">
+            <q-skeleton height="320px" />
+          </div>
+
+          <!-- error -->
+          <div v-else-if="tierError" class="kc-dungeons__empty">
+            Couldn’t load tier data for {{ levelLabel }}. Please try again.
+          </div>
+
+          <!-- empty -->
           <div v-else class="kc-dungeons__empty">No tier data for {{ levelLabel }}.</div>
-
-          <div class="kc-dgn__foot">
-            Tier from the corpus timed-rate distribution at {{ levelLabel }} · Δ vs last week.
-            Drive “at +N” with the <strong>Level</strong> chips above.
-          </div>
         </KcCard>
+
+        <!-- ============ SUPPORTING CARDS (tier-list mode only) ============ -->
+        <div class="kc-dgn__secondary">
+          <!-- A6 — Tyrannical vs Fortified (awaiting backend) -->
+          <KcCard :level="1" header="Affix impact · Tyrannical vs Fortified" :body-style="{ padding: '0' }">
+            <template #headerRight><span class="kc-eyebrow" style="margin:0;">this week</span></template>
+            <div class="kc-dgn__coming">
+              <div class="kc-dgn__coming-icon">◌</div>
+              <div>Needs a backend — coming soon</div>
+            </div>
+          </KcCard>
+
+          <!-- A7 — chest cushion distribution (awaiting backend) -->
+          <KcCard :level="1" header="Time-vs-par cushion" :body-style="{ padding: '0' }">
+            <div class="kc-dgn__coming">
+              <div class="kc-dgn__coming-icon">◌</div>
+              <div>Needs a backend — coming soon</div>
+            </div>
+          </KcCard>
+        </div>
       </template>
-
-      <!-- ============ SUPPORTING CARDS (mock-driven, both modes) ============ -->
-      <div class="kc-dgn__secondary">
-        <!-- A6 — Tyrannical vs Fortified -->
-        <KcCard :level="1" header="Affix impact · Tyrannical vs Fortified" :body-style="{ padding: '0' }">
-          <template #headerRight><span class="kc-eyebrow" style="margin:0;">this week</span></template>
-          <div class="kc-affix__head">
-            <span class="kc-eyebrow">Dungeon</span>
-            <span class="kc-eyebrow" style="text-align:center;">Tyrannical</span>
-            <span class="kc-eyebrow" style="text-align:center;">Fortified</span>
-            <span class="kc-eyebrow" style="text-align:right;">Δ timed</span>
-          </div>
-          <div
-            v-for="r in affixCompare"
-            :key="r.zone"
-            class="kc-affix__row"
-          >
-            <span class="kc-dgn__name">
-              <KcDungeonThumb :dungeon="dungeonByZone[r.zone]" :size="28" />
-              <span class="kc-dgn__name-main kc-affix__name">{{ dungeonByZone[r.zone]?.name }}</span>
-            </span>
-            <span class="kc-affix__col">
-              <span class="kc-tnum kc-affix__pct">{{ Math.round(r.tyr.timed * 100) }}%</span>
-              <span class="kc-mono kc-affix__time">{{ fmtMs(r.tyr.ms) }}</span>
-            </span>
-            <span class="kc-affix__col">
-              <span class="kc-tnum kc-affix__pct">{{ Math.round(r.fort.timed * 100) }}%</span>
-              <span class="kc-mono kc-affix__time">{{ fmtMs(r.fort.ms) }}</span>
-            </span>
-            <span class="kc-affix__delta">
-              <KcDeltaChip :delta="Math.round((r.fort.timed - r.tyr.timed) * 1000) / 10" />
-            </span>
-          </div>
-        </KcCard>
-
-        <!-- A7 — chest cushion distribution -->
-        <KcCard :level="1" header="Time-vs-par cushion" :body-style="{ padding: '0' }">
-          <template #headerRight>
-            <span class="kc-cush__legend">
-              <span v-for="s in CUSHION_SEG" :key="s.k" class="kc-cush__legend-item">
-                <span class="kc-cush__sw" :style="{ background: s.color }" />{{ s.label }}
-              </span>
-            </span>
-          </template>
-          <div
-            v-for="r in cushion"
-            :key="r.zone"
-            class="kc-cush__row"
-          >
-            <span class="kc-dgn__name">
-              <KcDungeonThumb :dungeon="dungeonByZone[r.zone]" :size="28" />
-              <span class="kc-dgn__name-main kc-affix__name">{{ dungeonByZone[r.zone]?.name }}</span>
-            </span>
-            <span class="kc-cush__stack">
-              <span
-                v-for="s in CUSHION_SEG"
-                v-show="(r as any)[s.k] > 0"
-                :key="s.k"
-                class="kc-cush__seg"
-                :style="{ width: `${(r as any)[s.k]}%`, background: s.color }"
-                :title="`${s.label}: ${(r as any)[s.k]}%`"
-              >{{ (r as any)[s.k] >= 12 ? `${(r as any)[s.k]}%` : '' }}</span>
-            </span>
-            <span class="kc-cush__median kc-mono kc-tnum">+{{ fmtMs(r.medianMs) }}</span>
-          </div>
-          <div class="kc-dgn__foot">
-            Share finishing with 3 / 2 / 1-chest cushion vs depleted · median headroom over par.
-          </div>
-        </KcCard>
-      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import axios from 'axios'
 import SF from 'src/SharedFunctions'
 import { useKc } from 'components/keystone/useKc'
 import KcPageHeader from 'components/layout/KcPageHeader.vue'
@@ -206,13 +170,9 @@ import KcDungeonThumb from 'components/keystone/KcDungeonThumb.vue'
 import KcBestWeek from 'components/keystone/KcBestWeek.vue'
 import KcTierBadge from 'components/keystone/KcTierBadge.vue'
 import KcDeltaChip from 'components/keystone/KcDeltaChip.vue'
-import {
-  dungeonByZone,
-  dungeonTier,
-  affixCompare,
-  cushion,
-  levelBands,
-} from 'src/mocks/meta'
+// Reference labels only (real dungeon/zone metadata + level-band constants).
+// NO fabricated stats — those used to come from src/mocks/meta and are gone.
+import { dungeonByZone, levelBands, type DungeonTierRow } from 'src/data/metaReference'
 
 const { store, data, dungeonByKeystoneId, fmtNum } = useKc()
 
@@ -226,16 +186,42 @@ const mode = ref<'rank' | 'tier'>('rank')
 const level = ref<string>('+15')
 const levelLabel = computed(() => (level.value === 'All' ? '+15' : level.value))
 
-/* tier rows from mock corpus (single band today; level chip reframes the headline
-   and is wired so a later pass can fetch per-band tiers). */
-const tierRows = computed(() => dungeonTier.rows)
+/* ---------------- tier-list mode (real /Meta/dungeon-tier endpoint) ----------------
+   GET ${apiUrl}/Meta/dungeon-tier?periode=<SelectedPeriode>&level=<level>
+   -> { level, rows: [{ zone, tier, timed, avgMs, delta }] }
+   The endpoint may 404 until the backend deploys — that is acceptable, the view
+   shows a clean loading → empty / error state and NEVER fabricated numbers. */
+const tierRows = ref<DungeonTierRow[]>([])
+const tierLoading = ref(false)
+const tierError = ref(false)
 
-const CUSHION_SEG = [
-  { k: 'c3', label: '3-chest', color: 'var(--kc-fire-3)' },
-  { k: 'c2', label: '2', color: 'var(--kc-fire-2)' },
-  { k: 'c1', label: '1', color: 'var(--kc-fire-1)' },
-  { k: 'dep', label: 'depleted', color: 'var(--kc-fire-0)' },
-] as const
+function fetchTier() {
+  if (mode.value !== 'tier') return
+  const apiUrl = data.apiUrl
+  const periode = data.SelectedPeriode
+  if (!apiUrl || periode == null) return
+  tierLoading.value = true
+  tierError.value = false
+  axios
+    .get(`${apiUrl}/Meta/dungeon-tier?periode=${periode}&level=${encodeURIComponent(level.value)}`)
+    .then((r) => {
+      tierRows.value = (r.data?.rows || []) as DungeonTierRow[]
+    })
+    .catch((e) => {
+      console.log(e)
+      tierRows.value = []
+      tierError.value = true
+    })
+    .finally(() => {
+      tierLoading.value = false
+    })
+}
+
+/* Fetch when entering tier mode, when the level chip changes, or when the
+   selected periode changes (only re-fetches while tier mode is active). */
+watch(mode, fetchTier)
+watch(level, fetchTier)
+watch(() => data.SelectedPeriode, () => { if (mode.value === 'tier') fetchTier() })
 
 /* ---------------- existing ranking-mode data (unchanged) ---------------- */
 function ensureData() {
@@ -243,7 +229,10 @@ function ensureData() {
   if (!data.Dungeons_Data || data.Dungeons_Data.periode !== data.SelectedPeriode) store.dispatch('fetchDungeonData')
   store.dispatch('fetchDungeonSuccessRateData', data.SelectedPeriode)
 }
-onMounted(ensureData)
+onMounted(() => {
+  ensureData()
+  fetchTier()
+})
 watch(() => data.SelectedPeriode, ensureData)
 
 const scoreType = computed<string>(() => data.settings?.score_type || 'mean')
@@ -377,54 +366,14 @@ function fmtMs(ms: number): string {
   gap: var(--kc-sp-5);
 }
 .kc-dgn__secondary > * { min-width: 0; }
-.kc-affix__name { font-size: 13px; }
 
-/* affix compare */
-.kc-affix__head, .kc-affix__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) 64px;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-}
-.kc-affix__head { height: 34px; background: var(--kc-bg-raised); border-bottom: 1px solid var(--kc-line-hairline); }
-.kc-affix__head .kc-eyebrow { color: var(--kc-text-low); }
-.kc-affix__row { min-height: 48px; border-bottom: 1px solid var(--kc-line-hairline); transition: background var(--kc-motion-fast) ease; }
-.kc-affix__row:hover { background: var(--kc-bg-hover); }
-.kc-affix__col { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
-.kc-affix__pct { font-size: 13px; font-weight: 700; color: var(--kc-text-hi); }
-.kc-affix__time { font-size: 11px; color: var(--kc-text-low); }
-.kc-affix__delta { display: flex; justify-content: flex-end; }
-
-/* cushion */
-.kc-cush__legend { display: flex; gap: 10px; flex-wrap: wrap; }
-.kc-cush__legend-item { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--kc-text-low); }
-.kc-cush__sw { width: 9px; height: 9px; border-radius: 2px; }
-.kc-cush__row {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 2fr) auto;
-  align-items: center;
-  gap: 12px;
-  padding: 0 16px;
-  min-height: 48px;
-  border-bottom: 1px solid var(--kc-line-hairline);
-}
-.kc-cush__stack { display: flex; height: 18px; border-radius: 4px; overflow: hidden; background: var(--kc-bg-inset); }
-.kc-cush__seg {
-  display: grid; place-items: center; height: 100%;
-  font-size: 10px; font-weight: 700; color: #0A0E14;
-  overflow: hidden; white-space: nowrap;
-  transition: width var(--kc-motion-slow) var(--kc-ease-out);
-}
-.kc-cush__median { font-size: 12px; color: var(--kc-text-mid); text-align: right; white-space: nowrap; }
+/* honest "awaiting backend" empty state for the supporting cards */
+.kc-dgn__coming { text-align: center; color: var(--kc-text-mid); font-size: 13px; padding: var(--kc-sp-7) var(--kc-sp-5); }
+.kc-dgn__coming-icon { font-size: 22px; opacity: 0.5; margin-bottom: 8px; }
 
 @media (max-width: 720px) {
   .kc-dgn__head--tier { display: none; }
   .kc-dgn__row--tier { grid-template-columns: auto 1.5fr auto auto; gap: 10px; }
   .kc-dgn__band, .kc-dgn__clear { display: none; }
-  .kc-affix__head { display: none; }
-  .kc-affix__row { grid-template-columns: 1.4fr 1fr 1fr auto; gap: 8px; }
-  .kc-cush__row { grid-template-columns: 1.2fr 1.6fr; }
-  .kc-cush__median { display: none; }
 }
 </style>

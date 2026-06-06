@@ -117,7 +117,7 @@
                 <div class="div-trend">
                   <div class="kc-eyebrow div-trend__label">12-week trend</div>
                   <KcSparkline
-                    :points="d.trend"
+                    :points="trend"
                     :w="260"
                     :h="56"
                     color="var(--kc-accent)"
@@ -146,8 +146,8 @@
                 <span class="kc-disp kc-tnum div-role__val">{{ r.value.toFixed(2) }}</span>
               </div>
             </div>
-            <div class="div-foot">
-              DPS is the most diverse pool; tanks remain the most concentrated this season.
+            <div v-if="roleSummary" class="div-foot">
+              {{ roleSummary }}
             </div>
           </KcCard>
         </div>
@@ -167,31 +167,78 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
-import { diversity, type Role } from 'src/mocks/meta'
+import { computed, onMounted, ref, watch } from 'vue'
+import axios from 'axios'
+import { useKc } from 'components/keystone/useKc'
+import type { Diversity, Role } from 'src/data/metaReference'
 import KcPageHeader from 'components/layout/KcPageHeader.vue'
 import KcCard from 'components/keystone/KcCard.vue'
 import KcDeltaChip from 'components/keystone/KcDeltaChip.vue'
 import KcSparkline from 'components/keystone/KcSparkline.vue'
 import RoleGlyph from 'components/keystone/RoleGlyph.vue'
 
-/* mock-backed for now; a later pass swaps to an endpoint */
-const d = diversity
+/* ------------------------------------------------------------------
+   Real data only. GET ${apiUrl}/Meta/diversity?periode=${SelectedPeriode}
+   -> { overall, delta, byRole:{tank,healer,dps}, trend:[...] }
+   The endpoint may 404 until the backend deploys — that is acceptable:
+   the view shows loading -> empty/error, never fabricated numbers.
+   ------------------------------------------------------------------ */
+const { data } = useKc()
+
+const d = ref<Diversity | null>(null)
 const loading = ref(false)
-const hasData = computed(() => !!d && typeof d.overall === 'number')
+
+/* hasData drives the existing "No diversity data" empty state. We require a
+   well-formed payload (numeric overall + a byRole object); anything missing,
+   empty, or errored falls through to the empty state. */
+const hasData = computed(() => {
+  const v = d.value
+  return !!v && typeof v.overall === 'number' && !!v.byRole
+})
+
+function fetchData() {
+  const apiUrl = data.apiUrl
+  const periode = data.SelectedPeriode
+  if (!apiUrl || !periode) {
+    d.value = null
+    return
+  }
+  loading.value = true
+  axios
+    .get(`${apiUrl}/Meta/diversity?periode=${periode}`)
+    .then((r) => {
+      const p = r.data
+      d.value = p && typeof p.overall === 'number' ? (p as Diversity) : null
+    })
+    .catch((e) => {
+      console.log(e)
+      d.value = null
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+onMounted(fetchData)
+watch([() => data.SelectedPeriode, () => data.Reloaded_Timestamp], fetchData)
 
 /* scope segmented control: Overall | Tank | Healer | DPS */
 const SCOPES = ['Overall', 'Tank', 'Healer', 'DPS'] as const
 type Scope = (typeof SCOPES)[number]
 const scope = ref<Scope>('Overall')
 
-const value = computed(() =>
-  scope.value === 'Overall' ? d.overall : d.byRole[scope.value.toLowerCase() as Role],
-)
+const value = computed(() => {
+  const v = d.value
+  if (!v) return 0
+  if (scope.value === 'Overall') return v.overall
+  return v.byRole[scope.value.toLowerCase() as Role] ?? 0
+})
 
 /* KcDeltaChip works in integer-ish steps; index deltas are tiny (±0.04),
    so scale to "points" (×100) for a readable +4 / −2 chip. */
-const deltaRounded = computed(() => Math.round(d.delta * 100))
+const deltaRounded = computed(() => Math.round((d.value?.delta ?? 0) * 100))
+
+/* 12-week trend series for the sparkline (number[] 0..1). */
+const trend = computed<number[]>(() => d.value?.trend ?? [])
 
 /* pos / warn / neg color by threshold (mirrors the design gauge) */
 const colorFor = (v: number) =>
@@ -206,8 +253,19 @@ const ROLE_ROWS: { role: Role; label: string; glyph: string }[] = [
   { role: 'dps', label: 'DPS', glyph: 'DPS' },
 ]
 const byRole = computed(() =>
-  ROLE_ROWS.map((r) => ({ ...r, value: d.byRole[r.role] })),
+  ROLE_ROWS.map((r) => ({ ...r, value: d.value?.byRole[r.role] ?? 0 })),
 )
+
+/* data-derived caption: which role pool is most diverse vs most concentrated.
+   Derived from the live values (no fixed claim); hidden when data is absent. */
+const roleSummary = computed(() => {
+  const rows = byRole.value
+  if (!d.value || !rows.length) return ''
+  const most = rows.reduce((a, b) => (b.value > a.value ? b : a))
+  const least = rows.reduce((a, b) => (b.value < a.value ? b : a))
+  if (most.role === least.role) return ''
+  return `${most.label} is the most diverse pool; ${least.label} is the most concentrated.`
+})
 
 /* ---- custom arc gauge geometry (270° sweep) ---- */
 const GAUGE = 184
