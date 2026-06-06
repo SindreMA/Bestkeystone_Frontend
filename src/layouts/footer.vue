@@ -19,7 +19,10 @@
       <!-- sitemap columns -->
       <div v-for="col in columns" :key="col.h" class="kc-footer__col">
         <div class="kc-eyebrow kc-footer__col-h">{{ col.h }}</div>
-        <router-link v-for="l in col.links" :key="l.to" :to="l.to" class="kc-footer__link">{{ l.label }}</router-link>
+        <template v-for="l in col.links" :key="l.label">
+          <a v-if="l.href" :href="l.href" target="_blank" rel="noopener" class="kc-footer__link">{{ l.label }}</a>
+          <router-link v-else :to="l.to!" class="kc-footer__link">{{ l.label }}</router-link>
+        </template>
       </div>
     </div>
   </footer>
@@ -28,7 +31,8 @@
 <script lang="ts" setup>
 const currentYear = new Date().getFullYear()
 
-const columns = [
+type FooterLink = { label: string; to?: string; href?: string }
+const columns: { h: string; links: FooterLink[] }[] = [
   { h: 'Statistics', links: [
     { label: 'Dungeons', to: '/statistics/dungeons' },
     { label: 'Classes', to: '/statistics/classes' },
@@ -43,6 +47,10 @@ const columns = [
     { label: 'Leaderboard', to: '/leaderboard/keystone' },
     { label: 'Live Monitor', to: '/monitor' },
     { label: 'Info', to: '/info' },
+  ] },
+  { h: 'Legacy', links: [
+    { label: 'Super Legacy site', href: 'https://super-legacy.bestkeystone.com/' },
+    { label: 'Classic site', href: 'https://legacy.bestkeystone.com' },
   ] },
 ]
 
@@ -67,7 +75,7 @@ const socials = [
   margin: 0 auto;
   padding: 40px 24px;
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
   gap: 32px;
 }
 @media (max-width: 815px) { .kc-footer__inner { grid-template-columns: 1fr 1fr; gap: 28px; } }
