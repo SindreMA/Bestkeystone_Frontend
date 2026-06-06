@@ -95,7 +95,7 @@
             </KcCard>
 
             <!-- what to farm next (global meta priority + this player's current best per dungeon) -->
-            <FarmNextCard :runs="data.run_data.runs" :periode="periode" />
+            <FarmNextCard :runs="data.run_data.runs" />
 
             <template v-if="data.run_data.runs.length > 0">
               <AffixOverview :runs="data.run_data.runs" />

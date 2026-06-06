@@ -54,9 +54,8 @@ import KcSuccessRing from 'components/keystone/KcSuccessRing.vue'
 
 const props = defineProps({
   runs: { type: Array, default: () => [] },
-  periode: { type: [Number, Object], default: null },
 })
-const { runs, periode } = toRefs(props)
+const { runs } = toRefs(props)
 
 const { data, dungeonByKeystoneId } = useKc()
 
@@ -76,10 +75,13 @@ const playerBest = computed<Record<number, { level: number; score: number }>>(()
   return best
 })
 
+// "What to farm next" is about the CURRENT week, so use the global selected
+// periode (a weekly periode id). The player page's own `periode` is a season
+// window ({start,end,season}) with no weekly id and is not what /Meta/planner
+// expects, which is why the fetch never fired before.
 const periodeId = computed<number | null>(() => {
-  const p: any = periode.value
-  if (p == null) return null
-  return typeof p === 'object' ? (p.id ?? null) : p
+  const sel = (data as any).SelectedPeriode
+  return sel == null ? null : Number(sel)
 })
 
 const rows = computed(() =>
