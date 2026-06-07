@@ -246,8 +246,10 @@ const goDungeons = () => router.push('/statistics/dungeons')
   font: 600 13px/1 var(--kc-font-ui); cursor: pointer; border: 1px solid transparent;
   transition: background var(--kc-motion-fast) ease;
 }
-.kc-btn--primary { background: var(--kc-accent); color: var(--kc-text-inverse); }
-.kc-btn--primary:hover { background: var(--kc-accent-hover); }
+/* white text on a slightly-darkened accent for readable contrast (near-black
+   text on the bright accent was hard to read); brighten to full accent on hover */
+.kc-btn--primary { background: color-mix(in oklab, var(--kc-accent) 80%, #000); color: #fff; }
+.kc-btn--primary:hover { background: var(--kc-accent); }
 
 @media (max-width: 600px) {
   .kc-hero-inner { padding: var(--kc-sp-4); }

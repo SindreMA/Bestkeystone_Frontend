@@ -7,19 +7,7 @@
         :sub="headerSub"
       >
         <template #right>
-          <span class="kc-tl__hint">share is within-role</span>
-          <div class="kc-seg" role="tablist" aria-label="Key level scope">
-            <button
-              v-for="lvl in levelBands"
-              :key="lvl"
-              type="button"
-              role="tab"
-              :aria-selected="lvl === level"
-              class="kc-seg__btn"
-              :class="{ 'is-sel': lvl === level }"
-              @click="setLevel(lvl)"
-            >{{ lvl }}</button>
-          </div>
+          <span class="kc-tl__hint">share is within-role · all key levels</span>
         </template>
       </KcPageHeader>
 
@@ -119,7 +107,7 @@ import KcTierBadge from 'components/keystone/KcTierBadge.vue'
 import KcDeltaChip from 'components/keystone/KcDeltaChip.vue'
 import KcSuccessRing from 'components/keystone/KcSuccessRing.vue'
 import RoleGlyph from 'components/keystone/RoleGlyph.vue'
-import { levelBands, type Role, type RoleGroup } from 'src/data/metaReference'
+import { type Role, type RoleGroup } from 'src/data/metaReference'
 
 /* -- class colour map (canon + on-dark) ported from design class-colors.css.
       The live app has no --class-* tokens; keep these local to the page. -- */
@@ -152,18 +140,12 @@ const iconBorder = (cls: string) => `color-mix(in oklab, ${clsColor(cls)} 50%, t
 const roleGlyph = (role: Role) => (role === 'dps' ? 'DPS' : role === 'tank' ? 'Tank' : 'Healer')
 
 /* ── data source: real /Meta/tierlists endpoint ──────────────────────────────
-   Periode + key-level band are global scope picked in the context bar (Vuex).
-   The Level segmented control here drives the same SelectedLevelBand mutation,
-   so it stays in sync with the rest of the app. We NEVER fabricate stats: the
-   page shows loading → data | empty | error, and nothing in between. */
-const { store, data } = useKc()
-
-/* Level chip is bound to the global level-band scope. */
-const level = computed<string>(() => data.SelectedLevelBand ?? 'All')
-const setLevel = (b: string) => store.commit('ChangeSelectedLevelBand', b)
-
-/* band query param: 'All' -> 'all', '+15' -> '15', '+7' -> '7', etc. */
-const bandParam = (b: string) => (b === 'All' ? 'all' : b.replace('+', ''))
+   Periode is global scope (Vuex). The backend currently only generates the
+   "all" level band (per-band snapshots aren't computed yet), so we always
+   request 'all' — the page must not break if SelectedLevelBand is set to a
+   non-"all" value on another page. We NEVER fabricate stats: the page shows
+   loading → data | empty | error, and nothing in between. */
+const { data } = useKc()
 
 const loading = ref(false)
 const error = ref(false)
@@ -177,11 +159,10 @@ async function fetchTierlists() {
   loading.value = true
   error.value = false
   const periode = data.SelectedPeriode
-  const band = bandParam(data.SelectedLevelBand ?? 'All')
   try {
-    const r = await axios.get(`${data.apiUrl}/Meta/tierlists?periode=${periode}&levelBand=${band}`)
-    // guard against a stale response arriving after the scope changed again
-    if (periode !== data.SelectedPeriode || band !== bandParam(data.SelectedLevelBand ?? 'All')) return
+    const r = await axios.get(`${data.apiUrl}/Meta/tierlists?periode=${periode}&levelBand=all`)
+    // guard against a stale response arriving after the periode changed again
+    if (periode !== data.SelectedPeriode) return
     const payload = (r.data && r.data.roles) || []
     roles.value = Array.isArray(payload) ? payload : []
   } catch (e) {
@@ -194,7 +175,7 @@ async function fetchTierlists() {
 }
 
 onMounted(fetchTierlists)
-watch(() => [data.SelectedPeriode, data.SelectedLevelBand], fetchTierlists)
+watch(() => data.SelectedPeriode, fetchTierlists)
 
 interface ScopedRole extends RoleGroup {
   maxPct: number
@@ -209,10 +190,7 @@ const scopedRoles = computed<ScopedRole[]>(() =>
 
 const hasData = computed(() => scopedRoles.value.some((r) => r.specs.length > 0))
 
-const headerSub = computed(() => {
-  const lvl = level.value === 'All' ? 'all key levels' : level.value
-  return `Best spec per role at ${lvl} · this week`
-})
+const headerSub = computed(() => 'Best spec per role at all key levels · this week')
 </script>
 
 <style scoped>
@@ -233,7 +211,7 @@ const headerSub = computed(() => {
 .kc-tl__cols {
   display: grid;
   gap: var(--kc-sp-5);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
 }
 
 /* card header bits */
@@ -244,10 +222,10 @@ const headerSub = computed(() => {
 .kc-tl__row {
   display: grid;
   align-items: center;
-  gap: var(--kc-sp-3);
-  grid-template-columns: 28px 26px minmax(110px, 1.2fr) minmax(72px, 1fr) 30px auto;
+  gap: var(--kc-sp-2);
+  grid-template-columns: 28px 26px minmax(0, 1.4fr) minmax(56px, 1fr) 30px 44px;
   min-height: 44px;
-  padding: 0 var(--kc-sp-5);
+  padding: 0 var(--kc-sp-4);
   border-bottom: 1px solid var(--kc-line-hairline);
   transition: background var(--kc-motion-fast) ease;
 }

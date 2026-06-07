@@ -154,8 +154,10 @@ const cfg = computed(() => {
   // the dungeons page IS the per-dungeon view, so no dungeon chip there
   if (p.startsWith('/statistics/dungeons')) return { week: 1, min: 1, score: 1, runs: 1, opts: 1 }
   if (p.startsWith('/statistics')) return { week: 1, min: 1, score: 1, runs: 1, opts: 1, dungeon: 1, level: 1 }
-  // new meta & tools surfaces — scope by dungeon + level band
-  if (p.startsWith('/meta') || p.startsWith('/tools')) return { week: 1, dungeon: 1, level: 1 }
+  // /meta has no working level-band breakdown (only the "all" band is generated),
+  // so no LEVEL chip here. /tools keeps it (population uses the band marker).
+  if (p.startsWith('/meta')) return { week: 1, dungeon: 1 }
+  if (p.startsWith('/tools')) return { week: 1, dungeon: 1, level: 1 }
   return null // leaderboard (own filters), monitor (live), lookup, info
 })
 
