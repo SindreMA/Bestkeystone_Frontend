@@ -30,7 +30,9 @@
               <div class="kc-eyebrow kc-hero__stat-label">Avg score</div>
               <div class="kc-disp kc-tnum kc-hero__stat-num">{{ avgScore != null ? avgScore : '—' }}</div>
             </div>
-            <KcSuccessRing :pct="successPct" :sample="best?.total_runs ?? null" :size="48" />
+            <!-- no "n {count}" caption: "Runs tracked" already shows it, and the
+                 caption overlapped adjacent stats at large brackets (e.g. 100k) -->
+            <KcSuccessRing :pct="successPct" :size="48" />
             <div>
               <div class="kc-eyebrow kc-hero__stat-label">Runs tracked</div>
               <div class="kc-disp kc-tnum kc-hero__stat-num">{{ fmtNum(best?.total_runs ?? null) }}</div>
