@@ -42,7 +42,7 @@
       <div v-else-if="loading" class="kc-comps__loading"><q-skeleton height="320px" /></div>
       <KcCard v-else :level="1"><div class="kc-comps__empty">No composition data for these filters yet.</div></KcCard>
 
-      <div v-if="generated" class="kc-comps__note">Data generated {{ generated }} · "Amount of runs" is the only setting that affects composition data.</div>
+      <div v-if="generated" class="kc-comps__note">Data generated {{ generated }} · Bracket is the only setting that affects composition data.</div>
     </div>
   </div>
 </template>
@@ -80,7 +80,9 @@ function fetchComps() {
   loading.value = true
   rows.value = []
   page.value = 0
-  const runs = data.settings.max_runs
+  // composition `runs` = the selected bracket's composition_runs (= cutoff/10),
+  // read from /api/Bracket so the per-endpoint scaling stays server-defined.
+  const runs = store.getters.GetCompositionRuns
   let url = `${data.apiUrl}/Composition?periode=${periode}&runs=${runs}&from=0&amount=5000&type=${type.value}`
   if (data.SelectedDungeon != null) url += `&dungeon=${data.SelectedDungeon}`
   axios.get(url)

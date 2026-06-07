@@ -75,6 +75,7 @@ const GetAllSpecs = () => store.dispatch("GetAllSpecs");
 const GetAllClasses = () => store.dispatch("GetAllClasses");
 const GetAllAffixData = () => store.dispatch("GetAllAffixData");
 const GetPeriodesData = () => store.dispatch("GetPeriodesData");
+const GetBrackets = () => store.dispatch("GetBracketsData");
 const fetchDungeonData = () => store.dispatch("fetchDungeonData");
 const fetchSpecData = () => store.dispatch("fetchSpecData");
 
@@ -107,6 +108,7 @@ onBeforeMount(() => {
   fetchDungeons();
 
   GetPeriodesData();
+  GetBrackets();
 
   var settings = { ...GetSettings.value };
 

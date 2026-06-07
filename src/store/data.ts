@@ -2,6 +2,24 @@ import axios from 'axios'
 import { colors } from 'quasar'
 const { rgbToHex } = colors
 
+// --- top-N population brackets (from GET /api/Bracket; see SaveBrackets) -------
+// The selected bracket's cutoff is stored in settings.max_runs. The query param
+// DIFFERS per endpoint family, so we read it from the bracket object rather than
+// deriving it: compositions use composition_runs (= cutoff/10); leaderboards and
+// stats use leaderboard_amount (= cutoff). The fallbacks only apply before the
+// /api/Bracket response has loaded.
+function selectedBracket(state) {
+    return (state.Brackets || []).find(b => b.cutoff === state.settings.max_runs) || null
+}
+function leaderboardAmount(state) {
+    const b = selectedBracket(state)
+    return b ? b.leaderboard_amount : state.settings.max_runs
+}
+function compositionRuns(state) {
+    const b = selectedBracket(state)
+    return b ? b.composition_runs : Math.max(1, Math.round((state.settings.max_runs || 0) / 10))
+}
+
 const state = {
 
     state: {
@@ -12,9 +30,10 @@ const state = {
             score_type: 'mean',
             limitbylowestdungeon: false,
             min_keystonelevel: 10,
-            max_runs: 5000,
+            max_runs: 10000, // selected top-N bracket CUTOFF (from /api/Bracket); migrated on load
             WeeksToShow: 6,
         },
+        Brackets: null, // supported top-N brackets from /api/Bracket (fetched once)
 
         notifications: [],
         //Colors are sent from backend now
@@ -103,6 +122,16 @@ const state = {
         },
         SaveCreatorsProjects(state, data) {
             state.CreatorsProjects = data
+        },
+        SaveBrackets(state, data) {
+            state.Brackets = data
+            // Migrate a stale/legacy sample size (e.g. 5000) to a real bracket cutoff
+            // so the selector highlights a valid option and params resolve correctly.
+            const cutoffs = (data || []).map(b => b.cutoff)
+            if (cutoffs.length && !cutoffs.includes(state.settings.max_runs)) {
+                state.settings.max_runs = cutoffs.includes(10000) ? 10000 : cutoffs[Math.floor(cutoffs.length / 2)]
+                localStorage.setItem('settings', JSON.stringify(state.settings))
+            }
         },
         SavePeriodes(state, data) {
             state.Periodes = data
@@ -233,6 +262,15 @@ const state = {
         fetchWorstPlayer({ commit, dispatch, state }, season) {
             //Deprecated
         },
+        GetBracketsData({ commit, state }) {
+            axios.get(state.apiUrl + '/Bracket')
+                .then(function(response) {
+                    commit('SaveBrackets', response.data)
+                })
+                .catch(function(error) {
+                    console.log(error);
+                })
+        },
         fetchSeasons({ commit, dispatch, state }) {
             axios.get(state.apiUrl + '/Periode/Seasons')
                 .then(function(response) {
@@ -244,7 +282,7 @@ const state = {
         },
 
         fetchDungeonSuccessRateData({ commit, dispatch, state }, id) {
-            axios.get(state.apiUrl + `/Dungeon/ontimerate?periode=${id}&min_level=${state.settings.min_keystonelevel}&amount=${state.settings.max_runs}&limitToLowestDungeon=${state.settings.limitbylowestdungeon}`)
+            axios.get(state.apiUrl + `/Dungeon/ontimerate?periode=${id}&min_level=${state.settings.min_keystonelevel}&amount=${leaderboardAmount(state)}&limitToLowestDungeon=${state.settings.limitbylowestdungeon}`)
                 .then(function(response) {
                     commit('SaveDungeonSuccessRateData', { data: response.data, id: id, settings: {...state.settings } })
                 })
@@ -292,7 +330,7 @@ const state = {
             axios.get(state.apiUrl + '/Dungeon/leaderboard?periode=' +
                     state.SelectedPeriode + '&min_level=' +
                     state.settings.min_keystonelevel + '&amount=' +
-                    state.settings.max_runs + '&limitToLowestDungeon=' +
+                    leaderboardAmount(state) + '&limitToLowestDungeon=' +
                     state.settings.limitbylowestdungeon)
                 .then(function(response) {
                     commit('SaveDungeonData', response.data)
@@ -308,7 +346,7 @@ const state = {
             var url = state.apiUrl + '/Spec/leaderboard?periode=' +
                 (payload?.SelectedPeriode ?? state.SelectedPeriode) + '&min_level=' +
                 state.settings.min_keystonelevel + '&amount=' +
-                state.settings.max_runs + '&limitToLowestDungeon=' +
+                leaderboardAmount(state) + '&limitToLowestDungeon=' +
                 state.settings.limitbylowestdungeon;
             if (payload) url += '&zone=' + payload.id
 
@@ -440,6 +478,18 @@ const state = {
 
         GetSettings(state) {
             return state.settings
+        },
+        GetBrackets(state) {
+            return state.Brackets
+        },
+        GetSelectedBracket(state) {
+            return selectedBracket(state)
+        },
+        GetLeaderboardAmount(state) {
+            return leaderboardAmount(state)
+        },
+        GetCompositionRuns(state) {
+            return compositionRuns(state)
         },
         GetDungeons(state) {
             return state.Dungeons

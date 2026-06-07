@@ -87,7 +87,7 @@ function fetchData() {
 function fetchIntime() {
   const s = data.settings
   if (!data.apiUrl || !data.SelectedPeriode) return
-  axios.get(`${data.apiUrl}/Class/ontimerate?periode=${data.SelectedPeriode}&min_level=${s.min_keystonelevel}&amount=${s.max_runs}&limitToLowestDungeon=${s.limitbylowestdungeon}`)
+  axios.get(`${data.apiUrl}/Class/ontimerate?periode=${data.SelectedPeriode}&min_level=${s.min_keystonelevel}&amount=${store.getters.GetLeaderboardAmount}&limitToLowestDungeon=${s.limitbylowestdungeon}`)
     .then((r) => { intime.value = r.data })
     .catch((e) => console.log(e))
 }

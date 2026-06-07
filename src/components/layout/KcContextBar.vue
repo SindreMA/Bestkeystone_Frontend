@@ -88,17 +88,23 @@
         </q-menu>
       </button>
 
-      <!-- Sample size (runs per dungeon) -->
+      <!-- Population bracket (top-N runs); options come from /api/Bracket -->
       <button v-if="cfg.runs" class="kc-ctxchip">
-        <span class="kc-eyebrow kc-ctxchip__k">Sample</span>
-        <span class="kc-ctxchip__v">{{ runsLabel(maxRuns) }}</span>
+        <span class="kc-eyebrow kc-ctxchip__k">Bracket</span>
+        <span class="kc-ctxchip__v">{{ bracketLabel }}</span>
         <svg class="kc-ctxchip__chev" v-bind="chev"><path d="M6 9l6 6 6-6" /></svg>
         <q-menu anchor="bottom left" self="top left" :offset="[0, 6]" class="kc-menu">
-          <div class="kc-menu__pad kc-menu__score">
-            <div class="kc-eyebrow" style="margin-bottom: 8px;">Runs sampled per dungeon</div>
-            <div class="kc-seg">
-              <button v-for="o in RUNS_OPTS" :key="o.v" class="kc-seg__btn" :class="{ 'is-sel': o.v === maxRuns }" @click="setRuns(o.v)">{{ o.label }}</button>
-            </div>
+          <div class="kc-menu__pad" style="min-width: 170px;">
+            <div class="kc-eyebrow" style="margin-bottom: 8px;">Top-N population bracket</div>
+            <button
+              v-for="o in brackets"
+              :key="o.cutoff"
+              class="kc-menu__opt"
+              :class="{ 'is-sel': o.cutoff === maxRuns }"
+              @click="setRuns(o.cutoff)"
+              v-close-popup
+            >{{ o.label }}</button>
+            <div v-if="!brackets.length" class="kc-menu__legend">Loading brackets…</div>
           </div>
         </q-menu>
       </button>
@@ -233,10 +239,14 @@ const SCORE_LEGEND: Record<string, string> = {
   mean: 'Total score ÷ run count — mean score per run.',
 }
 
-/* sample size (max_runs) */
-const maxRuns = computed<number>(() => data.settings?.max_runs ?? 5000)
-const RUNS_OPTS = [{ v: 10, label: '10' }, { v: 100, label: '100' }, { v: 1000, label: '1k' }, { v: 5000, label: '5k' }]
-const runsLabel = (n: number) => (n >= 1000 ? `${n / 1000}k` : `${n}`)
+/* population bracket — selected cutoff is stored in settings.max_runs; the
+   option list + labels come from /api/Bracket (single source of truth). */
+const maxRuns = computed<number>(() => data.settings?.max_runs ?? 10000)
+const brackets = computed<any[]>(() => data.Brackets ?? [])
+const bracketLabel = computed<string>(() => {
+  const b = brackets.value.find((x) => x.cutoff === maxRuns.value)
+  return b ? b.label : `Top ${Number(maxRuns.value || 0).toLocaleString()}`
+})
 function setRuns(v: number) {
   store.commit('SaveSettings', { setting: 'max_runs', value: v })
   reload()
@@ -307,6 +317,15 @@ function toggleLimit(e: Event) {
 .kc-menu__week:hover { background: var(--bg-hover); }
 .kc-menu__week-label { font-size: 13px; font-weight: 600; color: var(--text-hi); min-width: 88px; }
 .kc-menu__week .kc-ctxchip__affixes { margin-left: auto; }
+
+/* bracket options (top-N) */
+.kc-menu__opt {
+  display: block; width: 100%; padding: 8px 10px; border-radius: var(--r-sm);
+  background: transparent; border: none; cursor: pointer; text-align: left;
+  font: 600 13px/1.2 var(--font-ui); color: var(--text-hi);
+}
+.kc-menu__opt.is-sel { background: var(--accent-quiet); }
+.kc-menu__opt:hover { background: var(--bg-hover); }
 
 .kc-menu__dungeons { padding: 6px; max-height: 340px; overflow: auto; min-width: 230px; }
 .kc-menu__dungeon {
