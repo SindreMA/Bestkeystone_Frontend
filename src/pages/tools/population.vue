@@ -112,9 +112,16 @@ const fmtNum = (n: number | null | undefined) =>
 // not rows[0]. Bar widths are clamped to 100% against it.
 const max = computed(() => Math.max(1, ...rows.value.map((r) => r.count)))
 
-/* funnel bar fades from accent → cyan as levels climb (per design color-mix) */
-const barColor = (i: number) =>
-  `color-mix(in oklab, var(--kc-accent) ${100 - i * 8}%, var(--kc-signal-cyan, var(--kc-series-3)))`
+/* funnel bar fades from accent → cyan as levels climb. Scale the mix across the
+   actual number of rows (clamped 0–100) — a fixed 8%/row went negative past ~12
+   rows, producing an invalid color-mix that rendered the bar transparent (no bar
+   for +15 and up once the full +2..+24 ladder is shown). */
+const barColor = (i: number) => {
+  const n = rows.value.length
+  const t = n > 1 ? i / (n - 1) : 0
+  const pct = Math.max(0, Math.min(100, Math.round(100 - t * 100)))
+  return `color-mix(in oklab, var(--kc-accent) ${pct}%, var(--kc-signal-cyan, var(--kc-series-3)))`
+}
 
 /* footer narrative, derived live from the active rows */
 const tailPct = computed(() => {
