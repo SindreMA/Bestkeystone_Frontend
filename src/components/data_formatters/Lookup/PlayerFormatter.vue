@@ -24,23 +24,21 @@ export default {
   },
   computed: {
     filterdRuns() {
-      var ls = [];
-
-      for (let i = 0; i < this.runs.length; i++) {
-        const element = this.runs[i];
-        //SF.log(`Lookup->FilterRuns->For= Element: ${element.completed_timestamp} Periode:${(this.periode.start * 1000)}`,5)
-        if (this.periode.start == null || this.periode.end == null) {
-          ls.push(element);
-        } else {
-          if (
-            element.time.completed_timestamp > this.periode.start * 1000 &&
-            element.time.completed_timestamp < this.periode.end * 1000
-          ) {
-            ls.push(element);
-          }
-        }
+      // Filter runs to the selected season's window. periode.season carries the
+      // real millisecond start/end (the same object whose .id drives the API
+      // season param). The legacy periode.start/end were unreliable — they could
+      // resolve to ~now and hide EVERY run ("No runs for this season"). If no
+      // season window is available, show all runs rather than hide them.
+      const season = this.periode && this.periode.season;
+      if (season && season.start != null && season.end != null) {
+        return this.runs.filter(
+          (el) =>
+            el.time &&
+            el.time.completed_timestamp > season.start &&
+            el.time.completed_timestamp < season.end
+        );
       }
-      return ls;
+      return [...this.runs];
     },
     raidProgress() {
       if (!this.data) return;
