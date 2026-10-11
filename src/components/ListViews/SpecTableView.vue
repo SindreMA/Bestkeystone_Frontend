@@ -98,6 +98,31 @@
                       <q-tooltip>Success rate is generated separately. Could not get the data</q-tooltip>
                     </div>
                   </q-td>
+                  <q-td key="with_without" :props="props">
+                    <div v-if="getImpactData(props.row.spec)">
+                      {{Math.round(getImpactData(props.row.spec).avg_score_with)}} / {{Math.round(getImpactData(props.row.spec).avg_score_without)}}
+                      <q-tooltip>
+                        Groups with this spec: {{Math.round(getImpactData(props.row.spec).avg_score_with*10)/10}} avg score ({{getImpactData(props.row.spec).runs_with}} runs)<br />
+                        Groups without this spec: {{Math.round(getImpactData(props.row.spec).avg_score_without*10)/10}} avg score ({{getImpactData(props.row.spec).runs_without}} runs)
+                      </q-tooltip>
+                    </div>
+                    <q-spinner-bars v-else-if="fetchingImpact" size="15" />
+                    <div v-else>-</div>
+                  </q-td>
+                  <q-td key="impact" :props="props">
+                    <div
+                      v-if="getImpactData(props.row.spec) && getImpactData(props.row.spec).adjusted_delta != null"
+                      :class="getImpactData(props.row.spec).adjusted_delta >= 0 ? 'text-positive' : 'text-negative'"
+                    >
+                      {{formatDelta(getImpactData(props.row.spec).adjusted_delta)}}
+                      <q-tooltip>
+                        Average score difference between groups with and without this spec,<br />
+                        compared only against runs in the same dungeon and keystone level
+                      </q-tooltip>
+                    </div>
+                    <q-spinner-bars v-else-if="fetchingImpact" size="15" />
+                    <div v-else>-</div>
+                  </q-td>
                 </q-tr>
               </template>
             </q-table>
@@ -126,6 +151,8 @@ const {  dungeon } = toRefs(props)
 
 let inTimeData = ref([])
 let fetching = ref(false)
+let impactData = ref([])
+let fetchingImpact = ref(false)
 let error = ref(false)
 let runData = ref(null)
       let paginationControl = ref({
@@ -191,6 +218,20 @@ let runData = ref(null)
           field: row => getIntimeData(row.spec).ontime_percent || 0,
           sortable: true,
           align: "center"
+        },
+        {
+          name: "with_without",
+          label: "Avg score with / without",
+          field: row => getImpactData(row.spec)?.avg_score_with || 0,
+          sortable: true,
+          align: "center"
+        },
+        {
+          name: "impact",
+          label: "Impact",
+          field: row => getImpactData(row.spec)?.adjusted_delta ?? -Infinity,
+          sortable: true,
+          align: "center"
         }
       ])
 
@@ -214,6 +255,7 @@ const GetSettings = data.settings
       if (!dungeon.value) {
         ls.push('intime_rate')
       }
+      ls.push('with_without', 'impact')
       return ls
     })
 
@@ -320,6 +362,32 @@ const GetSettings = data.settings
         });
     }
 
+    const getImpactData = (id) => impactData.value?.find(x => x.spec == id)
+
+    const formatDelta = (delta) => `${delta >= 0 ? '+' : ''}${Math.round(delta * 10) / 10}`
+
+    const fetchImpactData = () => {
+      fetchingImpact.value = true;
+      var url = data.apiUrl +
+        "/Spec/impact?periode=" + SelectedPeriode.value +
+        "&min_level=" + GetSettings.min_keystonelevel +
+        "&amount=" + GetSettings.max_runs +
+        "&limitToLowestDungeon=" + GetSettings.limitbylowestdungeon;
+      if (dungeon.value) url += "&zone=" + dungeon.value;
+
+      axios
+        .get(url)
+        .then(function(response) {
+          impactData.value = response.data;
+          fetchingImpact.value = false;
+        })
+        .catch(function(error) {
+          console.log(error);
+          impactData.value = [];
+          fetchingImpact.value = false;
+        });
+    }
+
     const getscore = (score, type, procentTotal, runs) => sf.GetPoints(score, type, procentTotal, runs);
     
     const getTotalScore = (ls) => {
@@ -381,6 +449,9 @@ const GetSettings = data.settings
     }
 
 onBeforeMount(() => {
+  if (SelectedPeriode.value) {
+    fetchImpactData();
+  }
   if (dungeon.value) {
       fetchSpecData({ id: dungeon.value });
     } else {
@@ -405,6 +476,7 @@ onBeforeMount(() => {
       runData.value = null;
       error.value = false;
       fetchIntimeData();
+      fetchImpactData();
     })
     watch(getReloaded_Timestamp, ()=> {
       fetchIntimeData();
