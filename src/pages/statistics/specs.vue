@@ -28,6 +28,21 @@
                 <span class="kc-eyebrow">avg</span>
                 <span class="kc-disp kc-tnum kc-specrow__avg-num">{{ avgOf(s) }}</span>
               </span>
+              <span class="kc-specrow__avg kc-specrow__impact">
+                <span class="kc-eyebrow">impact</span>
+                <template v-if="impactOf(s.spec)?.adjusted_delta != null">
+                  <span
+                    class="kc-disp kc-tnum kc-specrow__avg-num"
+                    :class="impactOf(s.spec).adjusted_delta >= 0 ? 'kc-specrow__impact--pos' : 'kc-specrow__impact--neg'"
+                  >{{ formatDelta(impactOf(s.spec).adjusted_delta) }}</span>
+                  <q-tooltip>
+                    With this spec: {{ round1(impactOf(s.spec).avg_score_with) }} avg ({{ impactOf(s.spec).runs_with }} runs)<br />
+                    Without this spec: {{ round1(impactOf(s.spec).avg_score_without) }} avg ({{ impactOf(s.spec).runs_without }} runs)<br />
+                    Impact compares runs in the same dungeon and key level
+                  </q-tooltip>
+                </template>
+                <span v-else class="kc-disp kc-tnum kc-specrow__avg-num">–</span>
+              </span>
               <KcScorePill :score="s.score" :column-max="grp.max" :tier="tierFor(i, grp.specs.length)" :sample="s.runs" />
             </div>
           </KcCard>
@@ -42,7 +57,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import axios from 'axios'
 import { useKc, roleLabel } from 'components/keystone/useKc'
 import KcPageHeader from 'components/layout/KcPageHeader.vue'
 import KcCard from 'components/keystone/KcCard.vue'
@@ -82,6 +98,25 @@ function ensureData() {
 }
 onMounted(ensureData)
 watch([() => data.SelectedPeriode, () => data.SelectedDungeon, () => data.Reloaded_Timestamp], ensureData)
+
+/* spec impact: avg score of groups with vs without the spec (/Spec/impact) */
+const impact = ref<any[]>([])
+function fetchImpact() {
+  if (!data.SelectedPeriode) return
+  const s = data.settings
+  let url = `${data.apiUrl}/Spec/impact?periode=${data.SelectedPeriode}&min_level=${s.min_keystonelevel}&amount=${s.max_runs}&limitToLowestDungeon=${s.limitbylowestdungeon}`
+  if (data.SelectedDungeon != null) url += `&zone=${data.SelectedDungeon}`
+  axios
+    .get(url)
+    .then((res) => { impact.value = res.data || [] })
+    .catch((err) => { console.log(err); impact.value = [] })
+}
+onMounted(fetchImpact)
+watch([() => data.SelectedPeriode, () => data.SelectedDungeon, () => data.Reloaded_Timestamp], fetchImpact)
+
+const impactOf = (spec: number): any => impact.value.find((x) => x.spec === spec)
+const round1 = (n: number) => Math.round(n * 10) / 10
+const formatDelta = (d: number) => `${d >= 0 ? '+' : ''}${round1(d)}`
 
 const stats = computed<any[]>(() => {
   const zone = data.SelectedDungeon
@@ -123,7 +158,7 @@ const tierFor = (i: number, n: number) => (i === 0 ? 's' : i < n * 0.15 ? 'a' : 
 
 .kc-specrow {
   display: grid;
-  grid-template-columns: auto minmax(170px, 1.3fr) 1fr auto auto;
+  grid-template-columns: auto minmax(170px, 1.3fr) 1fr auto auto auto;
   align-items: center;
   gap: 16px;
   padding: 0 16px;
@@ -139,9 +174,12 @@ const tierFor = (i: number, n: number) => (i === 0 ? 's' : i < n * 0.15 ? 'a' : 
 .kc-specrow__fill { display: block; height: 100%; border-radius: 3px; opacity: 0.8; }
 .kc-specrow__avg { display: flex; flex-direction: column; align-items: flex-end; line-height: 1.1; }
 .kc-specrow__avg-num { font-size: 13px; font-weight: 700; }
+.kc-specrow__impact { min-width: 44px; cursor: default; }
+.kc-specrow__impact--pos { color: var(--kc-pos); }
+.kc-specrow__impact--neg { color: var(--kc-neg); }
 
 @media (max-width: 720px) {
-  .kc-specrow { grid-template-columns: auto 1.4fr auto; gap: 10px; }
-  .kc-specrow__bar, .kc-specrow__avg { display: none; }
+  .kc-specrow { grid-template-columns: auto 1.4fr auto auto; gap: 10px; }
+  .kc-specrow__bar, .kc-specrow__avg:not(.kc-specrow__impact) { display: none; }
 }
 </style>
