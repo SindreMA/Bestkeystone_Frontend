@@ -33,20 +33,22 @@
                 <template v-if="impactOf(s.spec)?.adjusted_delta != null">
                   <span
                     class="kc-disp kc-tnum kc-specrow__avg-num"
-                    :class="impactClass(impactOf(s.spec).adjusted_delta)"
+                    :class="impactClass(impactOf(s.spec))"
                   >{{ formatDelta(impactOf(s.spec).adjusted_delta) }}</span>
                   <q-tooltip>
-                    <b>Impact {{ formatDelta(impactOf(s.spec).adjusted_delta) }}</b>: score difference vs groups without this spec,<br />
+                    <b>Impact {{ formatDelta(impactOf(s.spec).adjusted_delta) }}</b>
+                    <template v-if="impactOf(s.spec).adjusted_delta_se != null"> (±{{ round1(1.96 * impactOf(s.spec).adjusted_delta_se) }})</template>:
+                    score difference vs groups without this spec,<br />
                     comparing only runs in the same dungeon and key level<br />
+                    <template v-if="!impactOf(s.spec).significant">
+                      Not clearly different from zero; could be random variation<br />
+                    </template>
                     <br />
                     Overall: {{ round1(impactOf(s.spec).avg_score_with) }} avg with ({{ impactOf(s.spec).runs_with }} runs)
                     vs {{ round1(impactOf(s.spec).avg_score_without) }} without ({{ impactOf(s.spec).runs_without }} runs)
                     = {{ formatDelta(impactOf(s.spec).avg_score_with - impactOf(s.spec).avg_score_without) }}<br />
                     <template v-if="Math.sign(impactOf(s.spec).avg_score_with - impactOf(s.spec).avg_score_without) !== Math.sign(impactOf(s.spec).adjusted_delta)">
-                      The overall gap mostly reflects which key levels this spec is played in, not the spec itself<br />
-                    </template>
-                    <template v-if="Math.abs(impactOf(s.spec).adjusted_delta) < IMPACT_NEUTRAL">
-                      Under ±{{ IMPACT_NEUTRAL }} is within normal variation
+                      The overall gap mostly reflects which key levels this spec is played in, not the spec itself
                     </template>
                   </q-tooltip>
                 </template>
@@ -124,10 +126,9 @@ onMounted(fetchImpact)
 watch([() => data.SelectedPeriode, () => data.SelectedDungeon, () => data.Reloaded_Timestamp], fetchImpact)
 
 const impactOf = (spec: number): any => impact.value.find((x) => x.spec === spec)
-// deltas this small are noise; show them uncolored rather than as a win/loss
-const IMPACT_NEUTRAL = 0.5
-const impactClass = (d: number) =>
-  Math.abs(d) < IMPACT_NEUTRAL ? '' : d > 0 ? 'kc-specrow__impact--pos' : 'kc-specrow__impact--neg'
+// only color deltas the API marks as clearly different from zero; the rest are noise
+const impactClass = (i: any) =>
+  !i.significant ? '' : i.adjusted_delta > 0 ? 'kc-specrow__impact--pos' : 'kc-specrow__impact--neg'
 const round1 = (n: number) => Math.round(n * 10) / 10
 const formatDelta = (d: number) => `${d >= 0 ? '+' : ''}${round1(d)}`
 

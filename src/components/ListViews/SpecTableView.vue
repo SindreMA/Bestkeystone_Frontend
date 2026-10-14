@@ -112,7 +112,7 @@
                   <q-td key="impact" :props="props">
                     <div
                       v-if="getImpactData(props.row.spec) && getImpactData(props.row.spec).adjusted_delta != null"
-                      :class="getImpactData(props.row.spec).adjusted_delta >= 0 ? 'text-positive' : 'text-negative'"
+                      :class="!getImpactData(props.row.spec).significant ? '' : getImpactData(props.row.spec).adjusted_delta > 0 ? 'text-positive' : 'text-negative'"
                     >
                       {{formatDelta(getImpactData(props.row.spec).adjusted_delta)}}
                       <q-tooltip>
